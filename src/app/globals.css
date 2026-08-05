@@ -106,6 +106,10 @@ body {
   appearance: none;
   cursor: pointer;
 }
+.glass-select option {
+  background: var(--bg-color);
+  color: var(--text-primary);
+}
 
 /* Buttons */
 .btn {
@@ -138,6 +142,11 @@ body {
   transform: translateY(0);
 }
 
+.btn-success {
+  background: var(--success-color);
+  color: white;
+}
+
 .btn-outline {
   background: transparent;
   border: 1px solid var(--glass-border);
@@ -148,12 +157,17 @@ body {
   background: rgba(255, 255, 255, 0.05);
 }
 
+.active-filter {
+  background: rgba(99, 102, 241, 0.15) !important;
+  border-color: var(--accent-color) !important;
+  color: var(--text-primary) !important;
+}
+
 /* Grid & Tables */
 .data-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 24px;
-  margin-top: 24px;
 }
 
 .data-card {
@@ -166,6 +180,16 @@ body {
 
 .data-card:hover {
   transform: translateY(-4px);
+}
+
+/* Dashboard Stats */
+.stat-card {
+  text-align: center;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-bottom: 3px solid var(--glass-border);
 }
 
 .card-header {
@@ -217,6 +241,12 @@ body {
   border: 1px solid rgba(245, 158, 11, 0.3);
 }
 
+.status-info {
+  background: rgba(99, 102, 241, 0.15);
+  color: #818cf8;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+}
+
 .card-info {
   display: flex;
   align-items: center;
@@ -236,7 +266,6 @@ body {
 
 .card-actions {
   margin-top: auto;
-  padding-top: 16px;
   border-top: 1px solid var(--glass-border);
   display: flex;
   gap: 12px;
@@ -253,7 +282,6 @@ body {
   background: rgba(0,0,0,0.2);
   padding: 6px;
   border-radius: 12px;
-  margin-bottom: 24px;
   border: 1px solid var(--glass-border);
 }
 
