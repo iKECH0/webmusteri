@@ -3,7 +3,6 @@ import path from 'path';
 
 const dbPath = path.join(process.cwd(), 'crm.db');
 const db = new Database(dbPath, { verbose: undefined });
-
 db.pragma('journal_mode = WAL');
 
 export function initDB() {
@@ -19,11 +18,18 @@ export function initDB() {
       name TEXT NOT NULL,
       address TEXT,
       phone TEXT,
+      email TEXT,
       website TEXT,
       has_website INTEGER DEFAULT 0,
       category TEXT,
       status TEXT DEFAULT 'new',
       notes TEXT,
+      tags TEXT DEFAULT '[]',
+      ai_score INTEGER DEFAULT 0,
+      rating REAL,
+      review_count INTEGER,
+      portal_token TEXT UNIQUE,
+      portal_viewed INTEGER DEFAULT 0,
       next_followup_date TEXT,
       revenue REAL DEFAULT 0,
       lat REAL,
@@ -49,16 +55,56 @@ export function initDB() {
       is_active INTEGER DEFAULT 1,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
+
+    CREATE TABLE IF NOT EXISTS email_campaigns (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      subject TEXT NOT NULL,
+      body TEXT NOT NULL,
+      sent_count INTEGER DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS email_logs (
+      id TEXT PRIMARY KEY,
+      lead_id TEXT,
+      campaign_id TEXT,
+      email TEXT,
+      status TEXT DEFAULT 'pending',
+      sent_at DATETIME,
+      FOREIGN KEY (lead_id) REFERENCES leads(id)
+    );
+
+    CREATE TABLE IF NOT EXISTS quotes (
+      id TEXT PRIMARY KEY,
+      lead_id TEXT NOT NULL,
+      title TEXT,
+      items TEXT NOT NULL,
+      total REAL,
+      notes TEXT,
+      status TEXT DEFAULT 'draft',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (lead_id) REFERENCES leads(id)
+    );
   `);
 
-  // Add new columns to existing leads table if they don't exist
-  const columns = db.pragma('table_info(leads)').map(c => c.name);
-  if (!columns.includes('next_followup_date')) db.exec("ALTER TABLE leads ADD COLUMN next_followup_date TEXT;");
-  if (!columns.includes('revenue')) db.exec("ALTER TABLE leads ADD COLUMN revenue REAL DEFAULT 0;");
-  if (!columns.includes('lat')) db.exec("ALTER TABLE leads ADD COLUMN lat REAL;");
-  if (!columns.includes('lng')) db.exec("ALTER TABLE leads ADD COLUMN lng REAL;");
+  // Migrate existing leads table — add new columns if missing
+  const cols = db.pragma('table_info(leads)').map(c => c.name);
+  const addCol = (col, type) => {
+    if (!cols.includes(col)) db.exec(`ALTER TABLE leads ADD COLUMN ${col} ${type};`);
+  };
+  addCol('email', 'TEXT');
+  addCol('tags', "TEXT DEFAULT '[]'");
+  addCol('ai_score', 'INTEGER DEFAULT 0');
+  addCol('rating', 'REAL');
+  addCol('review_count', 'INTEGER');
+  addCol('portal_token', 'TEXT');
+  addCol('portal_viewed', 'INTEGER DEFAULT 0');
+  addCol('next_followup_date', 'TEXT');
+  addCol('revenue', 'REAL DEFAULT 0');
+  addCol('lat', 'REAL');
+  addCol('lng', 'REAL');
 }
 
 initDB();
-
 export default db;

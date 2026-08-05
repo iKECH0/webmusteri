@@ -1,7 +1,7 @@
 "use client";
 import { useState } from 'react';
 import axios from 'axios';
-import { Download, Filter, Search, MessageCircle, AlignLeft, Save, Trash2, Phone, MapPin, Globe, ExternalLink, PhoneCall } from 'lucide-react';
+import { Download, Filter, Search, MessageCircle, AlignLeft, Save, Trash2, Phone, MapPin, Globe, ExternalLink, PhoneCall, Mail, Calendar, Link, Tag, Star, Activity } from 'lucide-react';
 
 const STATUS_MAP = {
   new: { label: 'Yeni', cls: 'status-warning' },
@@ -11,21 +11,31 @@ const STATUS_MAP = {
   closed: { label: 'Müşteri Oldu 🎉', cls: 'status-success' }
 };
 
+const SUGGESTED_TAGS = ['Sıcak Lead', 'VIP', 'Sezonluk', 'Halı Yıkama', 'Oto Yıkama', 'Büyük İşletme'];
+
 export default function CRMTab({ leads, onRefresh }) {
   const [crmSearch, setCrmSearch] = useState('');
   const [crmFilter, setCrmFilter] = useState('all');
+  
   const [notes, setNotes] = useState({});
   const [followupDates, setFollowupDates] = useState({});
   const [revenues, setRevenues] = useState({});
+  const [emails, setEmails] = useState({});
+  const [tags, setTags] = useState({});
+  
   const [callLogInputs, setCallLogInputs] = useState({});
   const [expandedCard, setExpandedCard] = useState(null);
   const [callLogs, setCallLogs] = useState({});
   const [checkingWebsite, setCheckingWebsite] = useState({});
+  const [portalCopied, setPortalCopied] = useState({});
+  const [calSyncing, setCalSyncing] = useState({});
 
-  const initNote = (lead) => {
+  const initLeadData = (lead) => {
     if (notes[lead.id] === undefined) setNotes(p => ({ ...p, [lead.id]: lead.notes || '' }));
     if (followupDates[lead.id] === undefined) setFollowupDates(p => ({ ...p, [lead.id]: lead.next_followup_date || '' }));
     if (revenues[lead.id] === undefined) setRevenues(p => ({ ...p, [lead.id]: lead.revenue || '' }));
+    if (emails[lead.id] === undefined) setEmails(p => ({ ...p, [lead.id]: lead.email || '' }));
+    if (tags[lead.id] === undefined) setTags(p => ({ ...p, [lead.id]: lead.tags || [] }));
   };
 
   const updateLead = async (id, data) => {
@@ -37,7 +47,9 @@ export default function CRMTab({ leads, onRefresh }) {
     await updateLead(lead.id, {
       notes: notes[lead.id],
       next_followup_date: followupDates[lead.id] || null,
-      revenue: revenues[lead.id] ? parseFloat(revenues[lead.id]) : null
+      revenue: revenues[lead.id] ? parseFloat(revenues[lead.id]) : null,
+      email: emails[lead.id] || null,
+      tags: tags[lead.id] || []
     });
   };
 
@@ -45,6 +57,14 @@ export default function CRMTab({ leads, onRefresh }) {
     if (!confirm('Bu firmayı silmek istediğinize emin misiniz?')) return;
     await axios.delete('/api/leads', { data: { id } });
     onRefresh();
+  };
+
+  const toggleTag = (leadId, tag) => {
+    setTags(p => {
+      const current = p[leadId] || [];
+      const updated = current.includes(tag) ? current.filter(t => t !== tag) : [...current, tag];
+      return { ...p, [leadId]: updated };
+    });
   };
 
   const addCallLog = async (leadId) => {
@@ -87,16 +107,46 @@ export default function CRMTab({ leads, onRefresh }) {
     }
   };
 
+  const syncToCalendar = async (lead) => {
+    const date = followupDates[lead.id] || lead.next_followup_date;
+    if (!date) return alert('Önce bir takip tarihi seçin ve kaydedin.');
+    
+    setCalSyncing(p => ({ ...p, [lead.id]: true }));
+    try {
+      const res = await axios.post('/api/calendar/sync', { lead_id: lead.id, date });
+      alert('✅ Takvim etkinliği oluşturuldu!');
+    } catch (e) {
+      alert(e.response?.data?.error || 'Takvime eklerken hata oluştu. Ayarlardan Google hesabınızı bağladığınızdan emin olun.');
+    } finally {
+      setCalSyncing(p => ({ ...p, [lead.id]: false }));
+    }
+  };
+
+  const copyPortalLink = async (lead) => {
+    let token = lead.portal_token;
+    if (!token) {
+      token = Math.random().toString(36).substring(2, 20) + Date.now().toString(36);
+      await axios.put('/api/leads', { id: lead.id, portal_token: token });
+      onRefresh(); // Refresh lead data to get the new token
+    }
+    const link = `${window.location.origin}/portal/${token}`;
+    navigator.clipboard.writeText(link);
+    setPortalCopied(p => ({ ...p, [lead.id]: true }));
+    setTimeout(() => setPortalCopied(p => ({ ...p, [lead.id]: false })), 2500);
+  };
+
   const downloadCSV = () => {
-    let csv = "\uFEFFDFirma Adı,Telefon,Adres,Kategori,Durum,Web Sitesi,Kazanılan Gelir,Notlar,Takip Tarihi\r\n";
+    let csv = "\uFEFFDFirma Adı,Telefon,E-posta,Adres,Kategori,Durum,Web Sitesi,Kazanılan Gelir,Yapay Zeka Skoru,Notlar,Takip Tarihi,Etiketler\r\n";
     filteredLeads.forEach(l => {
       csv += [
-        `"${l.name || ''}"`, `"${l.phone || ''}"`, `"${l.address || ''}"`,
+        `"${l.name || ''}"`, `"${l.phone || ''}"`, `"${l.email || ''}"`, `"${l.address || ''}"`,
         `"${l.category || ''}"`, `"${STATUS_MAP[l.status]?.label || l.status}"`,
         l.has_website ? 'Var' : 'Yok',
         l.revenue ? `${l.revenue}₺` : '0₺',
+        `"${l.ai_score || 0}"`,
         `"${(l.notes || '').replace(/"/g, '""')}"`,
         `"${l.next_followup_date || ''}"`,
+        `"${(l.tags || []).join(', ')}"`,
       ].join(',') + '\r\n';
     });
     const link = document.createElement('a');
@@ -109,14 +159,21 @@ export default function CRMTab({ leads, onRefresh }) {
 
   const filteredLeads = leads.filter(lead => {
     const q = crmSearch.toLowerCase();
-    const matchSearch = !q || lead.name.toLowerCase().includes(q) || (lead.phone || '').includes(q);
+    const matchSearch = !q || lead.name.toLowerCase().includes(q) || (lead.phone || '').includes(q) || (lead.tags || []).some(t => t.toLowerCase().includes(q));
     const matchFilter =
       crmFilter === 'all' ? true :
       crmFilter === 'nowebsite' ? !lead.has_website :
       crmFilter === 'contacted' ? lead.status !== 'new' :
-      crmFilter === 'closed' ? lead.status === 'closed' : true;
+      crmFilter === 'closed' ? lead.status === 'closed' : 
+      crmFilter === 'hot' ? lead.ai_score >= 80 : true;
     return matchSearch && matchFilter;
   });
+
+  const getScoreColor = (score) => {
+    if (score >= 80) return '#ef4444'; // Red (Hot)
+    if (score >= 60) return '#f59e0b'; // Yellow (Warm)
+    return '#94a3b8'; // Gray (Cold)
+  };
 
   // Stats
   const total = leads.length;
@@ -124,8 +181,6 @@ export default function CRMTab({ leads, onRefresh }) {
   const contacted = leads.filter(l => l.status !== 'new').length;
   const closed = leads.filter(l => l.status === 'closed').length;
   const totalRevenue = leads.reduce((sum, l) => sum + (l.revenue || 0), 0);
-
-  // Today's followups
   const today = new Date().toISOString().split('T')[0];
   const todayFollowups = leads.filter(l => l.next_followup_date === today);
 
@@ -182,12 +237,13 @@ export default function CRMTab({ leads, onRefresh }) {
           <div style={{ position: 'relative', flex: 1, minWidth: '200px' }}>
             <Search size={16} style={{ position: 'absolute', left: 12, top: 14, color: 'var(--text-secondary)' }} />
             <input className="glass-input" style={{ paddingLeft: '38px', width: '100%' }}
-              placeholder="İsim veya telefonla ara..."
+              placeholder="İsim, telefon veya etiketle ara..."
               value={crmSearch} onChange={e => setCrmSearch(e.target.value)} />
           </div>
           <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
             {[
               { key: 'all', label: 'Tümü' },
+              { key: 'hot', label: '🔥 Sıcak Fırsat (AI > 80)' },
               { key: 'nowebsite', label: '🔴 Site Yok' },
               { key: 'contacted', label: '📞 İletişim' },
               { key: 'closed', label: '🏆 Müşteri' },
@@ -205,24 +261,49 @@ export default function CRMTab({ leads, onRefresh }) {
         ) : (
           <div className="data-grid">
             {filteredLeads.map(lead => {
-              initNote(lead);
+              initLeadData(lead);
               const isExpanded = expandedCard === lead.id;
               const wsStatus = checkingWebsite[lead.id];
+              const aiScore = lead.ai_score || 0;
 
               return (
                 <div key={lead.id} className={`data-card glass-panel ${!lead.has_website ? 'card-highlight' : ''}`} style={{ padding: '20px' }}>
                   {/* Header */}
-                  <div className="card-header">
+                  <div className="card-header" style={{ marginBottom: 12 }}>
                     <h4 className="card-title" style={{ flex: 1, paddingRight: '8px' }}>{lead.name}</h4>
-                    <span className={`status-badge ${STATUS_MAP[lead.status]?.cls || 'status-warning'}`} style={{ whiteSpace: 'nowrap' }}>
-                      {STATUS_MAP[lead.status]?.label || 'Yeni'}
-                    </span>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
+                      <span className={`status-badge ${STATUS_MAP[lead.status]?.cls || 'status-warning'}`} style={{ whiteSpace: 'nowrap' }}>
+                        {STATUS_MAP[lead.status]?.label || 'Yeni'}
+                      </span>
+                      {aiScore > 0 && (
+                        <div style={{ fontSize: 11, fontWeight: 700, color: getScoreColor(aiScore), display: 'flex', alignItems: 'center', gap: 4 }}>
+                          <Activity size={12} /> AI Skor: {aiScore}
+                        </div>
+                      )}
+                    </div>
                   </div>
 
+                  {/* Badges / Tags Summary */}
+                  {lead.tags?.length > 0 && (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
+                      {lead.tags.map(t => (
+                        <span key={t} style={{ background: 'rgba(99,102,241,0.15)', color: '#818cf8', padding: '2px 8px', borderRadius: 12, fontSize: 11, fontWeight: 600 }}>#{t}</span>
+                      ))}
+                    </div>
+                  )}
+
                   {/* Info */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '12px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {(lead.rating || lead.review_count > 0) && (
+                      <div className="card-info">
+                        <Star size={14} style={{ color: '#f59e0b' }} />
+                        <span style={{ color: '#f59e0b', fontWeight: 600 }}>{lead.rating}</span> 
+                        <span style={{ fontSize: 11 }}>({lead.review_count} Yorum)</span>
+                      </div>
+                    )}
                     {lead.address && <div className="card-info"><MapPin size={14} /><span>{lead.address}</span></div>}
                     {lead.phone && <div className="card-info"><Phone size={14} /><span>{lead.phone}</span></div>}
+                    {lead.email && <div className="card-info"><Mail size={14} /><span>{lead.email}</span></div>}
                     <div className="card-info">
                       <Globe size={14} />
                       {lead.has_website ? (
@@ -236,24 +317,8 @@ export default function CRMTab({ leads, onRefresh }) {
                     </div>
                   </div>
 
-                  {/* WhatsApp + Check Website */}
-                  <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
-                    {lead.phone && (
-                      <button className="btn" style={{ flex: 1, background: '#25D366', color: 'white', padding: '10px', fontSize: '13px' }}
-                        onClick={() => openWhatsApp(lead.phone)}>
-                        <MessageCircle size={16} /> WhatsApp
-                      </button>
-                    )}
-                    {lead.has_website && (
-                      <button className="btn btn-outline" style={{ padding: '10px 12px', fontSize: '13px' }}
-                        onClick={() => checkWebsite(lead)} disabled={wsStatus === 'loading'}>
-                        <ExternalLink size={14} /> {wsStatus === 'loading' ? '...' : 'Site Kontrol'}
-                      </button>
-                    )}
-                  </div>
-
                   {/* Status Selector */}
-                  <select className="glass-select" style={{ width: '100%', marginTop: '12px', padding: '8px 12px', fontSize: '13px' }}
+                  <select className="glass-select" style={{ width: '100%', marginTop: '16px', padding: '8px 12px', fontSize: '13px' }}
                     value={lead.status}
                     onChange={e => updateLead(lead.id, { status: e.target.value })}>
                     <option value="new">Yeni (İşlem Yapılmadı)</option>
@@ -266,18 +331,50 @@ export default function CRMTab({ leads, onRefresh }) {
                   {/* Expand Button */}
                   <button className="btn btn-outline" style={{ marginTop: '12px', width: '100%', fontSize: '13px', padding: '8px' }}
                     onClick={() => toggleCard(lead.id)}>
-                    {isExpanded ? '▲ Gizle' : '▼ Not & Arama Geçmişi'}
+                    {isExpanded ? '▲ Gizle' : '▼ Tüm Detaylar, Notlar & İşlemler'}
                   </button>
 
                   {/* Expanded Section */}
                   {isExpanded && (
                     <div style={{ marginTop: '16px', borderTop: '1px solid var(--glass-border)', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                      
+                      {/* Tags Editor */}
+                      <div>
+                        <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}><Tag size={12} style={{ display: 'inline' }} /> Etiketler</label>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                          {SUGGESTED_TAGS.map(t => {
+                            const active = (tags[lead.id] || []).includes(t);
+                            return (
+                              <button key={t} type="button" onClick={() => toggleTag(lead.id, t)}
+                                style={{ padding: '4px 10px', fontSize: 11, borderRadius: 12, border: `1px solid ${active ? '#6366f1' : 'var(--glass-border)'}`, background: active ? 'rgba(99,102,241,0.2)' : 'transparent', color: active ? '#fff' : 'var(--text-secondary)', cursor: 'pointer' }}>
+                                {t}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Contact Info (Email) */}
+                      <div>
+                        <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>📧 E-posta Adresi</label>
+                        <input type="email" className="glass-input" style={{ width: '100%', fontSize: '13px' }}
+                          placeholder="Müşteri e-postası..."
+                          value={emails[lead.id] || ''}
+                          onChange={e => setEmails(p => ({ ...p, [lead.id]: e.target.value }))} />
+                      </div>
+
                       {/* Followup Date */}
                       <div>
                         <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>⏰ Takip Tarihi</label>
-                        <input type="date" className="glass-input" style={{ width: '100%', fontSize: '13px' }}
-                          value={followupDates[lead.id] || ''}
-                          onChange={e => setFollowupDates(p => ({ ...p, [lead.id]: e.target.value }))} />
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          <input type="date" className="glass-input" style={{ flex: 1, fontSize: '13px' }}
+                            value={followupDates[lead.id] || ''}
+                            onChange={e => setFollowupDates(p => ({ ...p, [lead.id]: e.target.value }))} />
+                          <button className="btn btn-outline" style={{ padding: '8px 12px', fontSize: 13, borderColor: '#818cf8', color: '#818cf8' }} 
+                            onClick={() => syncToCalendar(lead)} disabled={calSyncing[lead.id]}>
+                            <Calendar size={14} /> {calSyncing[lead.id] ? 'Ekleniyor' : 'Takvime Ekle'}
+                          </button>
+                        </div>
                       </div>
 
                       {/* Revenue */}
@@ -300,10 +397,14 @@ export default function CRMTab({ leads, onRefresh }) {
                           onChange={e => setNotes(p => ({ ...p, [lead.id]: e.target.value }))} />
                       </div>
 
-                      <div style={{ display: 'flex', gap: '8px' }}>
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                         <button className="btn btn-primary" style={{ flex: 1, padding: '8px', fontSize: '13px' }}
                           onClick={() => saveLead(lead)}>
-                          <Save size={14} /> Kaydet
+                          <Save size={14} /> Bilgileri Kaydet
+                        </button>
+                        <button className="btn btn-outline" style={{ padding: '8px 12px', fontSize: 13, borderColor: portalCopied[lead.id] ? '#10b981' : undefined, color: portalCopied[lead.id] ? '#34d399' : undefined }}
+                          onClick={() => copyPortalLink(lead)}>
+                          <Link size={14} /> {portalCopied[lead.id] ? 'Kopyalandı!' : 'Portal Linki'}
                         </button>
                         <button className="btn btn-outline" style={{ padding: '8px 12px', borderColor: '#ef4444', color: '#ef4444' }}
                           onClick={() => deleteLead(lead.id)}>
@@ -311,9 +412,24 @@ export default function CRMTab({ leads, onRefresh }) {
                         </button>
                       </div>
 
+                      <div style={{ display: 'flex', gap: '8px', marginTop: 4 }}>
+                        {lead.phone && (
+                          <button className="btn" style={{ flex: 1, background: '#25D366', color: 'white', padding: '10px', fontSize: '13px' }}
+                            onClick={() => openWhatsApp(lead.phone)}>
+                            <MessageCircle size={16} /> WhatsApp'tan Yaz
+                          </button>
+                        )}
+                        {lead.has_website && (
+                          <button className="btn btn-outline" style={{ flex: 1, padding: '10px', fontSize: '13px' }}
+                            onClick={() => checkWebsite(lead)} disabled={wsStatus === 'loading'}>
+                            <ExternalLink size={14} /> {wsStatus === 'loading' ? 'Kontrol Ediliyor...' : 'Siteyi Kontrol Et'}
+                          </button>
+                        )}
+                      </div>
+
                       {/* Call Logs */}
-                      <div>
-                        <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}><PhoneCall size={12} style={{ display: 'inline' }} /> Arama Geçmişi</label>
+                      <div style={{ marginTop: 8 }}>
+                        <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}><PhoneCall size={12} style={{ display: 'inline' }} /> Arama Geçmişi & Notları</label>
                         <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
                           <input className="glass-input" style={{ flex: 1, fontSize: '13px', padding: '8px 12px' }}
                             placeholder="Arama notu ekle..."
@@ -325,14 +441,16 @@ export default function CRMTab({ leads, onRefresh }) {
                         {(callLogs[lead.id] || []).length === 0 ? (
                           <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Henüz arama kaydı yok.</p>
                         ) : (
-                          (callLogs[lead.id] || []).map((log, i) => (
-                            <div key={i} style={{ padding: '8px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', marginBottom: '6px', fontSize: '13px' }}>
-                              <div style={{ color: 'var(--text-secondary)', fontSize: '11px', marginBottom: '4px' }}>
-                                {new Date(log.created_at).toLocaleString('tr-TR')}
+                          <div style={{ maxHeight: 150, overflowY: 'auto' }}>
+                            {(callLogs[lead.id] || []).map((log, i) => (
+                              <div key={i} style={{ padding: '8px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', marginBottom: '6px', fontSize: '13px' }}>
+                                <div style={{ color: 'var(--text-secondary)', fontSize: '11px', marginBottom: '4px' }}>
+                                  {new Date(log.created_at).toLocaleString('tr-TR')}
+                                </div>
+                                {log.note || <span style={{ opacity: 0.5 }}>Not yok</span>}
                               </div>
-                              {log.note || <span style={{ opacity: 0.5 }}>Not yok</span>}
-                            </div>
-                          ))
+                            ))}
+                          </div>
                         )}
                       </div>
                     </div>

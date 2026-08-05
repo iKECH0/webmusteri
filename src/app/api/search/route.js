@@ -30,7 +30,7 @@ export async function POST(request) {
     const headers = {
       'Content-Type': 'application/json',
       'X-Goog-Api-Key': apiKey,
-      'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.nationalPhoneNumber,places.websiteUri,places.primaryType,places.location'
+      'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.nationalPhoneNumber,places.websiteUri,places.primaryType,places.location,places.rating,places.userRatingCount'
     };
 
     const response = await axios.post(url, requestBody, { headers });
@@ -46,8 +46,8 @@ export async function POST(request) {
     
     // Prepare statement to insert new leads
     const insertStmt = db.prepare(`
-      INSERT OR IGNORE INTO leads (id, place_id, name, address, phone, website, has_website, category, status, lat, lng)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'new', ?, ?)
+      INSERT OR IGNORE INTO leads (id, place_id, name, address, phone, website, has_website, category, status, lat, lng, rating, review_count)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'new', ?, ?, ?, ?)
     `);
 
     const results = places.map(place => {
@@ -60,16 +60,18 @@ export async function POST(request) {
       const category = place.primaryType || 'Bilinmiyor';
       const lat = place.location?.latitude || null;
       const lng = place.location?.longitude || null;
+      const rating = place.rating || null;
+      const reviewCount = place.userRatingCount || 0;
 
       const existing = checkStmt.get(placeId);
       const status = existing ? existing.status : 'new';
 
       if (!existing) {
         const id = Math.random().toString(36).substring(2, 15);
-        insertStmt.run(id, placeId, name, address, phone, website, hasWebsite, category, lat, lng);
+        insertStmt.run(id, placeId, name, address, phone, website, hasWebsite, category, lat, lng, rating, reviewCount);
       }
 
-      return { id: placeId, name, address, phone, website, hasWebsite: !!hasWebsite, category, status, lat, lng };
+      return { id: placeId, name, address, phone, website, hasWebsite: !!hasWebsite, category, status, lat, lng, rating, reviewCount };
     });
 
     return NextResponse.json({ results });

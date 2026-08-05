@@ -1,12 +1,15 @@
 "use client";
 import { useState, useEffect, Suspense, lazy } from 'react';
 import axios from 'axios';
-import { Search, Map, Users, BarChart2, Clock, Settings as SettingsIcon } from 'lucide-react';
+import { Search, Map, Users, BarChart2, Clock, Settings as SettingsIcon, Mail, FileText, Target } from 'lucide-react';
 import SearchTab from '@/components/SearchTab';
 import CRMTab from '@/components/CRMTab';
 import AnalysisTab from '@/components/AnalysisTab';
 import ScheduleTab from '@/components/ScheduleTab';
 import SettingsTab from '@/components/SettingsTab';
+import EmailTab from '@/components/EmailTab';
+import QuotesTab from '@/components/QuotesTab';
+import CompetitorTab from '@/components/CompetitorTab';
 
 // Map uses browser-only APIs, import dynamically
 import dynamic from 'next/dynamic';
@@ -17,6 +20,9 @@ const TABS = [
   { key: 'map', label: 'Harita', icon: Map },
   { key: 'crm', label: 'Müşteriler', icon: Users },
   { key: 'analysis', label: 'Analiz', icon: BarChart2 },
+  { key: 'email', label: 'E-posta', icon: Mail },
+  { key: 'quotes', label: 'Teklifler', icon: FileText },
+  { key: 'competitor', label: 'Rakip', icon: Target },
   { key: 'schedule', label: 'Zamanlama', icon: Clock },
   { key: 'settings', label: 'Ayarlar', icon: SettingsIcon },
 ];
@@ -47,7 +53,7 @@ export default function Home() {
           background: 'linear-gradient(to right, #818cf8, #c084fc)',
           WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
         }}>
-          🚀 Oto & Halı Yıkama — Müşteri Bulucu & CRM
+          🚀 Oto & Halı Yıkama — Para Makinesi CRM Platformu
         </h1>
 
         {/* Tab Navigation */}
@@ -64,9 +70,9 @@ export default function Home() {
                 <button key={tab.key}
                   className={`tab ${isActive ? 'active' : ''}`}
                   onClick={() => { setActiveTab(tab.key); if (tab.key !== 'search') fetchLeads(); }}
-                  style={{ position: 'relative', whiteSpace: 'nowrap' }}
+                  style={{ position: 'relative', whiteSpace: 'nowrap', padding: '9px 10px', fontSize: '13px' }}
                 >
-                  <Icon size={16} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'text-bottom' }} />
+                  <Icon size={15} style={{ display: 'inline', marginRight: '5px', verticalAlign: 'text-bottom' }} />
                   {tab.label}
                   {tab.key === 'crm' && todayCount > 0 && (
                     <span style={{
@@ -105,6 +111,9 @@ export default function Home() {
       {activeTab === 'map' && <MapTab leads={leads} />}
       {activeTab === 'crm' && <CRMTab leads={leads} onRefresh={fetchLeads} />}
       {activeTab === 'analysis' && <AnalysisTab leads={leads} />}
+      {activeTab === 'email' && <EmailTab leads={leads} />}
+      {activeTab === 'quotes' && <QuotesTab leads={leads} />}
+      {activeTab === 'competitor' && <CompetitorTab leads={leads} />}
       {activeTab === 'schedule' && <ScheduleTab />}
       {activeTab === 'settings' && <SettingsTab />}
     </div>

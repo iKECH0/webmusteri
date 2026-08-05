@@ -2,62 +2,41 @@ import { NextResponse } from 'next/server';
 import db from '@/lib/db';
 
 export async function GET() {
-  try {
-    const stmt = db.prepare('SELECT * FROM leads ORDER BY created_at DESC');
-    const leads = stmt.all();
-    
-    const formattedLeads = leads.map(lead => ({
-      ...lead,
-      has_website: !!lead.has_website
-    }));
-    
-    return NextResponse.json(formattedLeads);
-  } catch (error) {
-    console.error("Leads GET error:", error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
-  }
+  const leads = db.prepare('SELECT * FROM leads ORDER BY ai_score DESC, created_at DESC').all();
+  return NextResponse.json(leads.map(l => ({
+    ...l,
+    has_website: !!l.has_website,
+    tags: JSON.parse(l.tags || '[]'),
+  })));
 }
 
 export async function PUT(request) {
-  try {
-    const data = await request.json();
-    const { id, status, notes, next_followup_date, revenue } = data;
+  const data = await request.json();
+  const { id, status, notes, next_followup_date, revenue, email, tags, portal_token } = data;
+  if (!id) return NextResponse.json({ error: 'Lead ID required' }, { status: 400 });
 
-    if (!id) {
-      return NextResponse.json({ error: 'Lead ID is required' }, { status: 400 });
-    }
+  const tagsJson = tags !== undefined ? JSON.stringify(tags) : null;
+  db.prepare(`
+    UPDATE leads SET
+      status = COALESCE(?, status),
+      notes = COALESCE(?, notes),
+      next_followup_date = COALESCE(?, next_followup_date),
+      revenue = COALESCE(?, revenue),
+      email = COALESCE(?, email),
+      tags = COALESCE(?, tags),
+      portal_token = COALESCE(?, portal_token),
+      updated_at = CURRENT_TIMESTAMP
+    WHERE id = ?
+  `).run(status ?? null, notes ?? null, next_followup_date ?? null, revenue ?? null, email ?? null, tagsJson, portal_token ?? null, id);
 
-    const stmt = db.prepare(`
-      UPDATE leads 
-      SET status = COALESCE(?, status), 
-          notes = COALESCE(?, notes),
-          next_followup_date = COALESCE(?, next_followup_date),
-          revenue = COALESCE(?, revenue),
-          updated_at = CURRENT_TIMESTAMP
-      WHERE id = ?
-    `);
-    
-    stmt.run(status ?? null, notes ?? null, next_followup_date ?? null, revenue ?? null, id);
-    
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Leads PUT error:", error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
-  }
+  return NextResponse.json({ success: true });
 }
 
 export async function DELETE(request) {
-  try {
-    const { id } = await request.json();
-    if (!id) return NextResponse.json({ error: 'Lead ID required' }, { status: 400 });
-    
-    // Delete related call logs first
-    db.prepare('DELETE FROM call_logs WHERE lead_id = ?').run(id);
-    db.prepare('DELETE FROM leads WHERE id = ?').run(id);
-    
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Leads DELETE error:", error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
-  }
+  const { id } = await request.json();
+  if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
+  db.prepare('DELETE FROM call_logs WHERE lead_id = ?').run(id);
+  db.prepare('DELETE FROM quotes WHERE lead_id = ?').run(id);
+  db.prepare('DELETE FROM leads WHERE id = ?').run(id);
+  return NextResponse.json({ success: true });
 }
