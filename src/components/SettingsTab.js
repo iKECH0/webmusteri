@@ -6,11 +6,10 @@ import { Save, Send, Link, CheckCircle } from 'lucide-react';
 export default function SettingsTab() {
   const [settings, setSettings] = useState({
     google_api_key: '', whatsapp_template: '', smtp_email: '', smtp_password: '',
-    smtp_host: 'smtp.gmail.com', telegram_bot_token: '', telegram_chat_id: '',
-    gcal_client_id: '', gcal_client_secret: '',
+    smtp_host: 'smtp.gmail.com', gcal_client_id: '', gcal_client_secret: '',
   });
   const [saved, setSaved] = useState(false);
-  const [telegramTest, setTelegramTest] = useState('');
+
   const [calConnected, setCalConnected] = useState(false);
   const [aiScoring, setAiScoring] = useState(false);
 
@@ -31,16 +30,7 @@ export default function SettingsTab() {
     setTimeout(() => setSaved(false), 3000);
   };
 
-  const testTelegram = async () => {
-    setTelegramTest('sending');
-    try {
-      await axios.post('/api/telegram', { type: 'daily_summary' });
-      setTelegramTest('ok');
-    } catch (err) {
-      setTelegramTest('fail');
-    }
-    setTimeout(() => setTelegramTest(''), 4000);
-  };
+
 
   const connectCalendar = async () => {
     const res = await axios.get('/api/calendar/auth');
@@ -115,20 +105,7 @@ export default function SettingsTab() {
             <Field label="SMTP Sunucu (varsayılan Gmail)" value={settings.smtp_host} onChange={v => set('smtp_host', v)} placeholder="smtp.gmail.com" />
           </Section>
 
-          {/* Telegram */}
-          <Section title="🔔 Telegram Bildirimler">
-            <div style={{ padding: '10px 14px', background: 'rgba(99,102,241,0.08)', borderRadius: 8, marginBottom: 12, fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-              💡 Telegram'da <strong style={{ color: 'var(--text-primary)' }}>@BotFather</strong>'a yazın → <code>/newbot</code> → Bot Token alın. Sonra <strong style={{ color: 'var(--text-primary)' }}>@userinfobot</strong>'a yazın → Chat ID'nizi alın.
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-              <Field label="Bot Token" type="password" value={settings.telegram_bot_token} onChange={v => set('telegram_bot_token', v)} placeholder="1234567890:ABCDef..." />
-              <Field label="Chat ID" value={settings.telegram_chat_id} onChange={v => set('telegram_chat_id', v)} placeholder="123456789" />
-            </div>
-            <button type="button" className="btn btn-outline" style={{ padding: '8px 16px', fontSize: 13, marginTop: 4 }} onClick={testTelegram} disabled={telegramTest === 'sending'}>
-              <Send size={14} />
-              {telegramTest === 'sending' ? 'Gönderiliyor...' : telegramTest === 'ok' ? '✅ Başarıyla Gönderildi!' : telegramTest === 'fail' ? '❌ Başarısız' : 'Test Mesajı Gönder'}
-            </button>
-          </Section>
+
 
           {/* Google Calendar */}
           <Section title="🗓️ Google Calendar Entegrasyonu">
