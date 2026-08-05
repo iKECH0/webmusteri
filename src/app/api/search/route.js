@@ -30,7 +30,7 @@ export async function POST(request) {
     const headers = {
       'Content-Type': 'application/json',
       'X-Goog-Api-Key': apiKey,
-      'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.nationalPhoneNumber,places.websiteUri,places.primaryType'
+      'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.nationalPhoneNumber,places.websiteUri,places.primaryType,places.location'
     };
 
     const response = await axios.post(url, requestBody, { headers });
@@ -46,8 +46,8 @@ export async function POST(request) {
     
     // Prepare statement to insert new leads
     const insertStmt = db.prepare(`
-      INSERT OR IGNORE INTO leads (id, place_id, name, address, phone, website, has_website, category, status)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'new')
+      INSERT OR IGNORE INTO leads (id, place_id, name, address, phone, website, has_website, category, status, lat, lng)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'new', ?, ?)
     `);
 
     const results = places.map(place => {
@@ -58,28 +58,18 @@ export async function POST(request) {
       const website = place.websiteUri || '';
       const hasWebsite = website ? 1 : 0;
       const category = place.primaryType || 'Bilinmiyor';
+      const lat = place.location?.latitude || null;
+      const lng = place.location?.longitude || null;
 
-      // Check if exists in CRM
       const existing = checkStmt.get(placeId);
       const status = existing ? existing.status : 'new';
 
-      // Auto insert to CRM if new
       if (!existing) {
-        // Generate a simple ID
         const id = Math.random().toString(36).substring(2, 15);
-        insertStmt.run(id, placeId, name, address, phone, website, hasWebsite, category);
+        insertStmt.run(id, placeId, name, address, phone, website, hasWebsite, category, lat, lng);
       }
 
-      return {
-        id: placeId,
-        name,
-        address,
-        phone,
-        website,
-        hasWebsite: !!hasWebsite,
-        category,
-        status
-      };
+      return { id: placeId, name, address, phone, website, hasWebsite: !!hasWebsite, category, status, lat, lng };
     });
 
     return NextResponse.json({ results });
