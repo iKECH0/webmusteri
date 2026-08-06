@@ -10,18 +10,11 @@ export async function POST(request) {
       return NextResponse.json({ error: 'queries array is required' }, { status: 400 });
     }
 
-    const settingsStmt = db.prepare("SELECT value FROM settings WHERE key = 'google_api_key'");
-    const row = settingsStmt.get();
-    if (!row?.value) {
+    const settingsRes = await db.query("SELECT value FROM settings WHERE key = 'google_api_key'");
+    const apiKey = settingsRes.rows[0]?.value;
+    if (!apiKey) {
       return NextResponse.json({ error: 'Google API Key not configured.' }, { status: 400 });
     }
-    const apiKey = row.value;
-
-    const checkStmt = db.prepare("SELECT status FROM leads WHERE place_id = ?");
-    const insertStmt = db.prepare(`
-      INSERT OR IGNORE INTO leads (id, place_id, name, address, phone, website, has_website, category, status, lat, lng)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'new', ?, ?)
-    `);
 
     let allResults = [];
     const seenPlaceIds = new Set();
@@ -53,18 +46,22 @@ export async function POST(request) {
           const lat = place.location?.latitude || null;
           const lng = place.location?.longitude || null;
 
-          const existing = checkStmt.get(placeId);
+          const checkRes = await db.query("SELECT status FROM leads WHERE place_id = $1", [placeId]);
+          const existing = checkRes.rows[0];
           const status = existing ? existing.status : 'new';
 
           if (!existing) {
             const id = Math.random().toString(36).substring(2, 15);
-            insertStmt.run(id, placeId, name, address, phone, website, hasWebsite, category, lat, lng);
+            await db.query(`
+              INSERT INTO leads (id, place_id, name, address, phone, website, has_website, category, status, lat, lng)
+              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'new', $9, $10)
+              ON CONFLICT (place_id) DO NOTHING
+            `, [id, placeId, name, address, phone, website, hasWebsite, category, lat, lng]);
           }
 
           allResults.push({ id: placeId, name, address, phone, website, hasWebsite: !!hasWebsite, category, status, lat, lng, query });
         }
 
-        // Small delay between requests to respect rate limits
         await new Promise(r => setTimeout(r, 300));
       } catch (err) {
         console.error(`Error for query "${query}":`, err.response?.data || err.message);

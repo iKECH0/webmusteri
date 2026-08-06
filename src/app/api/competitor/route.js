@@ -7,13 +7,12 @@ export async function POST(request) {
     const { region } = await request.json();
     if (!region) return NextResponse.json({ error: 'region required' }, { status: 400 });
 
-    const settingsRow = db.prepare("SELECT value FROM settings WHERE key = 'google_api_key'").get();
-    if (!settingsRow?.value) {
+    const settingsRes = await db.query("SELECT value FROM settings WHERE key = 'google_api_key'");
+    const apiKey = settingsRes.rows[0]?.value;
+    if (!apiKey) {
       return NextResponse.json({ error: 'Google API Key not configured.' }, { status: 400 });
     }
-    const apiKey = settingsRow.value;
 
-    // Search for web agencies in the region
     const queries = [
       `${region} web tasarım`,
       `${region} web ajansı`,
@@ -58,15 +57,14 @@ export async function POST(request) {
       }
     }
 
-    // Also find how many of OUR leads have websites (potential clients of these agencies)
-    const leadsWithSites = db.prepare('SELECT COUNT(*) as count FROM leads WHERE has_website = 1').get();
-    const leadsWithoutSites = db.prepare('SELECT COUNT(*) as count FROM leads WHERE has_website = 0').get();
+    const leadsWithSites = await db.query('SELECT COUNT(*) as count FROM leads WHERE has_website = 1');
+    const leadsWithoutSites = await db.query('SELECT COUNT(*) as count FROM leads WHERE has_website = 0');
 
     return NextResponse.json({
       agencies: allAgencies,
       market_data: {
-        our_leads_with_sites: leadsWithSites.count,
-        our_leads_without_sites: leadsWithoutSites.count,
+        our_leads_with_sites: parseInt(leadsWithSites.rows[0].count),
+        our_leads_without_sites: parseInt(leadsWithoutSites.rows[0].count),
         total_agencies_found: allAgencies.length,
         region,
       }

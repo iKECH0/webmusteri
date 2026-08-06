@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server';
 import db from '@/lib/db';
 
 export async function GET() {
-  const campaigns = db.prepare('SELECT * FROM email_campaigns ORDER BY created_at DESC').all();
-  return NextResponse.json(campaigns);
+  const res = await db.query('SELECT * FROM email_campaigns ORDER BY created_at DESC');
+  return NextResponse.json(res.rows);
 }
 
 export async function POST(request) {
@@ -12,12 +12,12 @@ export async function POST(request) {
     return NextResponse.json({ error: 'name, subject, body required' }, { status: 400 });
   }
   const id = Math.random().toString(36).substring(2, 15);
-  db.prepare('INSERT INTO email_campaigns (id, name, subject, body) VALUES (?, ?, ?, ?)').run(id, name, subject, body);
+  await db.query('INSERT INTO email_campaigns (id, name, subject, body) VALUES ($1, $2, $3, $4)', [id, name, subject, body]);
   return NextResponse.json({ success: true, id });
 }
 
 export async function DELETE(request) {
   const { id } = await request.json();
-  db.prepare('DELETE FROM email_campaigns WHERE id = ?').run(id);
+  await db.query('DELETE FROM email_campaigns WHERE id = $1', [id]);
   return NextResponse.json({ success: true });
 }

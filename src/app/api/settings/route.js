@@ -3,8 +3,8 @@ import db from '@/lib/db';
 
 export async function GET() {
   try {
-    const stmt = db.prepare('SELECT key, value FROM settings');
-    const settings = stmt.all();
+    const res = await db.query('SELECT key, value FROM settings');
+    const settings = res.rows;
     
     const settingsObj = {};
     settings.forEach(row => {
@@ -21,15 +21,12 @@ export async function GET() {
 export async function POST(request) {
   try {
     const data = await request.json();
-    const insertStmt = db.prepare('INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)');
-    
-    const transaction = db.transaction((settings) => {
-      for (const [key, value] of Object.entries(settings)) {
-        insertStmt.run(key, value);
-      }
-    });
-    
-    transaction(data);
+    for (const [key, value] of Object.entries(data)) {
+      await db.query(
+        'INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value',
+        [key, value]
+      );
+    }
     
     return NextResponse.json({ success: true });
   } catch (error) {

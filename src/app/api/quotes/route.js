@@ -4,13 +4,13 @@ import db from '@/lib/db';
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const leadId = searchParams.get('lead_id');
-  let quotes;
+  let res;
   if (leadId) {
-    quotes = db.prepare('SELECT * FROM quotes WHERE lead_id = ? ORDER BY created_at DESC').all(leadId);
+    res = await db.query('SELECT * FROM quotes WHERE lead_id = $1 ORDER BY created_at DESC', [leadId]);
   } else {
-    quotes = db.prepare('SELECT * FROM quotes ORDER BY created_at DESC').all();
+    res = await db.query('SELECT * FROM quotes ORDER BY created_at DESC');
   }
-  return NextResponse.json(quotes.map(q => ({ ...q, items: JSON.parse(q.items || '[]') })));
+  return NextResponse.json(res.rows.map(q => ({ ...q, items: JSON.parse(q.items || '[]') })));
 }
 
 export async function POST(request) {
@@ -19,8 +19,8 @@ export async function POST(request) {
 
   const total = items.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0);
   const id = Math.random().toString(36).substring(2, 15);
-  db.prepare('INSERT INTO quotes (id, lead_id, title, items, notes, total) VALUES (?, ?, ?, ?, ?, ?)')
-    .run(id, lead_id, title || 'Teklif', JSON.stringify(items), notes || '', total);
+  await db.query('INSERT INTO quotes (id, lead_id, title, items, notes, total) VALUES ($1, $2, $3, $4, $5, $6)',
+    [id, lead_id, title || 'Teklif', JSON.stringify(items), notes || '', total]);
 
   return NextResponse.json({ success: true, id, total });
 }
@@ -31,16 +31,16 @@ export async function PUT(request) {
 
   if (items) {
     const total = items.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0);
-    db.prepare('UPDATE quotes SET status = COALESCE(?, status), items = ?, title = COALESCE(?, title), notes = COALESCE(?, notes), total = ? WHERE id = ?')
-      .run(status ?? null, JSON.stringify(items), title ?? null, notes ?? null, total, id);
+    await db.query('UPDATE quotes SET status = COALESCE($1, status), items = $2, title = COALESCE($3, title), notes = COALESCE($4, notes), total = $5 WHERE id = $6',
+      [status ?? null, JSON.stringify(items), title ?? null, notes ?? null, total, id]);
   } else {
-    db.prepare('UPDATE quotes SET status = COALESCE(?, status) WHERE id = ?').run(status ?? null, id);
+    await db.query('UPDATE quotes SET status = COALESCE($1, status) WHERE id = $2', [status ?? null, id]);
   }
   return NextResponse.json({ success: true });
 }
 
 export async function DELETE(request) {
   const { id } = await request.json();
-  db.prepare('DELETE FROM quotes WHERE id = ?').run(id);
+  await db.query('DELETE FROM quotes WHERE id = $1', [id]);
   return NextResponse.json({ success: true });
 }

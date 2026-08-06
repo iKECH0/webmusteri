@@ -1,12 +1,17 @@
-import Database from 'better-sqlite3';
-import path from 'path';
+import { Pool } from '@neondatabase/serverless';
 
-const dbPath = path.join(process.cwd(), 'crm.db');
-const db = new Database(dbPath, { verbose: undefined });
-db.pragma('journal_mode = WAL');
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL
+});
 
-export function initDB() {
-  db.exec(`
+export const db = {
+  query: async (text, params) => {
+    return await pool.query(text, params);
+  }
+};
+
+export async function initDB() {
+  await db.query(`
     CREATE TABLE IF NOT EXISTS settings (
       key TEXT PRIMARY KEY,
       value TEXT
@@ -34,16 +39,16 @@ export function initDB() {
       revenue REAL DEFAULT 0,
       lat REAL,
       lng REAL,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
     CREATE TABLE IF NOT EXISTS call_logs (
       id TEXT PRIMARY KEY,
       lead_id TEXT NOT NULL,
       note TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (lead_id) REFERENCES leads(id)
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE
     );
 
     CREATE TABLE IF NOT EXISTS search_schedules (
@@ -53,7 +58,7 @@ export function initDB() {
       schedule_day INTEGER DEFAULT 1,
       last_run TEXT,
       is_active INTEGER DEFAULT 1,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
     CREATE TABLE IF NOT EXISTS email_campaigns (
@@ -62,7 +67,7 @@ export function initDB() {
       subject TEXT NOT NULL,
       body TEXT NOT NULL,
       sent_count INTEGER DEFAULT 0,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
     CREATE TABLE IF NOT EXISTS email_logs (
@@ -71,8 +76,8 @@ export function initDB() {
       campaign_id TEXT,
       email TEXT,
       status TEXT DEFAULT 'pending',
-      sent_at DATETIME,
-      FOREIGN KEY (lead_id) REFERENCES leads(id)
+      sent_at TIMESTAMP,
+      FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE
     );
 
     CREATE TABLE IF NOT EXISTS quotes (
@@ -83,28 +88,14 @@ export function initDB() {
       total REAL,
       notes TEXT,
       status TEXT DEFAULT 'draft',
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (lead_id) REFERENCES leads(id)
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE
     );
   `);
-
-  // Migrate existing leads table — add new columns if missing
-  const cols = db.pragma('table_info(leads)').map(c => c.name);
-  const addCol = (col, type) => {
-    if (!cols.includes(col)) db.exec(`ALTER TABLE leads ADD COLUMN ${col} ${type};`);
-  };
-  addCol('email', 'TEXT');
-  addCol('tags', "TEXT DEFAULT '[]'");
-  addCol('ai_score', 'INTEGER DEFAULT 0');
-  addCol('rating', 'REAL');
-  addCol('review_count', 'INTEGER');
-  addCol('portal_token', 'TEXT');
-  addCol('portal_viewed', 'INTEGER DEFAULT 0');
-  addCol('next_followup_date', 'TEXT');
-  addCol('revenue', 'REAL DEFAULT 0');
-  addCol('lat', 'REAL');
-  addCol('lng', 'REAL');
 }
 
-initDB();
+// We don't auto-call initDB here because top-level await is tricky in Next.js edge/serverless without strict configs.
+// Instead, we can call it inside the API routes if necessary, or let the user hit an init endpoint.
+// But for now, we'll expose a wrapper.
+
 export default db;

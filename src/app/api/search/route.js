@@ -10,23 +10,15 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Query is required' }, { status: 400 });
     }
 
-    // Get API key from settings
-    const stmt = db.prepare("SELECT value FROM settings WHERE key = 'google_api_key'");
-    const row = stmt.get();
+    const res = await db.query("SELECT value FROM settings WHERE key = 'google_api_key'");
+    const apiKey = res.rows[0]?.value;
     
-    if (!row || !row.value) {
+    if (!apiKey) {
       return NextResponse.json({ error: 'Google API Key not configured. Please set it in Settings.' }, { status: 400 });
     }
 
-    const apiKey = row.value;
-
-    // Use Google Places API (New)
     const url = 'https://places.googleapis.com/v1/places:searchText';
-    const requestBody = {
-      textQuery: query,
-      languageCode: "tr"
-    };
-
+    const requestBody = { textQuery: query, languageCode: "tr" };
     const headers = {
       'Content-Type': 'application/json',
       'X-Goog-Api-Key': apiKey,
@@ -40,17 +32,9 @@ export async function POST(request) {
     }
 
     const places = response.data.places;
-    
-    // Prepare statement to check existing leads
-    const checkStmt = db.prepare("SELECT status FROM leads WHERE place_id = ?");
-    
-    // Prepare statement to insert new leads
-    const insertStmt = db.prepare(`
-      INSERT OR IGNORE INTO leads (id, place_id, name, address, phone, website, has_website, category, status, lat, lng, rating, review_count)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'new', ?, ?, ?, ?)
-    `);
+    const results = [];
 
-    const results = places.map(place => {
+    for (const place of places) {
       const placeId = place.id;
       const name = place.displayName?.text || 'Bilinmiyor';
       const address = place.formattedAddress || '';
@@ -63,16 +47,21 @@ export async function POST(request) {
       const rating = place.rating || null;
       const reviewCount = place.userRatingCount || 0;
 
-      const existing = checkStmt.get(placeId);
+      const checkRes = await db.query("SELECT status FROM leads WHERE place_id = $1", [placeId]);
+      const existing = checkRes.rows[0];
       const status = existing ? existing.status : 'new';
 
       if (!existing) {
         const id = Math.random().toString(36).substring(2, 15);
-        insertStmt.run(id, placeId, name, address, phone, website, hasWebsite, category, lat, lng, rating, reviewCount);
+        await db.query(`
+          INSERT INTO leads (id, place_id, name, address, phone, website, has_website, category, status, lat, lng, rating, review_count)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'new', $9, $10, $11, $12)
+          ON CONFLICT (place_id) DO NOTHING
+        `, [id, placeId, name, address, phone, website, hasWebsite, category, lat, lng, rating, reviewCount]);
       }
 
-      return { id: placeId, name, address, phone, website, hasWebsite: !!hasWebsite, category, status, lat, lng, rating, reviewCount };
-    });
+      results.push({ id: placeId, name, address, phone, website, hasWebsite: !!hasWebsite, category, status, lat, lng, rating, reviewCount });
+    }
 
     return NextResponse.json({ results });
   } catch (error) {
