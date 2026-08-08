@@ -43,12 +43,66 @@ Müşteri şu anda kendisi için özel oluşturulmuş bir "Teklif ve İnceleme P
       });
     });
 
+    const tools = [
+      {
+        functionDeclarations: [
+          {
+            name: "save_customer_note",
+            description: "Müşteri özel bir istek, şikayet, tasarım notu veya projede öne çıkmasını istediği bir detayı sana ilettiğinde bu fonksiyonu çağırarak notu ajans yönetimine (admin'e) raporla.",
+            parameters: {
+              type: "OBJECT",
+              properties: {
+                note_content: { type: "STRING", description: "Müşterinin ilettiği notun detaylı ve net özeti." }
+              },
+              required: ["note_content"]
+            }
+          }
+        ]
+      }
+    ];
+
     const res = await axios.post(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`, {
       contents: geminiContents,
+      tools: tools,
       generationConfig: { temperature: 0.7 }
     });
 
-    const botMessage = res.data.candidates?.[0]?.content?.parts?.[0]?.text || 'Cevap alınamadı.';
+    const candidate = res.data.candidates?.[0];
+    let botMessage = 'Cevap alınamadı.';
+
+    if (candidate?.content?.parts) {
+      const part = candidate.content.parts[0];
+      if (part.functionCall && part.functionCall.name === 'save_customer_note') {
+        const noteContent = part.functionCall.args.note_content;
+        
+        // 1. Save note to DB
+        const noteId = `note_${Date.now()}_${Math.random().toString(36).substr(2,9)}`;
+        await db.query('INSERT INTO portal_notes (id, lead_id, content) VALUES ($1, $2, $3)', [noteId, lead.id, noteContent]);
+
+        // 2. Reply to function call
+        geminiContents.push({
+          role: 'model',
+          parts: [{ functionCall: part.functionCall }]
+        });
+        geminiContents.push({
+          role: 'user',
+          parts: [{
+            functionResponse: {
+              name: 'save_customer_note',
+              response: { name: 'save_customer_note', content: { success: true, message: 'Not başarıyla yönetime iletildi.' } }
+            }
+          }]
+        });
+
+        const res2 = await axios.post(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`, {
+          contents: geminiContents,
+          generationConfig: { temperature: 0.7 }
+        });
+        botMessage = res2.data.candidates?.[0]?.content?.parts?.[0]?.text || 'Notunuzu aldım ve ekibimize ilettim.';
+      } else {
+        botMessage = part.text || botMessage;
+      }
+    }
 
     return NextResponse.json({ success: true, message: botMessage });
   } catch (error) {

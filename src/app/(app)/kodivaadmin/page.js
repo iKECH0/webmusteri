@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, Suspense, lazy } from 'react';
 import axios from 'axios';
-import { Search, Map, Users, BarChart2, Clock, Settings as SettingsIcon, Mail, FileText, Target, Menu, X } from 'lucide-react';
+import { Search, Map, Users, BarChart2, Clock, Settings as SettingsIcon, Mail, FileText, Target, Menu, X, MessageSquare } from 'lucide-react';
 import SearchTab from '@/components/SearchTab';
 import CRMTab from '@/components/CRMTab';
 import AnalysisTab from '@/components/AnalysisTab';
@@ -10,6 +10,7 @@ import SettingsTab from '@/components/SettingsTab';
 import EmailTab from '@/components/EmailTab';
 import QuotesTab from '@/components/QuotesTab';
 import CompetitorTab from '@/components/CompetitorTab';
+import PortalNotesTab from '@/components/PortalNotesTab';
 
 import dynamic from 'next/dynamic';
 const MapTab = dynamic(() => import('@/components/MapTab'), { ssr: false });
@@ -21,6 +22,7 @@ const MENU_CATEGORIES = [
       { key: 'crm', label: 'CRM & Kanban', icon: Users },
       { key: 'quotes', label: 'Teklifler', icon: FileText },
       { key: 'email', label: 'E-posta', icon: Mail },
+      { key: 'portal-notes', label: 'Portal Notları', icon: MessageSquare },
     ]
   },
   {
@@ -179,6 +181,7 @@ export default function Home() {
           {activeTab === 'email' && <EmailTab leads={leads} />}
           {activeTab === 'quotes' && <QuotesTab leads={leads} />}
           {activeTab === 'competitor' && <CompetitorTab leads={leads} />}
+          {activeTab === 'portal-notes' && <PortalNotesTab />}
           {activeTab === 'schedule' && <ScheduleTab />}
           {activeTab === 'settings' && <SettingsTab />}
         </div>

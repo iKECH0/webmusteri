@@ -56,6 +56,15 @@ export async function initDB() {
       FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE
     );
 
+    CREATE TABLE IF NOT EXISTS portal_notes (
+      id TEXT PRIMARY KEY,
+      lead_id TEXT NOT NULL,
+      content TEXT NOT NULL,
+      is_read INTEGER DEFAULT 0,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE
+    );
+
     CREATE TABLE IF NOT EXISTS search_schedules (
       id TEXT PRIMARY KEY,
       queries TEXT NOT NULL,
