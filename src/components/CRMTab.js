@@ -1,7 +1,7 @@
 "use client";
 import { useState } from 'react';
 import axios from 'axios';
-import { Download, Filter, Search, MessageCircle, AlignLeft, Save, Trash2, Phone, MapPin, Globe, ExternalLink, PhoneCall, Mail, Calendar, Link, Tag, Star, Activity } from 'lucide-react';
+import { Download, Filter, Search, MessageCircle, AlignLeft, Save, Trash2, Phone, MapPin, Globe, ExternalLink, PhoneCall, Mail, Calendar, Link, Tag, Star, Activity, MessageSquare } from 'lucide-react';
 
 const STATUS_MAP = {
   new: { label: 'Yeni', cls: 'status-warning' },
