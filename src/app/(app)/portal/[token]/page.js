@@ -486,7 +486,7 @@ export default function PortalPage({ params }) {
 
             {/* Action Area */}
             <div className="pricing-actions" style={{ background: 'white' }}>
-              {!actionDone && latestQuote.status === 'draft' ? (
+              {!actionDone && (latestQuote.status !== 'approved' && latestQuote.status !== 'rejected') ? (
                 <div>
                   {!showRejectSurvey ? (
                     <>
