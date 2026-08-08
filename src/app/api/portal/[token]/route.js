@@ -39,10 +39,17 @@ export async function GET(request, { params }) {
 export async function POST(request, { params }) {
   try {
     const { token } = await params;
-    const { action } = await request.json(); // 'approve' | 'reject'
+    const { action, reason } = await request.json(); // 'approve' | 'reject' | 'reject_reason'
     const leadRes = await db.query('SELECT * FROM leads WHERE portal_token = $1', [token]);
     const lead = leadRes.rows[0];
     if (!lead) return NextResponse.json({ error: 'Portal bulunamadı' }, { status: 404 });
+
+    if (action === 'reject_reason' && reason) {
+      const currentNotes = lead.notes || '';
+      const newNotes = currentNotes + `\n\n[MÜŞTERİ RED SEBEBİ]: ${reason} - (${new Date().toLocaleString('tr-TR')})`;
+      await db.query('UPDATE leads SET notes = $1 WHERE portal_token = $2', [newNotes, token]);
+      return NextResponse.json({ success: true });
+    }
 
     const newStatus = action === 'approve' ? 'interested' : 'rejected';
     await db.query('UPDATE leads SET status = $1 WHERE portal_token = $2', [newStatus, token]);

@@ -14,7 +14,11 @@ export default function PortalPage({ params }) {
   const [messages, setMessages] = useState([]);
   const [chatInput, setChatInput] = useState('');
   const [chatLoading, setChatLoading] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(48 * 60 * 60); // 48 hours in seconds
+  const [showRejectSurvey, setShowRejectSurvey] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
+  const [rejectSubmitted, setRejectSubmitted] = useState(false);
+
+  const [timeLeft, setTimeLeft] = useState(3 * 24 * 60 * 60 + 5 * 60 * 60 + 20 * 60); // 3 days, 5 hours, 20 mins seconds
   const chatEndRef = useRef(null);
 
   useEffect(() => {
@@ -72,13 +76,29 @@ export default function PortalPage({ params }) {
   }, [token]);
 
   const handleAction = async (action) => {
+    if (action === 'reject' && !showRejectSurvey) {
+      setShowRejectSurvey(true);
+      return;
+    }
+
+    const payload = { action };
+    if (action === 'reject_reason') {
+      payload.reason = rejectReason;
+    }
+
     const res = await fetch(`/api/portal/${token}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action }),
+      body: JSON.stringify(payload),
     });
     const d = await res.json();
-    if (d.success) setActionDone(action === 'approve' ? 'approved' : 'rejected');
+    if (d.success) {
+      if (action === 'reject_reason') {
+        setRejectSubmitted(true);
+      } else {
+        setActionDone(action === 'approve' ? 'approved' : 'rejected');
+      }
+    }
   };
 
   const sendChatMessage = async () => {
@@ -209,6 +229,9 @@ export default function PortalPage({ params }) {
         <div style={{ position: 'absolute', top: '-10%', left: '50%', transform: 'translateX(-50%)', width: '80%', height: '80%', background: 'radial-gradient(circle, rgba(59,130,246,0.15) 0%, rgba(10,17,40,0) 70%)', zIndex: 1 }}></div>
         
         <div style={{ position: 'relative', zIndex: 2, maxWidth: 900, margin: '0 auto' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
+            <img src="/logo.jpg" alt="Kodiva Logo" style={{ height: 50, borderRadius: 12, boxShadow: '0 8px 16px rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)' }} />
+          </div>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', padding: '8px 16px', borderRadius: 30, color: '#94a3b8', fontSize: 13, fontWeight: 600, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 32 }}>
             <Briefcase size={16} /> Özel Teklif ve Proje Kapsamı
           </div>
@@ -471,17 +494,44 @@ export default function PortalPage({ params }) {
             <div className="pricing-actions" style={{ background: 'white' }}>
               {!actionDone && latestQuote.status === 'draft' ? (
                 <div>
-                  <p style={{ textAlign: 'center', color: '#64748b', marginBottom: 24, fontSize: 14 }}>
-                    Aşağıdaki "Projeyi Onayla" butonuna tıklayarak teklifi kabul edebilir ve dijital dönüşüm sürecinizi hemen başlatabilirsiniz.
-                  </p>
-                  <div className="action-buttons-grid">
-                    <button onClick={() => handleAction('approve')} className="btn-primary" style={{ padding: '16px', fontSize: 16, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8 }}>
-                      <CheckCircle2 size={20} /> Projeyi Onayla ve Başlat
-                    </button>
-                    <button onClick={() => handleAction('reject')} className="btn-outline" style={{ padding: '16px', fontSize: 16, borderColor: '#ef4444', color: '#ef4444' }}>
-                      Teklifi Reddet
-                    </button>
-                  </div>
+                  {!showRejectSurvey ? (
+                    <>
+                      <p style={{ textAlign: 'center', color: '#64748b', marginBottom: 24, fontSize: 14 }}>
+                        Aşağıdaki "Projeyi Onayla" butonuna tıklayarak teklifi kabul edebilir ve dijital dönüşüm sürecinizi hemen başlatabilirsiniz.
+                      </p>
+                      <div className="action-buttons-grid">
+                        <button onClick={() => handleAction('approve')} className="btn-primary" style={{ padding: '16px', fontSize: 16, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8 }}>
+                          <CheckCircle2 size={20} /> Projeyi Onayla ve Başlat
+                        </button>
+                        <button onClick={() => handleAction('reject')} className="btn-outline" style={{ padding: '16px', fontSize: 16, borderColor: '#ef4444', color: '#ef4444' }}>
+                          Teklifi Reddet
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <div style={{ background: '#fef2f2', padding: 24, borderRadius: 16, border: '1px solid #fecaca' }}>
+                      <h3 style={{ fontSize: 18, fontWeight: 700, color: '#9f1239', marginBottom: 12 }}>Teklifi neden reddediyorsunuz? (Opsiyonel)</h3>
+                      <p style={{ color: '#be123c', fontSize: 14, marginBottom: 16 }}>Hizmetlerimizi geliştirebilmemiz için geri bildiriminiz çok değerli.</p>
+                      
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
+                        {['Fiyat bütçemizi aşıyor', 'Şimdilik böyle bir ihtiyacımız yok', 'Tasarımı / Kapsamı beğenmedim', 'Yeterince güven vermedi', 'Diğer'].map((r, i) => (
+                          <label key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', color: '#7f1d1d', fontSize: 15 }}>
+                            <input type="radio" name="reject_reason" value={r} onChange={(e) => setRejectReason(e.target.value)} />
+                            {r}
+                          </label>
+                        ))}
+                      </div>
+
+                      <div style={{ display: 'flex', gap: 12 }}>
+                        <button onClick={() => { handleAction('reject_reason'); handleAction('reject_finalize'); }} className="btn-primary" style={{ flex: 1, padding: '12px', background: '#ef4444', borderColor: '#ef4444', color: 'white' }}>
+                          Gönder ve Reddet
+                        </button>
+                        <button onClick={() => handleAction('reject_finalize')} className="btn-outline" style={{ flex: 1, padding: '12px', borderColor: '#94a3b8', color: '#64748b' }}>
+                          Geri Bildirim Vermeden Geç
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div style={{ padding: 24, borderRadius: 16, textAlign: 'center', background: actionDone === 'approved' || latestQuote.status === 'approved' ? '#f0fdf4' : '#fef2f2', border: `2px solid ${actionDone === 'approved' || latestQuote.status === 'approved' ? '#bbf7d0' : '#fecaca'}` }}>
