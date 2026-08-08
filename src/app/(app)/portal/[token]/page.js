@@ -185,6 +185,7 @@ export default function PortalPage({ params }) {
         
         .desktop-mockup-wrapper { position: relative; width: 100%; max-width: 750px; z-index: 3; animation: floatMac 6s ease-in-out infinite; }
         .mobile-mockup-wrapper { position: absolute; right: 2%; bottom: -2%; width: 220px; z-index: 4; animation: floatPhone 5s ease-in-out infinite 1s; }
+        .mockup-container { position: relative; width: 100%; max-width: 900px; height: 550px; display: flex; align-items: center; justify-content: center; z-index: 10; margin: 0 auto; }
 
         /* Mobile Adjustments */
         @media (max-width: 768px) {
@@ -213,7 +214,8 @@ export default function PortalPage({ params }) {
           .action-buttons-grid { grid-template-columns: 1fr; }
           .timeline-grid { grid-template-columns: 1fr; gap: 32px; margin-bottom: 40px; }
           
-          .mobile-mockup-wrapper { width: 32% !important; right: -5% !important; bottom: -10% !important; min-width: 130px; }
+          .mockup-container { height: 350px !important; }
+          .mobile-mockup-wrapper { width: 35% !important; right: 2% !important; bottom: 5% !important; min-width: 120px; }
           
           .chatbot-window { width: calc(100vw - 40px) !important; height: 70vh !important; bottom: 80px !important; right: 20px !important; }
         }
@@ -370,7 +372,7 @@ export default function PortalPage({ params }) {
             Sizin İçin Tasarlayacağımız <span style={{ color: '#3b82f6' }}>Premium</span> Dijital Yapı
           </h2>
           
-          <div style={{ position: 'relative', width: '100%', maxWidth: 900, height: 550, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>
+          <div className="mockup-container">
             
             {/* Floating Badges */}
             <div className="glass-badge badge-1">
