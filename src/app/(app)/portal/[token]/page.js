@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, use, useRef } from 'react';
-import { CheckCircle2, Monitor, ShieldCheck, Zap, BarChart, Clock, MessageSquare, Briefcase, FileText, Smartphone } from 'lucide-react';
+import { CheckCircle2, Monitor, ShieldCheck, Zap, BarChart, Clock, MessageSquare, Briefcase, FileText, Smartphone, Target, PenTool, Code, Rocket } from 'lucide-react';
 
 export default function PortalPage({ params }) {
   const { token } = use(params);
@@ -326,6 +326,68 @@ export default function PortalPage({ params }) {
             50% { transform: perspective(1200px) rotateY(-15deg) rotateX(5deg) translateY(-20px); }
             100% { transform: perspective(1200px) rotateY(-15deg) rotateX(5deg) translateY(0px); }
           }
+          
+          .glass-badge {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 800;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            z-index: 20;
+          }
+          
+          @keyframes floatBadge1 { 0%, 100% { transform: translateY(0) rotate(-5deg); } 50% { transform: translateY(-10px) rotate(-3deg); } }
+          @keyframes floatBadge2 { 0%, 100% { transform: translateY(0) rotate(5deg); } 50% { transform: translateY(-12px) rotate(8deg); } }
+          @keyframes floatBadge3 { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-8px) rotate(-6deg); } }
+          
+          .badge-1 { top: 15%; left: -5%; animation: floatBadge1 4s ease-in-out infinite; color: #16a34a; }
+          .badge-2 { bottom: 25%; right: -5%; animation: floatBadge2 5s ease-in-out infinite 1s; color: #2563eb; }
+          .badge-3 { bottom: -5%; left: 5%; animation: floatBadge3 4.5s ease-in-out infinite 0.5s; color: #9333ea; }
+          
+          .device-reflection {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70%;
+            height: 20px;
+            background: radial-gradient(ellipse at center, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            filter: blur(10px);
+            z-index: 1;
+          }
+          
+          /* Timeline Styles */
+          .timeline-container { position: relative; max-width: 800px; margin: 0 auto; padding: 0 20px; }
+          .timeline-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: linear-gradient(to bottom, #3b82f6, #8b5cf6, #10b981); transform: translateX(-50%); border-radius: 4px; opacity: 0.2; }
+          .timeline-item { display: flex; align-items: center; margin-bottom: 40px; width: 100%; position: relative; }
+          .timeline-item:nth-child(even) { justify-content: flex-end; }
+          .timeline-item:nth-child(odd) { justify-content: flex-start; }
+          .timeline-dot { position: absolute; left: 50%; transform: translateX(-50%); width: 48px; height: 48px; border-radius: 50%; background: white; border: 4px solid #3b82f6; display: flex; align-items: center; justify-content: center; z-index: 10; color: #3b82f6; box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.1); }
+          .timeline-content { width: 45%; }
+          .timeline-card { padding: 24px; position: relative; transition: transform 0.3s ease, box-shadow 0.3s ease; border-radius: 16px; background: white; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+          .timeline-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+          .timeline-item:nth-child(odd) .timeline-card { text-align: right; }
+          .timeline-item:nth-child(even) .timeline-card { text-align: left; }
+          
+          @media (max-width: 768px) {
+            .timeline-line { left: 40px; }
+            .timeline-dot { left: 40px; }
+            .timeline-item:nth-child(even), .timeline-item:nth-child(odd) { justify-content: flex-end; }
+            .timeline-content { width: calc(100% - 80px); }
+            .timeline-item:nth-child(odd) .timeline-card, .timeline-item:nth-child(even) .timeline-card { text-align: left; }
+            .badge-1, .badge-2, .badge-3 { transform: scale(0.8); }
+            .badge-1 { left: 0%; top: 5%; }
+            .badge-2 { right: 0%; }
+          }
         `}} />
         <div style={{ position: 'relative', padding: '20px 0 80px', display: 'flex', flexDirection: 'column', alignItems: 'center', overflow: 'hidden' }}>
           {/* Background glowing orbs */}
@@ -337,6 +399,20 @@ export default function PortalPage({ params }) {
           </h2>
           
           <div style={{ position: 'relative', width: '100%', maxWidth: 900, height: 550, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>
+            
+            {/* Floating Badges */}
+            <div className="glass-badge badge-1">
+              <span>⚡</span> 100/100 Hız Skoru
+            </div>
+            <div className="glass-badge badge-2">
+              <ShieldCheck size={16} /> %100 Güvenli
+            </div>
+            <div className="glass-badge badge-3">
+              <Smartphone size={16} /> Mobil Uyumlu
+            </div>
+
+            {/* Reflection Base */}
+            <div className="device-reflection"></div>
             
             {/* MacBook Frame */}
             <div style={{ 
@@ -480,19 +556,37 @@ export default function PortalPage({ params }) {
         )}
 
         {/* Timeline */}
-        <h2 style={{ fontSize: 28, fontWeight: 800, textAlign: 'center', color: '#0f172a', marginBottom: 40 }}>Süreç Nasıl İşleyecek?</h2>
-        <div className="timeline-grid">
+        <h2 style={{ fontSize: 32, fontWeight: 900, textAlign: 'center', color: '#0f172a', marginBottom: 60, position: 'relative' }}>
+          Süreç Nasıl İşleyecek?
+        </h2>
+        
+        <div className="timeline-container">
+          {/* Vertical connecting line */}
+          <div className="timeline-line"></div>
+          
           {[
-            { step: '1', title: 'Onay ve Planlama', desc: 'Teklifi onaylamanızın ardından, istekleriniz analiz edilir ve yol haritası çizilir.' },
-            { step: '2', title: 'Tasarım ve Yazılım', desc: 'Markanıza özel arayüz tasarlanır, yazılım altyapısı güvenle kodlanır.' },
-            { step: '3', title: 'Test ve Yayına Alma', desc: 'Son kontrollerinizden sonra siteniz tüm cihazlara uyumlu şekilde yayına alınır.' },
+            { step: '1', title: 'Strateji ve Planlama', desc: 'İhtiyaç analizinizin yapılması, hedeflerin belirlenmesi ve dijital haritanızın çıkarılması.', icon: <Target size={24} /> },
+            { step: '2', title: 'Tasarım ve Arayüz', desc: 'Kurumsal kimliğinize uygun, premium ve kullanıcı dostu (UI/UX) görünümün tasarlanması.', icon: <PenTool size={24} /> },
+            { step: '3', title: 'Yazılım ve Kodlama', desc: 'Son teknoloji altyapı ile sitenizin sıfırdan kodlanması ve SEO altyapısının kurulması.', icon: <Code size={24} /> },
+            { step: '4', title: 'Test ve Optimizasyon', desc: 'Mobil cihaz uyumluluğu, güvenlik ve Google hız (PageSpeed) testlerinin yapılması.', icon: <CheckCircle2 size={24} /> },
+            { step: '5', title: 'Yayına Alma', desc: 'Projenin anahtar teslim olarak canlıya alınması ve kontrol panelinizin teslimi.', icon: <Rocket size={24} /> },
           ].map((s, i) => (
-            <div key={i} style={{ textAlign: 'center', padding: '0 24px' }}>
-              <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#0f172a', color: 'white', fontSize: 24, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', boxShadow: '0 10px 20px rgba(15, 23, 42, 0.2)' }}>
-                {s.step}
+            <div key={i} className="timeline-item">
+              
+              {/* Center Dot */}
+              <div className="timeline-dot">
+                {s.icon}
               </div>
-              <h4 style={{ fontSize: 18, fontWeight: 700, color: '#0f172a', marginBottom: 12 }}>{s.title}</h4>
-              <p style={{ color: '#64748b', fontSize: 14, lineHeight: 1.6 }}>{s.desc}</p>
+
+              {/* Card */}
+              <div className="timeline-content">
+                <div className="timeline-card">
+                  <div style={{ fontSize: 12, fontWeight: 800, color: '#3b82f6', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 8 }}>Adım {s.step}</div>
+                  <h4 style={{ fontSize: 20, fontWeight: 800, color: '#0f172a', marginBottom: 12 }}>{s.title}</h4>
+                  <p style={{ color: '#64748b', fontSize: 15, lineHeight: 1.6, margin: 0 }}>{s.desc}</p>
+                </div>
+              </div>
+
             </div>
           ))}
         </div>
