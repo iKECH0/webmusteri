@@ -26,18 +26,18 @@ export async function generateMetadata({ params }) {
       siteName: "Dijital Dönüşüm Portalı",
       images: [
         {
-          url: "https://uzaktansitetakip.vercel.app/logo.jpg", // Professional business logo
-          width: 512,
-          height: 512,
-          alt: "Dijital Dönüşüm Teklifi",
+          url: "https://kodivawebsite.com/logo.jpg", // Professional business logo
+          width: 1200,
+          height: 630,
+          alt: "Kodiva Web Tasarım Sunumu",
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title,
-      description,
-      images: ["https://uzaktansitetakip.vercel.app/logo.jpg"],
+      title: title,
+      description: description,
+      images: ["https://kodivawebsite.com/logo.jpg"],
     },
   };
 }
