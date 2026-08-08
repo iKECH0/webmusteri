@@ -224,68 +224,7 @@ export default function PortalPage({ params }) {
       {/* Main Content Container */}
       <div className="content-container">
         
-        {/* Quotes Section (Moved from hero) */}
-        {latestQuote && (
-          <div style={{ marginBottom: 60 }}>
-            <h2 style={{ fontSize: 28, fontWeight: 800, textAlign: 'center', color: '#0f172a', margin: '0 0 32px' }}>Yatırım Planı & Kapsam</h2>
-            <div className="glass-card" style={{ padding: 0, overflow: 'hidden', border: '1px solid #e2e8f0' }}>
-              <div style={{ background: '#f8fafc', padding: '24px 32px', borderBottom: '1px solid #e2e8f0' }}>
-                <h3 style={{ fontSize: 20, fontWeight: 700, color: '#0f172a' }}>{latestQuote.title || 'Proje Teklifi'}</h3>
-              </div>
-              <div style={{ padding: '0 32px' }}>
-                {latestQuote.items.map((item, i) => (
-                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '20px 0', borderBottom: i < latestQuote.items.length - 1 ? '1px solid #e2e8f0' : 'none' }}>
-                    <div>
-                      <div style={{ fontWeight: 600, color: '#1e293b', marginBottom: 4 }}>{item.desc}</div>
-                    </div>
-                    <div style={{ fontWeight: 700, color: '#0f172a' }}>{item.price} ₺</div>
-                  </div>
-                ))}
-              </div>
-              <div style={{ background: '#f8fafc', padding: '24px 32px', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ fontSize: 18, color: '#64748b', fontWeight: 600 }}>Toplam Yatırım</div>
-                <div style={{ fontSize: 32, color: '#3b82f6', fontWeight: 800 }}>{latestQuote.total} ₺</div>
-              </div>
-              {latestQuote.notes && (
-                <div style={{ padding: '24px 32px', background: 'white', color: '#64748b', fontSize: 14, borderTop: '1px dashed #cbd5e1' }}>
-                  <strong style={{ color: '#0f172a', display: 'block', marginBottom: '8px' }}>Notlar:</strong> 
-                  <div dangerouslySetInnerHTML={{ 
-                    __html: latestQuote.notes
-                      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<br/><a href="$2" target="_blank" style="display:inline-block; margin-top:12px; padding:10px 20px; background:#3b82f6; color:white; border-radius:8px; text-decoration:none; font-weight:600; box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3); transition: all 0.2s;">$1 ↗</a>')
-                      .replace(/\n/g, '<br/>')
-                  }} />
-                </div>
-              )}
-            </div>
-            
-            {/* Action Buttons */}
-            {actionDone ? (
-              <div style={{ marginTop: 40, textAlign: 'center', padding: 32, background: actionDone === 'approved' ? '#ecfdf5' : '#fef2f2', borderRadius: 16, border: `1px solid ${actionDone === 'approved' ? '#a7f3d0' : '#fecaca'}` }}>
-                {actionDone === 'approved' ? (
-                  <>
-                    <CheckCircle2 size={48} color="#10b981" style={{ margin: '0 auto 16px' }} />
-                    <h3 style={{ fontSize: 24, fontWeight: 700, color: '#065f46', marginBottom: 8 }}>Teklifi Onayladınız!</h3>
-                    <p style={{ color: '#047857' }}>Harika bir karar! Projenizi başlatmak için en kısa sürede sizinle iletişime geçeceğiz.</p>
-                  </>
-                ) : (
-                  <>
-                    <h3 style={{ fontSize: 24, fontWeight: 700, color: '#9f1239', marginBottom: 8 }}>Teklifi Reddettiniz</h3>
-                    <p style={{ color: '#be123c' }}>Kararınıza saygı duyuyoruz. İleride tekrar görüşmek dileğiyle.</p>
-                  </>
-                )}
-              </div>
-            ) : (
-              <div className="action-buttons-grid" style={{ marginTop: 32 }}>
-                <button onClick={() => handleAction('approve')} className="btn-primary" style={{ padding: '20px', fontSize: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-                  <CheckCircle2 size={24} /> Teklifi Onaylıyorum, Başlayalım!
-                </button>
-                <button onClick={() => handleAction('reject')} className="btn-outline" style={{ padding: '20px', fontSize: 16, borderColor: '#ef4444', color: '#ef4444' }}>
-                  Şu an ilgilenmiyorum
-                </button>
-              </div>
-            )}
-          </div>
-        )}
+
         
         {/* Why Digital? (The Problem/Opportunity) */}
         <div className="glass-card glass-card-padding why-grid" style={{ marginBottom: 32 }}>
@@ -519,7 +458,12 @@ export default function PortalPage({ params }) {
 
             {latestQuote.notes && (
               <div className="pricing-notes" style={{ background: '#fffbeb', color: '#b45309', fontSize: 14, lineHeight: 1.6, borderTop: '1px solid #fde68a' }}>
-                <span style={{ fontWeight: 700 }}>Açıklama:</span> {latestQuote.notes}
+                <span style={{ fontWeight: 700, display: 'block', marginBottom: '8px' }}>Açıklama:</span>
+                <div dangerouslySetInnerHTML={{ 
+                  __html: latestQuote.notes
+                    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<br/><a href="$2" target="_blank" style="display:inline-block; margin-top:12px; padding:10px 20px; background:#f59e0b; color:white; border-radius:8px; text-decoration:none; font-weight:600; box-shadow: 0 4px 6px rgba(245, 158, 11, 0.3); transition: all 0.2s;">$1 ↗</a>')
+                    .replace(/\n/g, '<br/>')
+                }} />
               </div>
             )}
 

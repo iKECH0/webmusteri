@@ -36,6 +36,7 @@ export default function CRMTab({ leads, onRefresh }) {
   const [generatingPitch, setGeneratingPitch] = useState({});
   const [competitorReports, setCompetitorReports] = useState({});
   const [generatingReport, setGeneratingReport] = useState({});
+  const [salesModalLead, setSalesModalLead] = useState(null);
 
   const initLeadData = (lead) => {
     if (notes[lead.id] === undefined) setNotes(p => ({ ...p, [lead.id]: lead.notes || '' }));
@@ -626,63 +627,10 @@ ${link}
                         </button>
                       </div>
 
-                      <div style={{ marginTop: 16, padding: 16, background: 'rgba(99,102,241,0.05)', borderRadius: 12, border: '1px solid rgba(99,102,241,0.2)' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, flexWrap: 'wrap', gap: 10 }}>
-                          <h5 style={{ margin: 0, fontSize: 14, color: '#4f46e5', display: 'flex', alignItems: 'center', gap: 6 }}>
-                            Satış Mesajı
-                          </h5>
-                          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                            <button className="btn btn-outline" style={{ padding: '6px 10px', fontSize: 11, borderColor: '#3b82f6', color: '#3b82f6' }}
-                              onClick={() => applyTemplate(lead, 'email')}>E-posta Şablonu</button>
-                            <button className="btn btn-outline" style={{ padding: '6px 10px', fontSize: 11, borderColor: '#10b981', color: '#10b981' }}
-                              onClick={() => applyTemplate(lead, 'whatsapp_short')}>Kısa Şablon (WA)</button>
-                            <button className="btn btn-outline" style={{ padding: '6px 10px', fontSize: 11, borderColor: '#f59e0b', color: '#f59e0b' }}
-                              onClick={() => applyTemplate(lead, 'whatsapp_alt')}>Detaylı Şablon (WA)</button>
-                            <button className="btn btn-primary" style={{ padding: '6px 12px', fontSize: 11, marginLeft: 10 }}
-                              onClick={() => generateAiPitch(lead)} disabled={generatingPitch[lead.id]}>
-                              {generatingPitch[lead.id] ? 'Üretiliyor...' : '✨ Yapay Zeka (AI) Üretsin'}
-                            </button>
-                          </div>
-                        </div>
-                        {aiPitches[lead.id] ? (
-                          <>
-                            <textarea className="glass-input" style={{ width: '100%', minHeight: 180, fontSize: 13, resize: 'vertical' }}
-                              value={aiPitches[lead.id]}
-                              onChange={(e) => setAiPitches(p => ({...p, [lead.id]: e.target.value}))}
-                            />
-                            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 10 }}>
-                              <button className="btn btn-primary" style={{ padding: '8px 16px', background: '#25D366', borderColor: '#25D366', color: 'white' }}
-                                onClick={() => {
-                                  const text = encodeURIComponent(aiPitches[lead.id]);
-                                  const phone = lead.phone ? lead.phone.replace(/[^0-9]/g, '') : '';
-                                  window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
-                                }}>
-                                WhatsApp'tan Gönder 🚀
-                              </button>
-                            </div>
-                          </>
-                        ) : (
-                          <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Bu müşteri için yapay zeka destekli, dönüşüm oranı yüksek bir satış mesajı oluşturun.</p>
-                        )}
-                      </div>
-                      
-                      {/* Competitor Report Section */}
-                      <div style={{ marginTop: 12, padding: 16, background: 'rgba(225,29,72,0.05)', borderRadius: 12, border: '1px solid rgba(225,29,72,0.2)' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                          <h5 style={{ margin: 0, fontSize: 14, color: '#be123c', display: 'flex', alignItems: 'center', gap: 6 }}>
-                            📊 AI Rakip Tehdidi Raporu
-                          </h5>
-                          <button className="btn btn-primary" style={{ padding: '6px 12px', fontSize: 12, background: '#e11d48', borderColor: '#e11d48' }}
-                            onClick={() => generateCompetitorReport(lead)} disabled={generatingReport[lead.id]}>
-                            {generatingReport[lead.id] ? 'Analiz Ediliyor...' : '🔍 Rakipleri Bul & Analiz Et'}
-                          </button>
-                        </div>
-                        {competitorReports[lead.id] ? (
-                          <p style={{ fontSize: 13, color: '#881337', lineHeight: 1.5 }}>{competitorReports[lead.id]}</p>
-                        ) : (
-                          <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Bu müşterinin bölgesindeki rakipleri analiz edip müşteri portalına ekleyin.</p>
-                        )}
-                      </div>
+                      <button className="btn btn-outline" style={{ width: '100%', padding: '10px', marginTop: 16, borderColor: '#6366f1', color: '#6366f1', fontWeight: 600 }}
+                        onClick={() => setSalesModalLead(lead)}>
+                        <MessageSquare size={16} /> Satış Asistanı & AI Raporu
+                      </button>
 
                       <div style={{ display: 'flex', gap: '8px', marginTop: 12, flexWrap: 'wrap' }}>
                         {lead.phone && (
@@ -739,6 +687,69 @@ ${link}
           </div>
         )}
       </div>
+      
+      {/* Sales Assistant Modal */}
+      {salesModalLead && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div className="glass-panel" style={{ width: '100%', maxWidth: 800, maxHeight: '90vh', overflowY: 'auto', padding: 32, position: 'relative' }}>
+            <button className="btn btn-outline" style={{ position: 'absolute', top: 20, right: 20, padding: 8 }} onClick={() => setSalesModalLead(null)}>
+              <Trash2 size={16} /> Kapat
+            </button>
+            <h2 style={{ fontSize: 24, marginBottom: 8, color: 'var(--text-primary)' }}>{salesModalLead.name} - Satış Asistanı</h2>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: 24 }}>Bu müşteri için satış mesajı şablonları oluşturun ve rakip analizi yapın.</p>
+            
+            <div style={{ padding: 20, background: 'rgba(99,102,241,0.05)', borderRadius: 12, border: '1px solid rgba(99,102,241,0.2)', marginBottom: 24 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
+                <h5 style={{ margin: 0, fontSize: 16, color: '#4f46e5', display: 'flex', alignItems: 'center', gap: 6 }}>Satış Mesajı</h5>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  <button className="btn btn-outline" style={{ padding: '8px 12px', fontSize: 12, borderColor: '#3b82f6', color: '#3b82f6' }} onClick={() => applyTemplate(salesModalLead, 'email')}>E-posta Şablonu</button>
+                  <button className="btn btn-outline" style={{ padding: '8px 12px', fontSize: 12, borderColor: '#10b981', color: '#10b981' }} onClick={() => applyTemplate(salesModalLead, 'whatsapp_short')}>Kısa Şablon (WA)</button>
+                  <button className="btn btn-outline" style={{ padding: '8px 12px', fontSize: 12, borderColor: '#f59e0b', color: '#f59e0b' }} onClick={() => applyTemplate(salesModalLead, 'whatsapp_alt')}>Detaylı Şablon (WA)</button>
+                  <button className="btn btn-primary" style={{ padding: '8px 16px', fontSize: 12, marginLeft: 10 }} onClick={() => generateAiPitch(salesModalLead)} disabled={generatingPitch[salesModalLead.id]}>
+                    {generatingPitch[salesModalLead.id] ? 'Üretiliyor...' : '✨ Yapay Zeka (AI) Üretsin'}
+                  </button>
+                </div>
+              </div>
+              {aiPitches[salesModalLead.id] ? (
+                <>
+                  <textarea className="glass-input" style={{ width: '100%', minHeight: 200, fontSize: 14, resize: 'vertical' }} value={aiPitches[salesModalLead.id]} onChange={(e) => setAiPitches(p => ({...p, [salesModalLead.id]: e.target.value}))} />
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 12, gap: 12 }}>
+                    <button className="btn btn-outline" style={{ padding: '10px 20px', color: 'var(--text-secondary)' }} onClick={() => { navigator.clipboard.writeText(aiPitches[salesModalLead.id]); alert('Mesaj kopyalandı!'); }}>
+                      <Copy size={16} style={{ marginRight: 6 }} /> Kopyala
+                    </button>
+                    <button className="btn btn-primary" style={{ padding: '10px 20px', background: '#25D366', borderColor: '#25D366', color: 'white' }} onClick={() => {
+                      const text = encodeURIComponent(aiPitches[salesModalLead.id]);
+                      let phone = salesModalLead.phone ? salesModalLead.phone.replace(/[^0-9]/g, '') : '';
+                      if (phone.startsWith('0')) phone = '9' + phone;
+                      if (phone.length === 10) phone = '90' + phone;
+                      window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
+                    }}>
+                      WhatsApp'tan Gönder 🚀
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>Bu müşteri için yapay zeka destekli, dönüşüm oranı yüksek bir satış mesajı oluşturun.</p>
+              )}
+            </div>
+
+            <div style={{ padding: 20, background: 'rgba(225,29,72,0.05)', borderRadius: 12, border: '1px solid rgba(225,29,72,0.2)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                <h5 style={{ margin: 0, fontSize: 16, color: '#be123c', display: 'flex', alignItems: 'center', gap: 6 }}>📊 AI Rakip Tehdidi Raporu</h5>
+                <button className="btn btn-primary" style={{ padding: '8px 16px', fontSize: 12, background: '#e11d48', borderColor: '#e11d48' }} onClick={() => generateCompetitorReport(salesModalLead)} disabled={generatingReport[salesModalLead.id]}>
+                  {generatingReport[salesModalLead.id] ? 'Analiz Ediliyor...' : '🔍 Rakipleri Bul & Analiz Et'}
+                </button>
+              </div>
+              {competitorReports[salesModalLead.id] ? (
+                <p style={{ fontSize: 14, color: '#881337', lineHeight: 1.6 }}>{competitorReports[salesModalLead.id]}</p>
+              ) : (
+                <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>Bu müşterinin bölgesindeki rakipleri analiz edip müşteri portalına ekleyin.</p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
