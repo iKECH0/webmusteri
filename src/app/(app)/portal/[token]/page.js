@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, use, useRef } from 'react';
-import { CheckCircle2, Monitor, ShieldCheck, Zap, BarChart, Clock, MessageSquare, Briefcase, FileText, Smartphone, Target, PenTool, Code, Rocket } from 'lucide-react';
+import { CheckCircle2, Monitor, ShieldCheck, Zap, BarChart, Clock, MessageSquare, Briefcase, FileText, Smartphone, Target, PenTool, Code, Rocket, HelpCircle } from 'lucide-react';
 
 export default function PortalPage({ params }) {
   const { token } = use(params);
@@ -580,6 +580,41 @@ export default function PortalPage({ params }) {
 
             </div>
           ))}
+        </div>
+
+        {/* FAQ Section */}
+        <div style={{ padding: '20px 20px 80px', maxWidth: 900, margin: '0 auto' }}>
+          <h2 style={{ fontSize: 32, fontWeight: 900, textAlign: 'center', color: '#0f172a', marginBottom: 40 }}>Sıkça Sorulan Sorular</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            
+            <div className="glass-card" style={{ padding: 24, borderRadius: 16 }}>
+              <h4 style={{ fontSize: 18, fontWeight: 700, color: '#0f172a', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <HelpCircle size={20} color="#3b82f6" /> Süreç ne kadar sürüyor?
+              </h4>
+              <p style={{ color: '#64748b', lineHeight: 1.6 }}>
+                Projeye göre değişmekle beraber işi aldıktan sonra genelde 1-7 gün arasında, ama çoğunlukla 2-3 gün içerisinde projeyi bitirmiş oluyoruz.
+              </p>
+            </div>
+
+            <div className="glass-card" style={{ padding: 24, borderRadius: 16 }}>
+              <h4 style={{ fontSize: 18, fontWeight: 700, color: '#0f172a', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <HelpCircle size={20} color="#3b82f6" /> Site dosyalarını paylaşıyor musunuz?
+              </h4>
+              <p style={{ color: '#64748b', lineHeight: 1.6 }}>
+                Tüm veritabanı yedeklerini ve site dosyalarını eksiksiz şekilde sizlere teslim ediyoruz.
+              </p>
+            </div>
+
+            <div className="glass-card" style={{ padding: 24, borderRadius: 16 }}>
+              <h4 style={{ fontSize: 18, fontWeight: 700, color: '#0f172a', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <HelpCircle size={20} color="#3b82f6" /> 1 sene sonra farklı hosting firmasına geçmek istesem yardımcı olur musunuz?
+              </h4>
+              <p style={{ color: '#64748b', lineHeight: 1.6 }}>
+                Elbette, domain ve hosting bağlantılarında ücretsiz olarak yardımcı oluyoruz.
+              </p>
+            </div>
+
+          </div>
         </div>
 
         {/* Footer */}
