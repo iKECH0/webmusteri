@@ -4,6 +4,15 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 
 export default function PublicHomePage() {
+  const [openFaq, setOpenFaq] = useState(null);
+  
+  const faqs = [
+    { q: "Süreç ne kadar sürüyor?", a: "Projenin kapsamına bağlı olarak genellikle 1-3 hafta içerisinde sitenizi anahtar teslim yayına alıyoruz." },
+    { q: "Alan adı ve hosting dahil mi?", a: "Evet, tüm paketlerimizde ilk yıl alan adı ve yüksek hızlı sunucu (hosting) ücretsiz olarak sunulmaktadır." },
+    { q: "Daha sonra kendi sitemi güncelleyebilir miyim?", a: "Kesinlikle! Size özel hazırladığımız yönetim paneli sayesinde metinleri ve görselleri kolayca değiştirebilirsiniz." },
+    { q: "Arama motorlarında (Google) üst sırada çıkar mıyım?", a: "Sitenizi en güncel SEO (Arama Motoru Optimizasyonu) kurallarına göre kodluyoruz. Bu sayede organik yükselişiniz garanti altına alınır." }
+  ];
+
   const [projects, setProjects] = useState([
     {
         "id": "1",
@@ -169,6 +178,8 @@ export default function PublicHomePage() {
               <div className="nav-links">
                   <a href="#projects">Projeler</a>
                   <a href="#why-me">Hakkımda</a>
+                  <a href="#pricing">Paketler</a>
+                  <a href="#process">Süreç</a>
                   <a href="#contact">İletişim</a>
               </div>
 
@@ -187,6 +198,8 @@ export default function PublicHomePage() {
           <div className="mobile-menu" id="mobile-menu">
               <a href="#projects" className="mobile-link">Projeler</a>
               <a href="#why-me" className="mobile-link">Hakkımda</a>
+              <a href="#pricing" className="mobile-link">Paketler</a>
+              <a href="#process" className="mobile-link">Süreç</a>
               <a href="#contact" className="mobile-link">İletişim</a>
               <a href="#contact" className="btn btn-primary mobile-cta">İletişime Geç</a>
           </div>
@@ -268,6 +281,155 @@ export default function PublicHomePage() {
               </div>
           </section>
 
+          {/* Pricing Section */}
+          <section id="pricing" className="pricing container reveal" style={{ paddingTop: '100px' }}>
+              <div className="section-header">
+                  <h2>Hizmet Paketleri</h2>
+                  <p>İhtiyacınıza ve bütçenize en uygun çözümü seçin</p>
+              </div>
+              
+              <div className="pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px', marginTop: '40px' }}>
+                  {/* Starter */}
+                  <div className="pricing-card glass-panel" style={{ padding: '40px 30px', textAlign: 'center', borderRadius: '24px', border: '1px solid var(--glass-border)' }}>
+                      <h3 style={{ fontSize: '24px', marginBottom: '15px' }}>Başlangıç</h3>
+                      <p style={{ color: 'var(--text-muted)', marginBottom: '30px' }}>Küçük işletmeler ve kişisel portfolyolar için ideal tek sayfalık yapı.</p>
+                      <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 30px 0', textAlign: 'left' }}>
+                          <li style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}><i className="ph-fill ph-check-circle" style={{ color: 'var(--accent-color)' }}></i> Tek Sayfa (One-Page) Tasarım</li>
+                          <li style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}><i className="ph-fill ph-check-circle" style={{ color: 'var(--accent-color)' }}></i> Mobil Uyumlu (Responsive)</li>
+                          <li style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}><i className="ph-fill ph-check-circle" style={{ color: 'var(--accent-color)' }}></i> İletişim Formu</li>
+                          <li style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}><i className="ph-fill ph-check-circle" style={{ color: 'var(--accent-color)' }}></i> Temel SEO Altyapısı</li>
+                      </ul>
+                      <a href="#contact" className="btn btn-outline" style={{ width: '100%', display: 'block' }}>Teklif Alın</a>
+                  </div>
+                  
+                  {/* Professional */}
+                  <div className="pricing-card glass-panel popular" style={{ padding: '40px 30px', textAlign: 'center', borderRadius: '24px', background: 'linear-gradient(135deg, rgba(79, 93, 250, 0.1), rgba(79, 93, 250, 0.05))', border: '2px solid var(--accent-color)', transform: 'scale(1.05)', position: 'relative' }}>
+                      <div style={{ position: 'absolute', top: '-15px', left: '50%', transform: 'translateX(-50%)', background: 'var(--accent-color)', color: 'white', padding: '5px 15px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold' }}>EN ÇOK TERCİH EDİLEN</div>
+                      <h3 style={{ fontSize: '24px', marginBottom: '15px' }}>Kurumsal</h3>
+                      <p style={{ color: 'var(--text-muted)', marginBottom: '30px' }}>Şirketler ve markalar için çok sayfalı, dinamik ve kapsamlı web sitesi.</p>
+                      <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 30px 0', textAlign: 'left' }}>
+                          <li style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}><i className="ph-fill ph-check-circle" style={{ color: 'var(--accent-color)' }}></i> Çok Sayfalı Premium Tasarım</li>
+                          <li style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}><i className="ph-fill ph-check-circle" style={{ color: 'var(--accent-color)' }}></i> Yönetim Paneli (İçerik Yönetimi)</li>
+                          <li style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}><i className="ph-fill ph-check-circle" style={{ color: 'var(--accent-color)' }}></i> Gelişmiş SEO ve Hız Optimizasyonu</li>
+                          <li style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}><i className="ph-fill ph-check-circle" style={{ color: 'var(--accent-color)' }}></i> 1 Yıl Ücretsiz Alan Adı & Hosting</li>
+                      </ul>
+                      <a href="#contact" className="btn btn-primary" style={{ width: '100%', display: 'block' }}>Teklif Alın</a>
+                  </div>
+
+                  {/* E-Commerce */}
+                  <div className="pricing-card glass-panel" style={{ padding: '40px 30px', textAlign: 'center', borderRadius: '24px', border: '1px solid var(--glass-border)' }}>
+                      <h3 style={{ fontSize: '24px', marginBottom: '15px' }}>E-Ticaret</h3>
+                      <p style={{ color: 'var(--text-muted)', marginBottom: '30px' }}>Ürünlerinizi internetten güvenle satabileceğiniz sanal mağaza.</p>
+                      <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 30px 0', textAlign: 'left' }}>
+                          <li style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}><i className="ph-fill ph-check-circle" style={{ color: 'var(--accent-color)' }}></i> Sınırsız Ürün ve Kategori</li>
+                          <li style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}><i className="ph-fill ph-check-circle" style={{ color: 'var(--accent-color)' }}></i> Güvenli Ödeme (Sanal POS)</li>
+                          <li style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}><i className="ph-fill ph-check-circle" style={{ color: 'var(--accent-color)' }}></i> Kargo ve Sipariş Takip Modülü</li>
+                          <li style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}><i className="ph-fill ph-check-circle" style={{ color: 'var(--accent-color)' }}></i> Sepet Kurtarma ve Promosyonlar</li>
+                      </ul>
+                      <a href="#contact" className="btn btn-outline" style={{ width: '100%', display: 'block' }}>Teklif Alın</a>
+                  </div>
+              </div>
+          </section>
+
+          {/* Timeline / Process Section */}
+          <section id="process" className="process container reveal" style={{ paddingTop: '100px' }}>
+              <div className="section-header">
+                  <h2>Nasıl Çalışıyoruz?</h2>
+                  <p>Fikrinizden yayına kadar geçen şeffaf ve hızlı sürecimiz</p>
+              </div>
+              <div className="process-timeline-container" style={{ position: 'relative', maxWidth: '800px', margin: '40px auto 0', padding: '0 20px' }}>
+                  <div className="process-timeline-line" style={{ position: 'absolute', left: '50%', top: '0', bottom: '0', width: '4px', background: 'linear-gradient(to bottom, var(--accent-color), #8b5cf6, #10b981)', transform: 'translateX(-50%)', borderRadius: '4px', opacity: '0.2' }}></div>
+                  
+                  {[
+                    { step: '1', title: 'Strateji ve Planlama', desc: 'İhtiyaç analizinizin yapılması, hedeflerin belirlenmesi ve dijital haritanızın çıkarılması.', icon: 'ph-target' },
+                    { step: '2', title: 'Tasarım ve Arayüz', desc: 'Kurumsal kimliğinize uygun, premium ve kullanıcı dostu (UI/UX) görünümün tasarlanması.', icon: 'ph-pen-nib' },
+                    { step: '3', title: 'Yazılım ve Kodlama', desc: 'Son teknoloji altyapı ile sitenizin sıfırdan kodlanması ve SEO altyapısının kurulması.', icon: 'ph-code' },
+                    { step: '4', title: 'Test ve Optimizasyon', desc: 'Mobil cihaz uyumluluğu, güvenlik ve Google hız (PageSpeed) testlerinin yapılması.', icon: 'ph-check-circle' },
+                    { step: '5', title: 'Yayına Alma', desc: 'Projenin anahtar teslim olarak canlıya alınması ve kontrol panelinizin teslimi.', icon: 'ph-rocket' },
+                  ].map((s, i) => (
+                    <div key={i} className="process-timeline-item" style={{ display: 'flex', justifyContent: i % 2 === 0 ? 'flex-start' : 'flex-end', alignItems: 'center', marginBottom: '40px', width: '100%', position: 'relative' }}>
+                      <div className="process-timeline-dot" style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', width: '48px', height: '48px', borderRadius: '50%', background: 'var(--card-bg)', border: '4px solid var(--accent-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10, color: 'var(--accent-color)', boxShadow: '0 0 0 6px rgba(79, 93, 250, 0.1)' }}>
+                        <i className={`ph ${s.icon}`} style={{ fontSize: '24px' }}></i>
+                      </div>
+                      <div className="process-timeline-content" style={{ width: '45%' }}>
+                        <div className="glass-panel" style={{ padding: '24px', textAlign: i % 2 === 0 ? 'right' : 'left', borderRadius: '16px', transition: 'transform 0.3s ease, box-shadow 0.3s ease', cursor: 'default' }} onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-5px)'; e.currentTarget.style.boxShadow = '0 15px 30px rgba(0,0,0,0.1)'; }} onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'var(--glass-shadow)'; }}>
+                          <div style={{ fontSize: '12px', fontWeight: 800, color: 'var(--accent-color)', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>Adım {s.step}</div>
+                          <h4 style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text-color)', marginBottom: '12px' }}>{s.title}</h4>
+                          <p style={{ color: 'var(--text-muted)', fontSize: '15px', lineHeight: 1.6, margin: 0 }}>{s.desc}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+          </section>
+
+          {/* Testimonials Section */}
+          <section id="testimonials" className="testimonials container reveal" style={{ paddingTop: '100px' }}>
+              <div className="section-header">
+                  <h2>Ne Dediler?</h2>
+                  <p>Benimle çalışan müşterilerimin deneyimleri</p>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px', marginTop: '40px' }}>
+                  <div className="glass-panel" style={{ padding: '30px', borderRadius: '24px', position: 'relative' }}>
+                      <i className="ph-fill ph-quotes" style={{ fontSize: '40px', color: 'var(--accent-light)', position: 'absolute', top: '20px', right: '20px' }}></i>
+                      <p style={{ color: 'var(--text-color)', fontSize: '15px', lineHeight: 1.6, marginBottom: '20px', fontStyle: 'italic' }}>"Sitemiz eski ve yavaştı. Kodiva ile çalıştıktan sonra hem harika bir tasarıma kavuştuk hem de Google'da ilk sayfaya çıktık. İletişimi ve hızı muazzamdı."</p>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                          <div style={{ width: '50px', height: '50px', borderRadius: '50%', background: 'linear-gradient(135deg, #f6d365 0%, #fda085 100%)' }}></div>
+                          <div>
+                              <h4 style={{ margin: 0, fontSize: '16px', color: 'var(--text-color)' }}>Ahmet Yılmaz</h4>
+                              <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Cafe Roma İşletmecisi</span>
+                          </div>
+                      </div>
+                  </div>
+                  <div className="glass-panel" style={{ padding: '30px', borderRadius: '24px', position: 'relative' }}>
+                      <i className="ph-fill ph-quotes" style={{ fontSize: '40px', color: 'var(--accent-light)', position: 'absolute', top: '20px', right: '20px' }}></i>
+                      <p style={{ color: 'var(--text-color)', fontSize: '15px', lineHeight: 1.6, marginBottom: '20px', fontStyle: 'italic' }}>"Estetik ve zarafet bizim sektörde her şeydir. Beklentimizin çok üstünde premium bir site teslim aldık. Randevularımız gözle görülür şekilde arttı."</p>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                          <div style={{ width: '50px', height: '50px', borderRadius: '50%', background: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)' }}></div>
+                          <div>
+                              <h4 style={{ margin: 0, fontSize: '16px', color: 'var(--text-color)' }}>Ayşe K.</h4>
+                              <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Güzellik Merkezi Kurucusu</span>
+                          </div>
+                      </div>
+                  </div>
+                  <div className="glass-panel" style={{ padding: '30px', borderRadius: '24px', position: 'relative' }}>
+                      <i className="ph-fill ph-quotes" style={{ fontSize: '40px', color: 'var(--accent-light)', position: 'absolute', top: '20px', right: '20px' }}></i>
+                      <p style={{ color: 'var(--text-color)', fontSize: '15px', lineHeight: 1.6, marginBottom: '20px', fontStyle: 'italic' }}>"E-ticaret sitemizi kurarken tüm detaylarla bizzat ilgilendi. Sadece siteyi yapmakla kalmadı, satış stratejileri konusunda da ufkumuzu açtı."</p>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                          <div style={{ width: '50px', height: '50px', borderRadius: '50%', background: 'linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)' }}></div>
+                          <div>
+                              <h4 style={{ margin: 0, fontSize: '16px', color: 'var(--text-color)' }}>Caner T.</h4>
+                              <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>TechStore Kurucusu</span>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </section>
+
+          {/* FAQ Section */}
+          <section id="faq" className="faq container reveal" style={{ paddingTop: '100px', paddingBottom: '100px' }}>
+              <div className="section-header">
+                  <h2>Sıkça Sorulan Sorular</h2>
+                  <p>Aklınızdaki soru işaretlerini giderelim</p>
+              </div>
+              <div style={{ maxWidth: '800px', margin: '40px auto 0', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                  {faqs.map((faq, index) => (
+                      <div key={index} className="glass-panel" style={{ borderRadius: '16px', overflow: 'hidden' }}>
+                          <button 
+                            onClick={() => setOpenFaq(openFaq === index ? null : index)}
+                            style={{ width: '100%', padding: '20px 25px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left', color: 'var(--text-color)', fontSize: '16px', fontWeight: 600 }}
+                          >
+                              {faq.q}
+                              <i className={`ph ${openFaq === index ? 'ph-caret-up' : 'ph-caret-down'}`} style={{ color: 'var(--accent-color)', fontSize: '20px' }}></i>
+                          </button>
+                          <div style={{ maxHeight: openFaq === index ? '200px' : '0', overflow: 'hidden', transition: 'max-height 0.3s ease', padding: openFaq === index ? '0 25px 20px' : '0 25px', opacity: openFaq === index ? 1 : 0, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+                              {faq.a}
+                          </div>
+                      </div>
+                  ))}
+              </div>
+          </section>
+
           {/* Contact Section */}
           <section id="contact" className="contact container reveal">
               <div className="contact-card glass-panel">
@@ -299,6 +461,44 @@ export default function PublicHomePage() {
               </div>
           </div>
       </footer>
+
+      {/* Floating WhatsApp */}
+      <a href="https://wa.me/905555555555" target="_blank" rel="noreferrer" style={{
+        position: 'fixed',
+        bottom: '30px',
+        right: '30px',
+        background: '#25D366',
+        color: 'white',
+        width: '60px',
+        height: '60px',
+        borderRadius: '50%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '32px',
+        boxShadow: '0 10px 25px rgba(37, 211, 102, 0.4)',
+        zIndex: 100,
+        animation: 'pulse-wa 2s infinite',
+        textDecoration: 'none'
+      }}>
+        <i className="ph-fill ph-whatsapp-logo"></i>
+      </a>
+
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes pulse-wa {
+          0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+          70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+          100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+        }
+        @media (max-width: 768px) {
+          .process-timeline-line { left: 40px !important; }
+          .process-timeline-dot { left: 40px !important; }
+          .process-timeline-item { justify-content: flex-end !important; }
+          .process-timeline-content { width: calc(100% - 80px) !important; margin-left: auto; }
+          .process-timeline-content .glass-panel { text-align: left !important; }
+          .pricing-card.popular { transform: none !important; margin-top: 15px; }
+        }
+      `}} />
     </>
   );
 }
