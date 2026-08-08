@@ -182,6 +182,9 @@ export default function PortalPage({ params }) {
         
         .action-buttons-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
         .timeline-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 80px; }
+        
+        .desktop-mockup-wrapper { position: relative; width: 100%; max-width: 750px; z-index: 3; animation: floatMac 6s ease-in-out infinite; }
+        .mobile-mockup-wrapper { position: absolute; right: 2%; bottom: -2%; width: 220px; z-index: 4; animation: floatPhone 5s ease-in-out infinite 1s; }
 
         /* Mobile Adjustments */
         @media (max-width: 768px) {
@@ -209,6 +212,8 @@ export default function PortalPage({ params }) {
           
           .action-buttons-grid { grid-template-columns: 1fr; }
           .timeline-grid { grid-template-columns: 1fr; gap: 32px; margin-bottom: 40px; }
+          
+          .mobile-mockup-wrapper { width: 32% !important; right: -5% !important; bottom: -10% !important; min-width: 130px; }
           
           .chatbot-window { width: calc(100vw - 40px) !important; height: 70vh !important; bottom: 80px !important; right: 20px !important; }
         }
@@ -382,13 +387,7 @@ export default function PortalPage({ params }) {
             <div className="device-reflection"></div>
             
             {/* MacBook Frame */}
-            <div style={{ 
-              position: 'relative', 
-              width: '100%', 
-              maxWidth: 750, 
-              zIndex: 3, 
-              animation: 'floatMac 6s ease-in-out infinite'
-            }}>
+            <div className="desktop-mockup-wrapper">
               {/* Screen enclosure */}
               <div style={{ background: '#1e293b', border: '12px solid #cbd5e1', borderBottomWidth: 16, borderRadius: '16px 16px 0 0', overflow: 'hidden', aspectRatio: '16/10', position: 'relative', boxShadow: '0 25px 50px rgba(0,0,0,0.25)' }}>
                 {lead.desktop_mockup_url ? (
@@ -408,14 +407,7 @@ export default function PortalPage({ params }) {
             </div>
 
             {/* iPhone Frame */}
-            <div style={{ 
-              position: 'absolute', 
-              right: '2%', 
-              bottom: '-2%', 
-              width: 220, 
-              zIndex: 4, 
-              animation: 'floatPhone 5s ease-in-out infinite 1s'
-            }}>
+            <div className="mobile-mockup-wrapper">
               <div style={{ background: '#0f172a', border: '8px solid #334155', borderRadius: 36, padding: '3px', overflow: 'hidden', aspectRatio: '9/19', position: 'relative', boxShadow: '-15px 25px 50px rgba(0,0,0,0.5)' }}>
                 {/* iPhone Notch */}
                 <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: 70, height: 16, background: '#334155', borderBottomLeftRadius: 12, borderBottomRightRadius: 12, zIndex: 5 }}></div>
