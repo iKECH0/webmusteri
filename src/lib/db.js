@@ -37,6 +37,8 @@ export async function initDB() {
       portal_viewed INTEGER DEFAULT 0,
       next_followup_date TEXT,
       revenue REAL DEFAULT 0,
+      desktop_mockup_url TEXT,
+      mobile_mockup_url TEXT,
       lat REAL,
       lng REAL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -92,6 +94,14 @@ export async function initDB() {
       FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE
     );
   `);
+
+  try {
+    await db.query(`ALTER TABLE leads ADD COLUMN desktop_mockup_url TEXT;`);
+  } catch (e) { /* Ignore if exists */ }
+  
+  try {
+    await db.query(`ALTER TABLE leads ADD COLUMN mobile_mockup_url TEXT;`);
+  } catch (e) { /* Ignore if exists */ }
 }
 
 // We don't auto-call initDB here because top-level await is tricky in Next.js edge/serverless without strict configs.

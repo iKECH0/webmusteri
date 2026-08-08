@@ -17,6 +17,8 @@ export async function GET(request, { params }) {
         name: lead.name,
         address: lead.address,
         phone: lead.phone,
+        category: lead.category,
+        competitor_report: lead.competitor_report,
         status: lead.status,
         portal_viewed: 1,
       },

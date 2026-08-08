@@ -1,11 +1,11 @@
 {
-  "name": "Oto & Halı Yıkama CRM",
-  "short_name": "Yıkama CRM",
-  "description": "Google Haritalar üzerinden müşteri bulan ve CRM ile takip eden sistem.",
+  "name": "Dijital Ajans CRM",
+  "short_name": "Ajans CRM",
+  "description": "Potansiyel müşterilerinizi bulan ve teklif oluşturan yapay zeka destekli CRM sistemi.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0f111a",
-  "theme_color": "#6366f1",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
   "orientation": "portrait-primary",
   "icons": [
     {

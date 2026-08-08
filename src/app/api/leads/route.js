@@ -18,7 +18,7 @@ export async function GET() {
 
 export async function PUT(request) {
   const data = await request.json();
-  const { id, status, notes, next_followup_date, revenue, email, tags, portal_token } = data;
+  const { id, status, notes, next_followup_date, revenue, email, tags, portal_token, desktop_mockup_url, mobile_mockup_url } = data;
   if (!id) return NextResponse.json({ error: 'Lead ID required' }, { status: 400 });
 
   const tagsJson = tags !== undefined ? JSON.stringify(tags) : null;
@@ -32,9 +32,11 @@ export async function PUT(request) {
       email = COALESCE($5, email),
       tags = COALESCE($6, tags),
       portal_token = COALESCE($7, portal_token),
+      desktop_mockup_url = COALESCE($8, desktop_mockup_url),
+      mobile_mockup_url = COALESCE($9, mobile_mockup_url),
       updated_at = CURRENT_TIMESTAMP
-    WHERE id = $8
-  `, [status ?? null, notes ?? null, next_followup_date ?? null, revenue ?? null, email ?? null, tagsJson, portal_token ?? null, id]);
+    WHERE id = $10
+  `, [status ?? null, notes ?? null, next_followup_date ?? null, revenue ?? null, email ?? null, tagsJson, portal_token ?? null, desktop_mockup_url ?? null, mobile_mockup_url ?? null, id]);
 
   return NextResponse.json({ success: true });
 }

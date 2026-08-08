@@ -11,6 +11,27 @@ export default function QuotesTab({ leads }) {
     { desc: 'Aylık Bakım ve Destek (Yıllık)', price: '1200' },
   ]);
   const [notes, setNotes] = useState('');
+
+  // Load template from local storage on mount
+  useEffect(() => {
+    const savedTemplate = localStorage.getItem('quote_template');
+    if (savedTemplate) {
+      try {
+        const parsed = JSON.parse(savedTemplate);
+        if (parsed.title) setTitle(parsed.title);
+        if (parsed.items) setItems(parsed.items);
+        if (parsed.notes) setNotes(parsed.notes);
+      } catch (e) {
+        console.error('Failed to parse quote template from localStorage', e);
+      }
+    }
+  }, []);
+
+  // Save template to local storage when changed
+  useEffect(() => {
+    localStorage.setItem('quote_template', JSON.stringify({ title, items, notes }));
+  }, [title, items, notes]);
+
   const [quotes, setQuotes] = useState([]);
   const [saving, setSaving] = useState(false);
   const [portalCopied, setPortalCopied] = useState({});
@@ -214,6 +235,15 @@ export default function QuotesTab({ leads }) {
                     <button className="btn btn-outline" style={{ padding: '7px 12px', fontSize: 12, borderColor: portalCopied[q.id] ? '#10b981' : undefined, color: portalCopied[q.id] ? '#34d399' : undefined }}
                       onClick={() => copyPortalLink(q)}>
                       {portalCopied[q.id] ? <><CheckCircle size={13} /> Kopyalandı!</> : <><Copy size={13} /> Portal Linki</>}
+                    </button>
+                    <button className="btn btn-outline" style={{ padding: '7px 12px', fontSize: 12, borderColor: '#ef4444', color: '#f87171' }}
+                      onClick={async () => {
+                        if(confirm('Bu teklifi silmek istediğinize emin misiniz?')) {
+                          await axios.delete('/api/quotes', { data: { id: q.id } });
+                          fetchQuotes();
+                        }
+                      }}>
+                      <Trash2 size={13} />
                     </button>
                   </div>
                 </div>

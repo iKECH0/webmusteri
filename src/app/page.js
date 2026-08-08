@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, Suspense, lazy } from 'react';
 import axios from 'axios';
-import { Search, Map, Users, BarChart2, Clock, Settings as SettingsIcon, Mail, FileText, Target } from 'lucide-react';
+import { Search, Map, Users, BarChart2, Clock, Settings as SettingsIcon, Mail, FileText, Target, Menu, X } from 'lucide-react';
 import SearchTab from '@/components/SearchTab';
 import CRMTab from '@/components/CRMTab';
 import AnalysisTab from '@/components/AnalysisTab';
@@ -11,25 +11,40 @@ import EmailTab from '@/components/EmailTab';
 import QuotesTab from '@/components/QuotesTab';
 import CompetitorTab from '@/components/CompetitorTab';
 
-// Map uses browser-only APIs, import dynamically
 import dynamic from 'next/dynamic';
 const MapTab = dynamic(() => import('@/components/MapTab'), { ssr: false });
 
-const TABS = [
-  { key: 'search', label: 'Arama', icon: Search },
-  { key: 'map', label: 'Harita', icon: Map },
-  { key: 'crm', label: 'Müşteriler', icon: Users },
-  { key: 'analysis', label: 'Analiz', icon: BarChart2 },
-  { key: 'email', label: 'E-posta', icon: Mail },
-  { key: 'quotes', label: 'Teklifler', icon: FileText },
-  { key: 'competitor', label: 'Rakip', icon: Target },
-  { key: 'schedule', label: 'Zamanlama', icon: Clock },
-  { key: 'settings', label: 'Ayarlar', icon: SettingsIcon },
+const MENU_CATEGORIES = [
+  {
+    title: "Ana Operasyon",
+    items: [
+      { key: 'crm', label: 'CRM & Kanban', icon: Users },
+      { key: 'quotes', label: 'Teklifler', icon: FileText },
+      { key: 'email', label: 'E-posta', icon: Mail },
+    ]
+  },
+  {
+    title: "Müşteri Bulucu",
+    items: [
+      { key: 'search', label: 'Yeni Bul', icon: Search },
+      { key: 'map', label: 'Harita', icon: Map },
+      { key: 'schedule', label: 'Oto Arama', icon: Clock },
+    ]
+  },
+  {
+    title: "Rapor & Sistem",
+    items: [
+      { key: 'analysis', label: 'Analiz', icon: BarChart2 },
+      { key: 'competitor', label: 'Rakipler', icon: Target },
+      { key: 'settings', label: 'Ayarlar', icon: SettingsIcon },
+    ]
+  }
 ];
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState('search');
+  const [activeTab, setActiveTab] = useState('crm'); // Default to CRM
   const [leads, setLeads] = useState([]);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => { fetchLeads(); }, []);
 
@@ -40,82 +55,112 @@ export default function Home() {
     } catch (e) { console.error(e); }
   };
 
-  // Badge count for CRM tab
   const todayCount = leads.filter(l => l.next_followup_date === new Date().toISOString().split('T')[0]).length;
-  const noWebsiteCount = leads.filter(l => !l.has_website).length;
+  
+  const handleTabChange = (key) => {
+    setActiveTab(key);
+    setIsMobileMenuOpen(false);
+    if (key !== 'search') fetchLeads();
+  };
 
   return (
-    <div className="app-container">
-      {/* Header */}
-      <header style={{ marginBottom: '28px' }}>
-        <h1 style={{
-          fontSize: '24px', fontWeight: 700, marginBottom: '16px',
-          background: 'linear-gradient(to right, #818cf8, #c084fc)',
-          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
-        }}>
-          🚀 Oto & Halı Yıkama — Para Makinesi CRM Platformu
-        </h1>
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-color)', color: 'var(--text-primary)' }}>
+      
+      {/* Mobile Menu Toggle */}
+      <div className="mobile-header" style={{ display: 'none', padding: '16px 20px', background: 'var(--glass-bg)', borderBottom: '1px solid var(--glass-border)', alignItems: 'center', justifyContent: 'space-between', position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50 }}>
+        <h1 style={{ fontSize: '18px', fontWeight: 700, margin: 0, background: 'linear-gradient(to right, #818cf8, #c084fc)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Para Makinesi CRM</h1>
+        <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} style={{ background: 'transparent', border: 'none', color: 'white' }}>
+          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+      </div>
 
-        {/* Tab Navigation */}
-        <div style={{ overflowX: 'auto', paddingBottom: '4px' }}>
-          <div style={{
-            display: 'flex', gap: '6px', background: 'rgba(0,0,0,0.25)',
-            padding: '6px', borderRadius: '14px', border: '1px solid var(--glass-border)',
-            width: 'max-content', minWidth: '100%'
-          }}>
-            {TABS.map(tab => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.key;
-              return (
-                <button key={tab.key}
-                  className={`tab ${isActive ? 'active' : ''}`}
-                  onClick={() => { setActiveTab(tab.key); if (tab.key !== 'search') fetchLeads(); }}
-                  style={{ position: 'relative', whiteSpace: 'nowrap', padding: '9px 10px', fontSize: '13px' }}
-                >
-                  <Icon size={15} style={{ display: 'inline', marginRight: '5px', verticalAlign: 'text-bottom' }} />
-                  {tab.label}
-                  {tab.key === 'crm' && todayCount > 0 && (
-                    <span style={{
-                      position: 'absolute', top: '-4px', right: '-4px',
-                      background: '#f59e0b', color: 'black', borderRadius: '999px',
-                      fontSize: '10px', fontWeight: 700, padding: '2px 6px', minWidth: '18px'
-                    }}>{todayCount}</span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
+      {/* Sidebar Navigation */}
+      <nav className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`} style={{ width: 280, borderRight: '1px solid var(--glass-border)', background: 'rgba(15, 17, 26, 0.95)', display: 'flex', flexDirection: 'column', height: '100vh', position: 'sticky', top: 0, zIndex: 40, flexShrink: 0 }}>
+        <div style={{ padding: '32px 24px 24px' }}>
+          <h1 style={{ fontSize: '20px', fontWeight: 800, margin: 0, background: 'linear-gradient(to right, #818cf8, #c084fc)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', lineHeight: 1.3 }}>
+            Oto & Halı Yıkama <br/> <span style={{ fontSize: '14px', color: 'var(--text-secondary)', WebkitTextFillColor: 'var(--text-secondary)' }}>Para Makinesi CRM</span>
+          </h1>
         </div>
 
-        {/* Quick Stats Bar */}
-        {leads.length > 0 && (
-          <div style={{ display: 'flex', gap: '16px', marginTop: '16px', flexWrap: 'wrap' }}>
-            {[
-              { label: 'Toplam Kayıt', value: leads.length, color: 'var(--text-secondary)' },
-              { label: 'Potansiyel', value: noWebsiteCount, color: '#f87171' },
-              { label: 'Müşteri', value: leads.filter(l => l.status === 'closed').length, color: '#34d399' },
-              { label: 'Bugün Takip', value: todayCount, color: '#fbbf24' },
-            ].map((s, i) => (
-              <div key={i} style={{ fontSize: '13px', color: s.color, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ fontWeight: 700, fontSize: '15px' }}>{s.value}</span>
-                <span style={{ color: 'var(--text-secondary)' }}>{s.label}</span>
-                {i < 3 && <span style={{ color: 'var(--glass-border)' }}>·</span>}
+        <div style={{ overflowY: 'auto', padding: '0 16px 24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          {MENU_CATEGORIES.map((category, idx) => (
+            <div key={idx}>
+              <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: '8px', paddingLeft: '12px' }}>
+                {category.title}
               </div>
-            ))}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                {category.items.map(item => {
+                  const Icon = item.icon;
+                  const isActive = activeTab === item.key;
+                  return (
+                    <button key={item.key} onClick={() => handleTabChange(item.key)}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px',
+                        background: isActive ? 'rgba(99, 102, 241, 0.15)' : 'transparent',
+                        color: isActive ? '#818cf8' : 'var(--text-primary)',
+                        border: 'none', borderRadius: '10px', cursor: 'pointer',
+                        fontSize: '14px', fontWeight: isActive ? 600 : 500,
+                        transition: 'all 0.2s', textAlign: 'left', position: 'relative'
+                      }}
+                      onMouseOver={(e) => { if(!isActive) e.currentTarget.style.background = 'rgba(255,255,255,0.05)' }}
+                      onMouseOut={(e) => { if(!isActive) e.currentTarget.style.background = 'transparent' }}
+                    >
+                      <Icon size={18} style={{ color: isActive ? '#818cf8' : 'var(--text-secondary)' }} />
+                      {item.label}
+                      {item.key === 'crm' && todayCount > 0 && (
+                        <span style={{ position: 'absolute', right: 12, background: '#f59e0b', color: 'black', borderRadius: '999px', fontSize: '11px', fontWeight: 800, padding: '2px 6px' }}>
+                          {todayCount}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        <div style={{ padding: '24px', borderTop: '1px solid var(--glass-border)', marginTop: 'auto' }}>
+          <div style={{ fontSize: '12px', color: 'var(--text-secondary)', textAlign: 'center' }}>
+            Version 1.0.1
           </div>
-        )}
-      </header>
+        </div>
+      </nav>
 
-      {/* Tab Content */}
-      {activeTab === 'search' && <SearchTab onSearchComplete={fetchLeads} />}
-      {activeTab === 'map' && <MapTab leads={leads} />}
-      {activeTab === 'crm' && <CRMTab leads={leads} onRefresh={fetchLeads} />}
-      {activeTab === 'analysis' && <AnalysisTab leads={leads} />}
-      {activeTab === 'email' && <EmailTab leads={leads} />}
-      {activeTab === 'quotes' && <QuotesTab leads={leads} />}
-      {activeTab === 'competitor' && <CompetitorTab leads={leads} />}
-      {activeTab === 'schedule' && <ScheduleTab />}
-      {activeTab === 'settings' && <SettingsTab />}
+      {/* Main Content Area */}
+      <main className="main-content" style={{ flex: 1, overflowY: 'auto', padding: '32px', height: '100vh', position: 'relative' }}>
+        
+        {/* Tab Content Rendering */}
+        <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%' }}>
+          {activeTab === 'search' && <SearchTab onSearchComplete={fetchLeads} />}
+          {activeTab === 'map' && <MapTab leads={leads} />}
+          {activeTab === 'crm' && <CRMTab leads={leads} onRefresh={fetchLeads} />}
+          {activeTab === 'analysis' && <AnalysisTab leads={leads} />}
+          {activeTab === 'email' && <EmailTab leads={leads} />}
+          {activeTab === 'quotes' && <QuotesTab leads={leads} />}
+          {activeTab === 'competitor' && <CompetitorTab leads={leads} />}
+          {activeTab === 'schedule' && <ScheduleTab />}
+          {activeTab === 'settings' && <SettingsTab />}
+        </div>
+      </main>
+
+      {/* Injecting basic CSS for responsive sidebar via styled block to avoid globals.css merge conflicts right now, but globals.css is better */}
+      <style>{`
+        @media (max-width: 900px) {
+          .mobile-header { display: flex !important; }
+          .sidebar {
+            position: fixed !important;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+          }
+          .sidebar.open {
+            transform: translateX(0);
+          }
+          .main-content {
+            padding: 80px 16px 32px !important; 
+          }
+        }
+      `}</style>
     </div>
   );
 }

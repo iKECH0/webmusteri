@@ -5,7 +5,7 @@ import { Save, Send, Link, CheckCircle } from 'lucide-react';
 
 export default function SettingsTab() {
   const [settings, setSettings] = useState({
-    google_api_key: '', whatsapp_template: '', smtp_email: '', smtp_password: '',
+    google_api_key: '', gemini_api_key: '', whatsapp_template: '', smtp_email: '', smtp_password: '',
     smtp_host: 'smtp.gmail.com', gcal_client_id: '', gcal_client_secret: '',
   });
   const [saved, setSaved] = useState(false);
@@ -74,8 +74,9 @@ export default function SettingsTab() {
           <h2 style={{ fontSize: 22, marginBottom: 24 }}>⚙️ Sistem Ayarları</h2>
 
           {/* Google API */}
-          <Section title="🔑 Google Places API">
-            <Field label="API Anahtarı" type="password" value={settings.google_api_key} onChange={v => set('google_api_key', v)} placeholder="AIzaSyB..." hint="Google Cloud Console → Places API (New) yetkisi olan anahtar gerekli." />
+          <Section title="🔑 API Anahtarları (Google & AI)">
+            <Field label="Google Places API Anahtarı" type="password" value={settings.google_api_key} onChange={v => set('google_api_key', v)} placeholder="AIzaSyB..." hint="Google Cloud Console → Places API (New) yetkisi olan anahtar gerekli." />
+            <Field label="Gemini API Anahtarı (Yapay Zeka İçin)" type="password" value={settings.gemini_api_key} onChange={v => set('gemini_api_key', v)} placeholder="AIza..." hint="Kişiselleştirilmiş satış metinleri ve Müşteri Portalı AI Chatbot için gerekli (Google AI Studio)." />
           </Section>
 
           {/* WhatsApp */}
