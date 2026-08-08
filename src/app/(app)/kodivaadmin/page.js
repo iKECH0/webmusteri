@@ -89,7 +89,9 @@ export default function Home() {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'var(--bg-color)', color: 'var(--text-primary)' }}>
         <form onSubmit={handleLogin} className="glass-panel" style={{ width: '100%', maxWidth: 400, display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <h2 style={{ textAlign: 'center', marginBottom: 16, background: 'linear-gradient(to right, #818cf8, #c084fc)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: 800 }}>Sistem Girişi</h2>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+            <img src="/logo.jpg" alt="Kodiva CRM" style={{ width: '120px', borderRadius: '8px' }} />
+          </div>
           {error && <div style={{ color: '#ef4444', textAlign: 'center', fontSize: 14 }}>{error}</div>}
           <div className="input-group">
             <label>Kullanıcı Adı</label>
@@ -118,10 +120,8 @@ export default function Home() {
 
       {/* Sidebar Navigation */}
       <nav className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`} style={{ width: 280, borderRight: '1px solid var(--glass-border)', background: 'rgba(15, 17, 26, 0.95)', display: 'flex', flexDirection: 'column', height: '100vh', position: 'sticky', top: 0, zIndex: 40, flexShrink: 0 }}>
-        <div style={{ padding: '32px 24px 24px' }}>
-          <h1 style={{ fontSize: '20px', fontWeight: 800, margin: 0, background: 'linear-gradient(to right, #818cf8, #c084fc)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', lineHeight: 1.3 }}>
-            Oto & Halı Yıkama <br/> <span style={{ fontSize: '14px', color: 'var(--text-secondary)', WebkitTextFillColor: 'var(--text-secondary)' }}>Para Makinesi CRM</span>
-          </h1>
+        <div style={{ padding: '32px 24px 24px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '12px' }}>
+          <img src="/logo.jpg" alt="Kodiva CRM Logo" style={{ width: '140px', height: 'auto', borderRadius: '8px' }} />
         </div>
 
         <div style={{ overflowY: 'auto', padding: '0 16px 24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
