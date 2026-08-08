@@ -16,7 +16,7 @@ export async function GET() {
     return NextResponse.json(settingsObj);
   } catch (error) {
     console.error("Settings GET error:", error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal Server Error', details: error.message, stack: error.stack }, { status: 500 });
   }
 }
 

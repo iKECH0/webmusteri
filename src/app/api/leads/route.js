@@ -12,9 +12,9 @@ export async function GET() {
       has_website: !!l.has_website,
       tags: JSON.parse(l.tags || '[]'),
     })));
-  } catch (e) {
-    console.error(e);
-    return NextResponse.json({ error: 'DB Error' }, { status: 500 });
+  } catch (error) {
+    console.error("Leads GET error:", error);
+    return NextResponse.json({ error: 'Internal Server Error', details: error.message, stack: error.stack }, { status: 500 });
   }
 }
 
