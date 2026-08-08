@@ -229,7 +229,16 @@ export default function QuotesTab({ leads }) {
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                     <span style={{ fontSize: 18, fontWeight: 800, color: '#818cf8' }}>{q.total?.toLocaleString('tr-TR')}₺</span>
-                    <span className={`status-badge ${statusInfo.cls}`}>{statusInfo.label}</span>
+                    <select className={`glass-select ${statusInfo.cls}`} style={{ padding: '6px 12px', fontSize: 12, borderRadius: 20, minWidth: 120 }}
+                      value={q.status || 'draft'}
+                      onChange={async (e) => {
+                        await axios.put('/api/quotes', { id: q.id, status: e.target.value });
+                        fetchQuotes();
+                      }}>
+                      {Object.keys(STATUS).map(sKey => (
+                        <option key={sKey} value={sKey} style={{ color: 'initial' }}>{STATUS[sKey].label}</option>
+                      ))}
+                    </select>
                     <button className="btn btn-outline" style={{ padding: '7px 12px', fontSize: 12 }} onClick={() => downloadPDF(q)}>
                       <Download size={13} /> PDF
                     </button>
