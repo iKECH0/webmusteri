@@ -172,6 +172,7 @@ export default function CRMTab({ leads, onRefresh }) {
     const city = lead.address ? lead.address.split(',')[0].trim() : 'bölgenizdeki';
     const sector = lead.category || 'sektörünüzdeki';
     const link = '{portal_link}';
+    const mockupText = lead.design_mockup_url ? `\nAyrıca sizin için hazırladığımız özel tasarım görselini (demo) buradan inceleyebilirsiniz: ${lead.design_mockup_url}\n` : '';
 
     if (type === 'email') {
       tpl = `Merhaba,
@@ -184,8 +185,8 @@ ${city} bölgesindeki ${sector} işletmeleri için modern, hızlı yüklenen ve 
 ✅ Mobil ve masaüstü uyumlu, hızlı yüklenen bir site
 ✅ İletişim formu, konum, çalışma saatleri gibi tüm bilgiler tek sayfada
 ✅ Uygun fiyatlı ve hızlı teslim
-
-${lead.name} için size özel bir fiyat teklifi hazırlamak isterim. Hazırladığımız örnek şablonu incelemek isterseniz:
+${mockupText}
+${lead.name} için size özel bir fiyat teklifi hazırlamak isterim. Hazırladığımız projenin detaylarını incelemek isterseniz:
 ${link}
 
 Kısa bir görüşme yapabilir miyiz?
@@ -195,8 +196,8 @@ Kısa bir görüşme yapabilir miyiz?
       tpl = `Merhaba ${lead.name} 👋
 
 Google Haritalar'da işletmenizi gördüm ama bir web siteniz olmadığını fark ettim. ${city} bölgesinde ${sector} işletmelere özel, uygun fiyatlı ve hızlı web sitesi hazırlıyorum.
-
-Size özel hazırladığımız örnek tasarıma buradan göz atabilirsiniz:
+${mockupText}
+Size özel hazırladığımız detaylı teklife ve sunuma buradan göz atabilirsiniz:
 ${link}
 
 Size özel bir teklif hazırlamak isterim, kısa bir konuşabilir miyiz? 🙂`;
@@ -205,7 +206,7 @@ Size özel bir teklif hazırlamak isterim, kısa bir konuşabilir miyiz? 🙂`;
 İnternette işletmenizi incelerken harika müşteri yorumlarınız dikkatimi çekti. Ancak fark ettim ki, bu kalitenizi dijitale taşıyacak kurumsal bir web siteniz henüz yok.
 
 Müşterilerin büyük bir kısmı işletmeye gitmeden önce web sitesini inceliyor. Rakiplerinizin dijitalde müşteri kazandığı bu dönemde sizin geride kalmanızı istemedik.
-
+${mockupText}
 Sizin için hazırladığımız özel sunum portalını ve teklifimizi aşağıdaki linkten hemen inceleyebilirsiniz:
 ${link}
 

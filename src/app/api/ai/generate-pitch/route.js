@@ -29,7 +29,8 @@ Yazılacak Mesajın Kuralları:
 2. İşletmenin mevcut başarısını (Google puanı vb.) öv.
 3. Web siteleri olmamasının onlara nasıl müşteri kaybettirdiğini ufak bir "korku/fırsat" psikolojisiyle anlat.
 4. Müşteriye bir portal linki göndereceğimizi düşünerek "Size özel hazırladığımız web sitesi şablonunu ve teklifimizi aşağıdaki linkten inceleyebilirsiniz:" şeklinde bitir. (Link kısmını {portal_link} değişkeni olarak bırak).
-5. Maksimum 3-4 paragraf olsun, çok uzun tutma.
+5. ${lead.design_mockup_url ? `ÇOK ÖNEMLİ: Müşteri için zaten bir tasarım görseli (demo) hazırlanmış. Mesajın içine mutlaka "{portal_link}" değişkeninden ÖNCE şu cümleyi ve linki ekle: "Ayrıca sizin için hazırladığımız özel tasarım görselini (demo) buradan inceleyebilirsiniz: ${lead.design_mockup_url}"` : 'Tasarım linki yok, bu adımı atla.'}
+6. Maksimum 3-4 paragraf olsun, çok uzun tutma.
     `;
 
     const res = await axios.post(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`, {
