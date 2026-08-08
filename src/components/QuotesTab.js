@@ -10,7 +10,8 @@ export default function QuotesTab({ leads }) {
     { desc: 'Web Sitesi Tasarım ve Geliştirme', price: '3500' },
     { desc: 'Aylık Bakım ve Destek (Yıllık)', price: '1200' },
   ]);
-  const [notes, setNotes] = useState('');
+  const defaultNotes = `📌 Ödeme, web sitesi tamamen hazırlanıp onayınıza sunulduktan ve teslim edildikten sonra yapılmaktadır. Ön ödeme veya kapora talep edilmez.\n\n👉 [Referanslarımızı İnceleyin](https://kodivawebsite.com/#referanslar)`;
+  const [notes, setNotes] = useState(defaultNotes);
 
   // Load template from local storage on mount
   useEffect(() => {

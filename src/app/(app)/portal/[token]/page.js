@@ -248,7 +248,12 @@ export default function PortalPage({ params }) {
               </div>
               {latestQuote.notes && (
                 <div style={{ padding: '24px 32px', background: 'white', color: '#64748b', fontSize: 14, borderTop: '1px dashed #cbd5e1' }}>
-                  <strong style={{ color: '#0f172a' }}>Notlar:</strong> {latestQuote.notes}
+                  <strong style={{ color: '#0f172a', display: 'block', marginBottom: '8px' }}>Notlar:</strong> 
+                  <div dangerouslySetInnerHTML={{ 
+                    __html: latestQuote.notes
+                      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<br/><a href="$2" target="_blank" style="display:inline-block; margin-top:12px; padding:10px 20px; background:#3b82f6; color:white; border-radius:8px; text-decoration:none; font-weight:600; box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3); transition: all 0.2s;">$1 ↗</a>')
+                      .replace(/\n/g, '<br/>')
+                  }} />
                 </div>
               )}
             </div>
