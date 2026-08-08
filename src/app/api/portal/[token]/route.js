@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import db from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request, { params }) {
   try {
     const { token } = await params;
@@ -21,6 +23,8 @@ export async function GET(request, { params }) {
         competitor_report: lead.competitor_report,
         status: lead.status,
         portal_viewed: 1,
+        desktop_mockup_url: lead.desktop_mockup_url,
+        mobile_mockup_url: lead.mobile_mockup_url,
       },
       quotes: quotesRes.rows.map(q => ({
         ...q,

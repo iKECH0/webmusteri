@@ -55,15 +55,20 @@ export default function CRMTab({ leads, onRefresh }) {
   };
 
   const saveLead = async (lead) => {
-    await updateLead(lead.id, {
-      notes: notes[lead.id],
-      next_followup_date: followupDates[lead.id] || null,
-      revenue: revenues[lead.id] ? parseFloat(revenues[lead.id]) : null,
-      email: emails[lead.id] || null,
-      tags: tags[lead.id] || [],
-      desktop_mockup_url: desktopMockups[lead.id] || null,
-      mobile_mockup_url: mobileMockups[lead.id] || null
-    });
+    try {
+      await updateLead(lead.id, {
+        notes: notes[lead.id],
+        next_followup_date: followupDates[lead.id] || null,
+        revenue: revenues[lead.id] ? parseFloat(revenues[lead.id]) : null,
+        email: emails[lead.id] || null,
+        tags: tags[lead.id] || [],
+        desktop_mockup_url: desktopMockups[lead.id] || null,
+        mobile_mockup_url: mobileMockups[lead.id] || null
+      });
+      alert('✅ Bilgiler başarıyla kaydedildi!');
+    } catch (e) {
+      alert('Kaydedilirken bir hata oluştu.');
+    }
   };
 
   const deleteLead = async (id) => {
