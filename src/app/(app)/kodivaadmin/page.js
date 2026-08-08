@@ -11,6 +11,7 @@ import EmailTab from '@/components/EmailTab';
 import QuotesTab from '@/components/QuotesTab';
 import CompetitorTab from '@/components/CompetitorTab';
 import PortalNotesTab from '@/components/PortalNotesTab';
+import ReferencesTab from '@/components/ReferencesTab';
 
 import dynamic from 'next/dynamic';
 const MapTab = dynamic(() => import('@/components/MapTab'), { ssr: false });
@@ -38,6 +39,7 @@ const MENU_CATEGORIES = [
     items: [
       { key: 'analysis', label: 'Analiz', icon: BarChart2 },
       { key: 'competitor', label: 'Rakipler', icon: Target },
+      { key: 'references', label: 'Referanslar', icon: FileText },
       { key: 'settings', label: 'Ayarlar', icon: SettingsIcon },
     ]
   }
@@ -174,16 +176,17 @@ export default function Home() {
         
         {/* Tab Content Rendering */}
         <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%' }}>
-          {activeTab === 'search' && <SearchTab onSearchComplete={fetchLeads} />}
-          {activeTab === 'map' && <MapTab leads={leads} />}
-          {activeTab === 'crm' && <CRMTab leads={leads} onRefresh={fetchLeads} />}
+          {activeTab === 'search' && <SearchTab fetchLeads={fetchLeads} />}
+          {activeTab === 'crm' && <CRMTab leads={leads} fetchLeads={fetchLeads} />}
           {activeTab === 'analysis' && <AnalysisTab leads={leads} />}
+          {activeTab === 'schedule' && <ScheduleTab />}
+          {activeTab === 'settings' && <SettingsTab />}
           {activeTab === 'email' && <EmailTab leads={leads} />}
           {activeTab === 'quotes' && <QuotesTab leads={leads} />}
           {activeTab === 'competitor' && <CompetitorTab leads={leads} />}
+          {activeTab === 'map' && <MapTab fetchLeads={fetchLeads} />}
           {activeTab === 'portal-notes' && <PortalNotesTab />}
-          {activeTab === 'schedule' && <ScheduleTab />}
-          {activeTab === 'settings' && <SettingsTab />}
+          {activeTab === 'references' && <ReferencesTab />}
         </div>
       </main>
 

@@ -105,6 +105,15 @@ export async function initDB() {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE
     );
+
+    CREATE TABLE IF NOT EXISTS portfolio_references (
+      id TEXT PRIMARY KEY,
+      title TEXT NOT NULL,
+      url TEXT,
+      image_url TEXT,
+      description TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
   `);
 
   try {
