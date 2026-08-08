@@ -644,10 +644,22 @@ ${link}
                           </div>
                         </div>
                         {aiPitches[lead.id] ? (
-                          <textarea className="glass-input" style={{ width: '100%', minHeight: 180, fontSize: 13, resize: 'vertical' }}
-                            value={aiPitches[lead.id]}
-                            onChange={(e) => setAiPitches(p => ({...p, [lead.id]: e.target.value}))}
-                          />
+                          <>
+                            <textarea className="glass-input" style={{ width: '100%', minHeight: 180, fontSize: 13, resize: 'vertical' }}
+                              value={aiPitches[lead.id]}
+                              onChange={(e) => setAiPitches(p => ({...p, [lead.id]: e.target.value}))}
+                            />
+                            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 10 }}>
+                              <button className="btn btn-primary" style={{ padding: '8px 16px', background: '#25D366', borderColor: '#25D366', color: 'white' }}
+                                onClick={() => {
+                                  const text = encodeURIComponent(aiPitches[lead.id]);
+                                  const phone = lead.phone ? lead.phone.replace(/[^0-9]/g, '') : '';
+                                  window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
+                                }}>
+                                WhatsApp'tan Gönder 🚀
+                              </button>
+                            </div>
+                          </>
                         ) : (
                           <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Bu müşteri için yapay zeka destekli, dönüşüm oranı yüksek bir satış mesajı oluşturun.</p>
                         )}
