@@ -315,110 +315,80 @@ export default function PortalPage({ params }) {
         )}
 
         {/* Premium Mockup Section */}
-        <h2 style={{ fontSize: 32, fontWeight: 800, textAlign: 'center', color: '#0f172a', margin: '60px 0 32px' }}>
-          Sizin İçin Tasarlayacağımız <span style={{ color: '#3b82f6' }}>Premium</span> Dijital Yapı
-        </h2>
-        <div style={{ marginBottom: 60, borderRadius: 24, overflow: 'hidden', boxShadow: '0 40px 80px rgba(0,0,0,0.15)', border: '1px solid #e2e8f0', background: 'white' }}>
-          {/* Mac Header */}
-          <div style={{ background: '#f8fafc', padding: '16px 24px', display: 'flex', gap: 10, alignItems: 'center', borderBottom: '1px solid #e2e8f0' }}>
-            <div style={{ width: 14, height: 14, borderRadius: '50%', background: '#ef4444', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2)' }}></div>
-            <div style={{ width: 14, height: 14, borderRadius: '50%', background: '#f59e0b', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2)' }}></div>
-            <div style={{ width: 14, height: 14, borderRadius: '50%', background: '#10b981', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2)' }}></div>
-            <div style={{ marginLeft: 'auto', marginRight: 'auto', background: 'white', padding: '8px 24px', borderRadius: 8, fontSize: 13, color: '#64748b', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 1px 3px rgba(0,0,0,0.05)', maxWidth: '60%', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-              <span style={{ color: '#10b981' }}>🔒</span> https://www.{lead.name.toLowerCase().replace(/[^a-z0-9ğüşöçı]/g, '') || 'websiteniz'}.com
-            </div>
-          </div>
+        <style dangerouslySetInnerHTML={{__html: `
+          @keyframes floatMac {
+            0% { transform: perspective(1200px) rotateY(-5deg) rotateX(2deg) translateY(0px); }
+            50% { transform: perspective(1200px) rotateY(-5deg) rotateX(2deg) translateY(-15px); }
+            100% { transform: perspective(1200px) rotateY(-5deg) rotateX(2deg) translateY(0px); }
+          }
+          @keyframes floatPhone {
+            0% { transform: perspective(1200px) rotateY(-15deg) rotateX(5deg) translateY(0px); }
+            50% { transform: perspective(1200px) rotateY(-15deg) rotateX(5deg) translateY(-20px); }
+            100% { transform: perspective(1200px) rotateY(-15deg) rotateX(5deg) translateY(0px); }
+          }
+        `}} />
+        <div style={{ position: 'relative', padding: '20px 0 80px', display: 'flex', flexDirection: 'column', alignItems: 'center', overflow: 'hidden' }}>
+          {/* Background glowing orbs */}
+          <div style={{ position: 'absolute', top: '20%', left: '20%', width: 400, height: 400, background: '#3b82f6', filter: 'blur(120px)', opacity: 0.15, borderRadius: '50%', zIndex: 0 }}></div>
+          <div style={{ position: 'absolute', bottom: '10%', right: '20%', width: 500, height: 500, background: '#8b5cf6', filter: 'blur(150px)', opacity: 0.15, borderRadius: '50%', zIndex: 0 }}></div>
+
+          <h2 style={{ fontSize: 36, fontWeight: 800, textAlign: 'center', color: '#0f172a', marginBottom: 40, position: 'relative', zIndex: 10 }}>
+            Sizin İçin Tasarlayacağımız <span style={{ color: '#3b82f6' }}>Premium</span> Dijital Yapı
+          </h2>
           
-          {/* Mockup Body (High-end SaaS style) */}
-          <div style={{ background: '#0a0f24', position: 'relative', display: 'flex', flexDirection: 'column', minHeight: 500, overflow: 'hidden' }}>
+          <div style={{ position: 'relative', width: '100%', maxWidth: 900, height: 550, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>
             
-            {/* Background glowing orbs */}
-            <div style={{ position: 'absolute', top: '-10%', left: '-10%', width: 500, height: 500, background: '#3b82f6', filter: 'blur(150px)', opacity: 0.15, borderRadius: '50%' }}></div>
-            <div style={{ position: 'absolute', bottom: '-20%', right: '-10%', width: 600, height: 600, background: '#8b5cf6', filter: 'blur(150px)', opacity: 0.15, borderRadius: '50%' }}></div>
-
-            {/* Nav */}
-            <div style={{ padding: '24px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative', zIndex: 10 }}>
-              <div style={{ fontSize: 24, fontWeight: 900, color: 'white', letterSpacing: -0.5 }}>
-                {lead.name} <span style={{ color: '#3b82f6' }}>.</span>
+            {/* MacBook Frame */}
+            <div style={{ 
+              position: 'relative', 
+              width: '100%', 
+              maxWidth: 750, 
+              zIndex: 3, 
+              animation: 'floatMac 6s ease-in-out infinite'
+            }}>
+              {/* Screen enclosure */}
+              <div style={{ background: '#1e293b', border: '12px solid #cbd5e1', borderBottomWidth: 16, borderRadius: '16px 16px 0 0', overflow: 'hidden', aspectRatio: '16/10', position: 'relative', boxShadow: '0 25px 50px rgba(0,0,0,0.25)' }}>
+                {lead.desktop_mockup_url ? (
+                  <img src={lead.desktop_mockup_url} alt="Masaüstü Tasarım" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }} />
+                ) : (
+                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #0f172a, #1e293b)', color: '#64748b', flexDirection: 'column', gap: 16 }}>
+                    <Monitor size={64} opacity={0.3} />
+                    <span style={{ fontWeight: 600, fontSize: 18 }}>Tasarım Hazırlanıyor</span>
+                  </div>
+                )}
               </div>
-              <div style={{ display: 'none', gap: 32, fontSize: 14, fontWeight: 600, color: '#94a3b8', '@media (min-width: 768px)': { display: 'flex' } }}>
-                <span style={{ color: 'white', cursor: 'pointer' }}>Anasayfa</span>
-                <span style={{ cursor: 'pointer' }}>Hizmetlerimiz</span>
-                <span style={{ cursor: 'pointer' }}>Hakkımızda</span>
+              {/* Bottom Base */}
+              <div style={{ background: '#94a3b8', height: 20, width: '110%', marginLeft: '-5%', borderBottomLeftRadius: 24, borderBottomRightRadius: 24, position: 'relative', boxShadow: '0 15px 30px rgba(0,0,0,0.3)' }}>
+                {/* Trackpad indent */}
+                <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: 80, height: 5, background: '#64748b', borderBottomLeftRadius: 6, borderBottomRightRadius: 6 }}></div>
               </div>
-              <button style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', color: 'white', padding: '10px 24px', borderRadius: 8, border: 'none', fontWeight: 700, boxShadow: '0 4px 14px rgba(59, 130, 246, 0.4)' }}>
-                Randevu Al
-              </button>
             </div>
 
-            {/* Hero Split Layout */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'row', alignItems: 'center', padding: '40px 48px 80px', position: 'relative', zIndex: 10, flexWrap: 'wrap', gap: 48 }}>
-              
-              {/* Left Content */}
-              <div style={{ flex: '1 1 400px' }}>
-                <div style={{ display: 'inline-block', background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.2)', color: '#60a5fa', padding: '6px 16px', borderRadius: 20, fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 24 }}>
-                  Yeni Nesil İşletme
-                </div>
-                <h1 style={{ fontSize: 48, fontWeight: 800, color: 'white', lineHeight: 1.1, marginBottom: 24, letterSpacing: -1 }}>
-                  Bölgenizdeki <br/> <span style={{ background: 'linear-gradient(to right, #60a5fa, #a78bfa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>En Çok Tercih Edilen</span> İşletme Olun.
-                </h1>
-                <p style={{ color: '#94a3b8', fontSize: 18, lineHeight: 1.6, marginBottom: 40, maxWidth: 480 }}>
-                  Müşterilerinize güven veren, 7/24 randevu ve talep toplayabilen modern dijital şubenizle rakiplerinize fark atın.
-                </p>
-                <div style={{ display: 'flex', gap: 16 }}>
-                  <button style={{ background: 'white', color: '#0f172a', padding: '16px 32px', borderRadius: 8, border: 'none', fontWeight: 800, fontSize: 16, boxShadow: '0 4px 14px rgba(255,255,255,0.1)' }}>
-                    Hizmetleri İncele
-                  </button>
-                  <button style={{ background: 'rgba(255,255,255,0.05)', color: 'white', padding: '16px 32px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', fontWeight: 700, fontSize: 16 }}>
-                    İletişim
-                  </button>
-                </div>
-              </div>
-
-              {/* Right Visuals (Device Mockups) */}
-              <div style={{ flex: '1 1 500px', position: 'relative', height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {/* iPhone Frame */}
+            <div style={{ 
+              position: 'absolute', 
+              right: '2%', 
+              bottom: '-2%', 
+              width: 220, 
+              zIndex: 4, 
+              animation: 'floatPhone 5s ease-in-out infinite 1s'
+            }}>
+              <div style={{ background: '#0f172a', border: '8px solid #334155', borderRadius: 36, padding: '3px', overflow: 'hidden', aspectRatio: '9/19', position: 'relative', boxShadow: '-15px 25px 50px rgba(0,0,0,0.5)' }}>
+                {/* iPhone Notch */}
+                <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: 70, height: 16, background: '#334155', borderBottomLeftRadius: 12, borderBottomRightRadius: 12, zIndex: 5 }}></div>
                 
-                {/* MacBook Frame */}
-                <div style={{ position: 'relative', width: '100%', maxWidth: 460, zIndex: 3, transform: 'perspective(1200px) rotateY(-8deg) rotateX(4deg)' }}>
-                  {/* Screen enclosure */}
-                  <div style={{ background: '#1e293b', border: '8px solid #cbd5e1', borderBottomWidth: 12, borderRadius: '12px 12px 0 0', overflow: 'hidden', aspectRatio: '16/10', position: 'relative', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}>
-                    {lead.desktop_mockup_url ? (
-                      <img src={lead.desktop_mockup_url} alt="Masaüstü Tasarım" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }} />
-                    ) : (
-                      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #0f172a, #1e293b)', color: '#64748b', flexDirection: 'column', gap: 12 }}>
-                        <Monitor size={48} opacity={0.3} />
-                        <span style={{ fontWeight: 600 }}>Tasarım Hazırlanıyor</span>
-                      </div>
-                    )}
-                  </div>
-                  {/* Bottom Base */}
-                  <div style={{ background: '#94a3b8', height: 16, width: '110%', marginLeft: '-5%', borderBottomLeftRadius: 16, borderBottomRightRadius: 16, position: 'relative', boxShadow: '0 10px 20px rgba(0,0,0,0.4)' }}>
-                    {/* Trackpad indent */}
-                    <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: 60, height: 4, background: '#64748b', borderBottomLeftRadius: 4, borderBottomRightRadius: 4 }}></div>
-                  </div>
-                </div>
-
-                {/* iPhone Frame */}
-                <div style={{ position: 'absolute', right: '0%', bottom: '-5%', width: 130, zIndex: 4, transform: 'perspective(1200px) rotateY(-15deg) rotateX(5deg) translateY(-20px)' }}>
-                  <div style={{ background: '#0f172a', border: '6px solid #334155', borderRadius: 24, padding: '2px', overflow: 'hidden', aspectRatio: '9/19', position: 'relative', boxShadow: '-10px 20px 40px rgba(0,0,0,0.6)' }}>
-                    {/* iPhone Notch */}
-                    <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: 50, height: 12, background: '#334155', borderBottomLeftRadius: 8, borderBottomRightRadius: 8, zIndex: 5 }}></div>
-                    
-                    {/* Content */}
-                    <div style={{ background: '#1e293b', width: '100%', height: '100%', borderRadius: 16, overflow: 'hidden' }}>
-                      {lead.mobile_mockup_url ? (
-                        <img src={lead.mobile_mockup_url} alt="Mobil Tasarım" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }} />
-                      ) : (
-                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #0f172a, #1e293b)', color: '#64748b', flexDirection: 'column', gap: 8 }}>
-                          <Smartphone size={24} opacity={0.3} />
-                          <span style={{ fontSize: 10, fontWeight: 600, textAlign: 'center' }}>Mobil<br/>Hazırlanıyor</span>
-                        </div>
-                      )}
+                {/* Content */}
+                <div style={{ background: '#1e293b', width: '100%', height: '100%', borderRadius: 24, overflow: 'hidden' }}>
+                  {lead.mobile_mockup_url ? (
+                    <img src={lead.mobile_mockup_url} alt="Mobil Tasarım" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }} />
+                  ) : (
+                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #0f172a, #1e293b)', color: '#64748b', flexDirection: 'column', gap: 12 }}>
+                      <Smartphone size={32} opacity={0.3} />
+                      <span style={{ fontSize: 12, fontWeight: 600, textAlign: 'center' }}>Mobil<br/>Hazırlanıyor</span>
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
-
             </div>
           </div>
         </div>
