@@ -1,7 +1,7 @@
 "use client";
 import { useState } from 'react';
 import axios from 'axios';
-import { Download, Filter, Search, MessageCircle, AlignLeft, Save, Trash2, Phone, MapPin, Globe, ExternalLink, PhoneCall, Mail, Calendar, Link, Tag, Star, Activity, MessageSquare } from 'lucide-react';
+import { Download, Filter, Search, MessageCircle, AlignLeft, Save, Trash2, Phone, MapPin, Globe, ExternalLink, PhoneCall, Mail, Calendar, Link, Tag, Star, Activity, MessageSquare, Copy, X } from 'lucide-react';
 
 const STATUS_MAP = {
   new: { label: 'Yeni', cls: 'status-warning' },
@@ -115,10 +115,14 @@ export default function CRMTab({ leads, onRefresh }) {
     setCallLogs(p => ({ ...p, [leadId]: res.data }));
   };
 
-  const toggleCard = (id) => {
-    const newExpanded = expandedCard === id ? null : id;
-    setExpandedCard(newExpanded);
-    if (newExpanded) fetchCallLogs(newExpanded);
+  const toggleCard = (lead) => {
+    if (expandedCard === lead.id) {
+      setExpandedCard(null);
+    } else {
+      setExpandedCard(lead.id);
+      initLeadData(lead);
+      fetchCallLogs(lead.id);
+    }
   };
 
   const openWhatsApp = async (lead) => {
@@ -147,6 +151,12 @@ export default function CRMTab({ leads, onRefresh }) {
         templateStmt = `Merhaba {firma_adi} ailesi 👋\n\nİnternette işletmenizi incelerken harika müşteri yorumlarınız dikkatimi çekti. Ancak fark ettim ki, bu kalitenizi dijitale taşıyacak kurumsal bir web siteniz henüz yok.\n\nMüşterilerin büyük bir kısmı işletmeye gitmeden önce web sitesini inceliyor. Rakiplerinizin dijitalde müşteri kazandığı bu dönemde sizin geride kalmanızı istemedik.\n\nSizin için hazırladığımız özel sunum portalını ve teklifimizi aşağıdaki linkten hemen inceleyebilirsiniz:\n{portal_link}\n\nİnceledikten sonra görüşlerinizi paylaşırsanız çok sevinirim! 😊`;
       }
       text = templateStmt.replace(/{firma_adi}/g, lead.name).replace(/{portal_link}/g, portalLink);
+    }
+
+    if (desktopMockups[lead.id] || mobileMockups[lead.id]) {
+        text += `\n\nTasarım Önizlemeleri:\n`;
+        if (desktopMockups[lead.id]) text += `💻 Masaüstü: ${desktopMockups[lead.id]}\n`;
+        if (mobileMockups[lead.id]) text += `📱 Mobil: ${mobileMockups[lead.id]}\n`;
     }
     
     const msg = encodeURIComponent(text);
@@ -455,7 +465,6 @@ ${link}
           <div className="data-grid">
             {filteredLeads.map(lead => {
               initLeadData(lead);
-              const isExpanded = expandedCard === lead.id;
               const wsStatus = checkingWebsite[lead.id];
               const aiScore = lead.ai_score || 0;
 
@@ -530,13 +539,30 @@ ${link}
 
                   {/* Expand Button */}
                   <button className="btn btn-outline" style={{ marginTop: '12px', width: '100%', fontSize: '13px', padding: '8px' }}
-                    onClick={() => toggleCard(lead.id)}>
-                    {isExpanded ? '▲ Gizle' : '▼ Tüm Detaylar, Notlar & İşlemler'}
+                    onClick={() => toggleCard(lead)}>
+                    ▼ Müşteri Detayları & İşlemler
                   </button>
-
-                  {/* Expanded Section */}
-                  {isExpanded && (
-                    <div style={{ marginTop: '16px', borderTop: '1px solid var(--glass-border)', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+      
+      {/* Lead Details Modal */}
+      {expandedCard && leads.find(l => l.id === expandedCard) && (() => {
+        const lead = leads.find(l => l.id === expandedCard);
+        const wsStatus = checkingWebsite[lead.id];
+        return (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', zIndex: 9998, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div className="glass-panel" style={{ width: '100%', maxWidth: 600, maxHeight: '90vh', overflowY: 'auto', padding: 32, position: 'relative' }}>
+            <button className="btn btn-outline" style={{ position: 'absolute', top: 20, right: 20, padding: 8 }} onClick={() => setExpandedCard(null)}>
+              <X size={16} />
+            </button>
+            <h2 style={{ fontSize: 24, marginBottom: 8, color: 'var(--text-primary)' }}>{lead.name}</h2>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: 24 }}>Müşteri ile ilgili notları, bilgileri ve mockupları düzenleyin.</p>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                       
                       {/* Tags Editor */}
                       <div>
@@ -679,14 +705,11 @@ ${link}
                           </div>
                         )}
                       </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+            </div>
           </div>
-        )}
-      </div>
+        </div>
+        );
+      })()}
       
       {/* Sales Assistant Modal */}
       {salesModalLead && (
