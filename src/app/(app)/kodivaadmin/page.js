@@ -13,6 +13,7 @@ import CompetitorTab from '@/components/CompetitorTab';
 import PortalNotesTab from '@/components/PortalNotesTab';
 import ReferencesTab from '@/components/ReferencesTab';
 import GuidedSalesTab from '@/components/GuidedSalesTab';
+import OutreachTab from '@/components/OutreachTab';
 
 import dynamic from 'next/dynamic';
 const MapTab = dynamic(() => import('@/components/MapTab'), { ssr: false });
@@ -22,6 +23,7 @@ const MENU_CATEGORIES = [
     title: "Ana Operasyon",
     items: [
       { key: 'guided-sales', label: 'Hızlı Satış Asistanı', icon: Target },
+      { key: 'outreach', label: 'Toplu İlk Temas', icon: Users },
       { key: 'crm', label: 'CRM & Kanban', icon: Users },
       { key: 'quotes', label: 'Teklifler', icon: FileText },
       { key: 'email', label: 'E-posta', icon: Mail },
@@ -179,6 +181,7 @@ export default function Home() {
         {/* Tab Content Rendering */}
         <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%' }}>
           {activeTab === 'guided-sales' && <GuidedSalesTab leads={leads} onRefresh={fetchLeads} />}
+          {activeTab === 'outreach' && <OutreachTab leads={leads} onRefresh={fetchLeads} />}
           {activeTab === 'search' && <SearchTab fetchLeads={fetchLeads} />}
           {activeTab === 'crm' && <CRMTab leads={leads} fetchLeads={fetchLeads} />}
           {activeTab === 'analysis' && <AnalysisTab leads={leads} />}
