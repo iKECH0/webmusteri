@@ -12,6 +12,34 @@ export default function GuidedSalesTab({ leads = [], onRefresh }) {
   const [generatedQuoteId, setGeneratedQuoteId] = useState('');
   const [portalToken, setPortalToken] = useState('');
 
+  // Load from local storage on mount
+  const [isLoaded, setIsLoaded] = useState(false);
+  useEffect(() => {
+    const savedAgent = localStorage.getItem('guided_sales_agent');
+    const savedStep = localStorage.getItem('guided_sales_step');
+    const savedLeadId = localStorage.getItem('guided_sales_lead');
+
+    if (savedAgent) setAgentName(savedAgent);
+    if (savedLeadId) setSelectedLeadId(savedLeadId);
+    
+    if (savedStep) {
+      setStep(parseInt(savedStep));
+    } else if (savedAgent) {
+      setStep(1);
+    }
+    setIsLoaded(true);
+  }, []);
+
+  // Save to local storage on change
+  useEffect(() => {
+    if (isLoaded) {
+      if (agentName) localStorage.setItem('guided_sales_agent', agentName);
+      if (selectedLeadId) localStorage.setItem('guided_sales_lead', selectedLeadId);
+      else localStorage.removeItem('guided_sales_lead');
+      localStorage.setItem('guided_sales_step', step.toString());
+    }
+  }, [step, agentName, selectedLeadId, isLoaded]);
+
   // Default quote template
   const [quoteTitle, setQuoteTitle] = useState('Web Sitesi Tasarım ve Geliştirme Projesi');
   const [quotePrice, setQuotePrice] = useState('4500');
@@ -162,9 +190,18 @@ export default function GuidedSalesTab({ leads = [], onRefresh }) {
         {/* STEP 1: Select Customer */}
         {step === 1 && (
           <div className="fade-in">
-            <h2 style={{ fontSize: 20, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <UserCircle color="#818cf8" /> Müşteriyi Seçin
-            </h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <h2 style={{ fontSize: 20, display: 'flex', alignItems: 'center', gap: 8, margin: 0 }}>
+                <UserCircle color="#818cf8" /> Müşteriyi Seçin
+              </h2>
+              <button 
+                onClick={() => setStep(0)} 
+                className="btn btn-outline" 
+                style={{ padding: '6px 12px', fontSize: 13 }}
+              >
+                Temsilciyi Değiştir ({agentName})
+              </button>
+            </div>
             <p style={{ color: 'var(--text-secondary)', marginBottom: 24, fontSize: 14 }}>
               Bugün kime ulaşmak istersin? Aşağıdaki listede sadece henüz iletişime geçilmemiş <strong>Yeni Müşteriler</strong> listelenmektedir.
             </p>
