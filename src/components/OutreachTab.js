@@ -5,7 +5,7 @@ import { Send, CheckCircle, Search, Users } from 'lucide-react';
 
 export default function OutreachTab({ leads, onRefresh }) {
   const [template, setTemplate] = useState(
-    "Merhaba {firma_adi} yetkilisi,\n\nİşletmenizi dijital dünyada daha görünür ve müşterileriniz için daha güvenilir bir hale getirmek ister misiniz? Sektörünüze özel, şık ve modern bir web sitesi altyapısı hazırlıyoruz.\n\nDetaylı bilgi almak isterseniz sizin için de bir taslak hazırlayabiliriz. İyi çalışmalar dileriz."
+    "Merhaba {firma_adi} yetkilisi,\n\nİşletmenizi Google'da öne çıkararak yeni müşterilerin sizi daha kolay bulmasını sağlamak ister misiniz? 🚀\n\nSize özel, Google uyumlu ve modern bir web sitesi hazırlıyoruz:\n✅ Teslim Öncesi Ödeme Yok: Siteyi görüp onaylamadan tek kuruş ödemezsiniz.\n🔝 Google İlk Sayfa Garantisi: Rakiplerinizin önüne geçerek bölgenizdeki müşterileri kazanın.\n\nSizin için tamamen ücretsiz bir taslak (demo) hazırlamamızı isterseniz, bu mesaja dönüş yapmanız yeterlidir.\n\nBol kazançlı günler dileriz!"
   );
   
   const [searchTerm, setSearchTerm] = useState('');
