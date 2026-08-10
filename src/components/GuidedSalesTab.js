@@ -28,7 +28,8 @@ export default function GuidedSalesTab({ leads = [], onRefresh }) {
         id: selectedLead.id, 
         desktop_mockup_url: mockupLinks.desktop, 
         mobile_mockup_url: mockupLinks.mobile,
-        assigned_to: agentName 
+        assigned_to: agentName,
+        status: 'contacted'
       });
       return true;
     } catch (e) {
@@ -165,23 +166,35 @@ export default function GuidedSalesTab({ leads = [], onRefresh }) {
               <UserCircle color="#818cf8" /> Müşteriyi Seçin
             </h2>
             <p style={{ color: 'var(--text-secondary)', marginBottom: 24, fontSize: 14 }}>
-              Öncelikle mesaj göndereceğiniz ve teklif hazırlayacağınız müşteriyi listeden seçin. Eğer müşteri listede yoksa önce CRM sekmesinden müşteriyi ekleyin.
+              Bugün kime ulaşmak istersin? Aşağıdaki listede sadece henüz iletişime geçilmemiş <strong>Yeni Müşteriler</strong> listelenmektedir.
             </p>
             
-            <div className="input-group">
-              <label>Kayıtlı Müşteriler</label>
-              <select className="glass-select" style={{ padding: '16px', fontSize: 16 }} value={selectedLeadId} onChange={e => {
-                setSelectedLeadId(e.target.value);
-                const lead = leads.find(l => l.id === e.target.value);
-                if (lead) {
-                  setMockupLinks({ desktop: lead.desktop_mockup_url || '', mobile: lead.mobile_mockup_url || '' });
-                }
-              }}>
-                <option value="">-- Müşteri Seçin --</option>
-                {leads.map(l => (
-                  <option key={l.id} value={l.id}>{l.name} {l.phone ? `(${l.phone})` : ''}</option>
-                ))}
-              </select>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 16, maxHeight: 400, overflowY: 'auto', paddingRight: 8 }}>
+              {leads.filter(l => l.status === 'new').length === 0 && (
+                <div style={{ color: 'var(--text-secondary)', fontStyle: 'italic', padding: 24, textAlign: 'center', gridColumn: '1 / -1' }}>
+                  Şu an bekleyen yeni müşteri yok! Harika iş çıkardınız. 🎉 (Müşteri eklemek için CRM sekmesini kullanın)
+                </div>
+              )}
+              {leads.filter(l => l.status === 'new').map(l => (
+                <div key={l.id} 
+                  onClick={() => {
+                    setSelectedLeadId(l.id);
+                    setMockupLinks({ desktop: l.desktop_mockup_url || '', mobile: l.mobile_mockup_url || '' });
+                  }}
+                  style={{
+                    padding: 16,
+                    borderRadius: 12,
+                    border: selectedLeadId === l.id ? '2px solid #818cf8' : '2px solid var(--glass-border)',
+                    background: selectedLeadId === l.id ? 'rgba(129, 140, 248, 0.1)' : 'var(--bg-color)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    boxShadow: selectedLeadId === l.id ? '0 4px 12px rgba(129, 140, 248, 0.2)' : 'none'
+                  }}>
+                  <strong style={{ display: 'block', fontSize: 16, marginBottom: 8, color: selectedLeadId === l.id ? '#4f46e5' : 'var(--text-primary)' }}>{l.name}</strong>
+                  {l.phone && <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 4 }}>📞 {l.phone}</div>}
+                  {l.category && <div style={{ fontSize: 12, background: 'rgba(129, 140, 248, 0.15)', color: '#6366f1', display: 'inline-block', padding: '2px 8px', borderRadius: 4, marginTop: 4 }}>{l.category}</div>}
+                </div>
+              ))}
             </div>
 
             {selectedLead && (
