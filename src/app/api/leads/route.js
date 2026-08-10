@@ -19,28 +19,38 @@ export async function GET() {
 }
 
 export async function PUT(request) {
-  const data = await request.json();
-  const { id, status, notes, next_followup_date, revenue, email, tags, portal_token, desktop_mockup_url, mobile_mockup_url } = data;
-  if (!id) return NextResponse.json({ error: 'Lead ID required' }, { status: 400 });
+  try {
+    const { id, name, category, status, notes, tags, revenue, desktop_mockup_url, mobile_mockup_url, next_followup_date, portal_token, portal_viewed, assigned_to, email } = await request.json();
+    if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 });
 
-  const tagsJson = tags !== undefined ? JSON.stringify(tags) : null;
-  
-  await db.query(`
-    UPDATE leads SET
-      status = COALESCE($1, status),
-      notes = COALESCE($2, notes),
-      next_followup_date = COALESCE($3, next_followup_date),
-      revenue = COALESCE($4, revenue),
-      email = COALESCE($5, email),
-      tags = COALESCE($6, tags),
-      portal_token = COALESCE($7, portal_token),
-      desktop_mockup_url = COALESCE($8, desktop_mockup_url),
-      mobile_mockup_url = COALESCE($9, mobile_mockup_url),
-      updated_at = CURRENT_TIMESTAMP
-    WHERE id = $10
-  `, [status ?? null, notes ?? null, next_followup_date ?? null, revenue ?? null, email ?? null, tagsJson, portal_token ?? null, desktop_mockup_url ?? null, mobile_mockup_url ?? null, id]);
+    const query = `
+      UPDATE leads 
+      SET 
+        name = COALESCE($1, name),
+        category = COALESCE($2, category),
+        status = COALESCE($3, status),
+        notes = COALESCE($4, notes),
+        tags = COALESCE($5, tags),
+        revenue = COALESCE($6, revenue),
+        desktop_mockup_url = COALESCE($7, desktop_mockup_url),
+        mobile_mockup_url = COALESCE($8, mobile_mockup_url),
+        next_followup_date = COALESCE($9, next_followup_date),
+        portal_token = COALESCE($10, portal_token),
+        portal_viewed = COALESCE($11, portal_viewed),
+        assigned_to = COALESCE($12, assigned_to),
+        email = COALESCE($13, email),
+        updated_at = CURRENT_TIMESTAMP
+      WHERE id = $14
+    `;
+    const params = [name, category, status, notes, tags ? JSON.stringify(tags) : null, revenue, desktop_mockup_url, mobile_mockup_url, next_followup_date, portal_token, portal_viewed, assigned_to, email, id];
+    
+    await db.query(query, params);
 
-  return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Leads PUT error:", error);
+    return NextResponse.json({ error: 'Internal Server Error', details: error.message }, { status: 500 });
+  }
 }
 
 export async function DELETE(request) {

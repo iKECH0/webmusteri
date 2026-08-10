@@ -7,6 +7,7 @@ export default function SettingsTab() {
   const [settings, setSettings] = useState({
     google_api_key: '', gemini_api_key: '', whatsapp_template: '', smtp_email: '', smtp_password: '',
     smtp_host: 'smtp.gmail.com', gcal_client_id: '', gcal_client_secret: '',
+    whatsapp_api_key: '', whatsapp_phone_id: '',
   });
   const [saved, setSaved] = useState(false);
 
@@ -135,7 +136,19 @@ export default function SettingsTab() {
             </button>
           </Section>
 
-          <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: 8 }}>
+          <Section title={<><Send size={18}/> WhatsApp Business API Ayarları</>}>
+            <div className="input-group">
+              <label>WhatsApp API Access Token</label>
+              <input type="text" className="glass-input" value={settings.whatsapp_api_key || ''} onChange={e => set('whatsapp_api_key', e.target.value)} placeholder="EAAI..." />
+            </div>
+            <div className="input-group" style={{ marginBottom: 0 }}>
+              <label>Telefon Numarası Kimliği (Phone ID)</label>
+              <input type="text" className="glass-input" value={settings.whatsapp_phone_id || ''} onChange={e => set('whatsapp_phone_id', e.target.value)} placeholder="1023456789..." />
+            </div>
+            <p style={{ marginTop: 8, fontSize: 13, color: 'var(--text-secondary)' }}>Bu ayarlar Hızlı Satış Asistanı üzerinden ileride direkt mesaj gönderimi yapmak için kullanılacaktır.</p>
+          </Section>
+
+          <button type="submit" className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: 14 }}>
             <Save size={18} /> {saved ? '✓ Kaydedildi!' : 'Tüm Ayarları Kaydet'}
           </button>
         </div>

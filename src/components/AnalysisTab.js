@@ -5,6 +5,7 @@ export default function AnalysisTab({ leads }) {
   const funnelRef = useRef(null);
   const sectorRef = useRef(null);
   const revenueRef = useRef(null);
+  const agentRef = useRef(null);
 
   const total = leads.length;
   const contacted = leads.filter(l => l.status !== 'new').length;
@@ -30,12 +31,21 @@ export default function AnalysisTab({ leads }) {
     sectorMap[sector] = (sectorMap[sector] || 0) + 1;
   });
 
+  // Agent (Team) analysis
+  const agentMap = {};
+  leads.forEach(l => {
+    if (l.assigned_to) {
+      agentMap[l.assigned_to] = (agentMap[l.assigned_to] || 0) + 1;
+    }
+  });
+  const teamMembers = Object.keys(agentMap);
+
   useEffect(() => {
     if (typeof window === 'undefined' || !leads.length) return;
 
     import('chart.js/auto').then(({ default: Chart }) => {
       // Destroy existing charts
-      [funnelRef, sectorRef, revenueRef].forEach(ref => {
+      [funnelRef, sectorRef, revenueRef, agentRef].forEach(ref => {
         if (ref.current?._chartInstance) {
           ref.current._chartInstance.destroy();
         }
@@ -87,29 +97,52 @@ export default function AnalysisTab({ leads }) {
         });
       }
 
-      // Website ratio chart
+        // Revenue Chart
       if (revenueRef.current) {
+        const revenueData = leads.filter(l => l.revenue > 0).sort((a,b) => new Date(a.created_at) - new Date(b.created_at)).slice(-10);
         revenueRef.current._chartInstance = new Chart(revenueRef.current, {
-          type: 'pie',
+          type: 'line',
           data: {
-            labels: ['Web Sitesi Yok (Fırsat)', 'Web Sitesi Var'],
+            labels: revenueData.map(l => l.name.substring(0, 15) + '...'),
             datasets: [{
-              data: [noWebsite, total - noWebsite],
-              backgroundColor: ['#ef4444', '#10b981'],
-              borderColor: 'rgba(0,0,0,0.2)',
-              borderWidth: 2,
+              label: 'Kazanılan Tutar (₺)',
+              data: revenueData.map(l => l.revenue),
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+              fill: true,
+              tension: 0.4
             }]
           },
           options: {
             responsive: true,
-            plugins: { legend: { labels: { color: '#94a3b8' } } }
+            maintainAspectRatio: false,
+          }
+        });
+      }
+
+      // Agent Performance Chart
+      if (agentRef.current && teamMembers.length > 0) {
+        agentRef.current._chartInstance = new Chart(agentRef.current, {
+          type: 'bar',
+          data: {
+            labels: Object.keys(agentMap),
+            datasets: [{
+              label: 'İlgilenilen Müşteri Sayısı',
+              data: Object.values(agentMap),
+              backgroundColor: ['#6366f1', '#f59e0b', '#ec4899', '#14b8a6', '#8b5cf6'],
+              borderRadius: 6,
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
           }
         });
       }
     });
 
     return () => {
-      [funnelRef, sectorRef, revenueRef].forEach(ref => {
+      [funnelRef, sectorRef, revenueRef, agentRef].forEach(ref => {
         if (ref.current?._chartInstance) ref.current._chartInstance.destroy();
       });
     };
@@ -152,12 +185,50 @@ export default function AnalysisTab({ leads }) {
           <h3 style={{ marginBottom: '16px', fontSize: '16px' }}>🗺️ Bölge Dağılımı</h3>
           {topRegions.length ? <canvas ref={sectorRef}></canvas> : <p style={{ color: 'var(--text-secondary)' }}>Bölge verisi yetersiz.</p>}
         </div>
-        <div className="glass-panel">
-          <h3 style={{ marginBottom: '16px', fontSize: '16px' }}>🌐 Web Sitesi Oranı</h3>
+      </div>
+
+      {/* Agent Analysis */}
+      <div className="glass-panel" style={{ padding: 24, display: 'flex', flexDirection: 'column' }}>
+        <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16, color: 'var(--text-secondary)' }}>Ekip Performansı (Temsilciler)</h3>
+        {teamMembers.length > 0 ? (
+          <div style={{ height: 250, width: '100%' }}>
+            <canvas ref={agentRef}></canvas>
+          </div>
+        ) : (
+          <div style={{ height: 250, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)', fontStyle: 'italic' }}>
+            Henüz temsilci kaydı yok.
+          </div>
+        )}
+        
+        {teamMembers.length > 0 && (
+          <div style={{ marginTop: 24, overflowX: 'auto' }}>
+            <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse', fontSize: 13 }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid var(--glass-border)' }}>
+                  <th style={{ padding: '8px 4px', color: 'var(--text-secondary)' }}>Temsilci</th>
+                  <th style={{ padding: '8px 4px', color: 'var(--text-secondary)' }}>Müşteriler</th>
+                </tr>
+              </thead>
+              <tbody>
+                {teamMembers.map(agent => (
+                  <tr key={agent} style={{ borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
+                    <td style={{ padding: '8px 4px', fontWeight: 'bold' }}>{agent}</td>
+                    <td style={{ padding: '8px 4px', color: 'var(--text-secondary)' }}>
+                      {leads.filter(l => l.assigned_to === agent).map(l => l.name).join(', ')}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* Revenue Trends */}
+      <div className="glass-panel" style={{ padding: 24 }}>
+        <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16, color: 'var(--text-secondary)' }}>Son Kazanılan Gelirler</h3>
+        <div style={{ height: 250, width: '100%' }}>
           <canvas ref={revenueRef}></canvas>
-          <p style={{ marginTop: '12px', textAlign: 'center', fontSize: '13px', color: 'var(--text-secondary)' }}>
-            {noWebsite} firma potansiyel müşteri ({total ? Math.round((noWebsite / total) * 100) : 0}%)
-          </p>
         </div>
       </div>
 

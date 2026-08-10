@@ -42,6 +42,7 @@ export async function initDB() {
       revenue REAL DEFAULT 0,
       desktop_mockup_url TEXT,
       mobile_mockup_url TEXT,
+      assigned_to TEXT,
       lat REAL,
       lng REAL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -122,6 +123,10 @@ export async function initDB() {
   
   try {
     await db.query(`ALTER TABLE leads ADD COLUMN mobile_mockup_url TEXT;`);
+  } catch (e) { /* Ignore if exists */ }
+
+  try {
+    await db.query(`ALTER TABLE leads ADD COLUMN assigned_to TEXT;`);
   } catch (e) { /* Ignore if exists */ }
 }
 

@@ -4,7 +4,8 @@ import axios from 'axios';
 import { ChevronRight, ChevronLeft, CheckCircle2, Image as ImageIcon, Send, FileText, UserCircle, ExternalLink } from 'lucide-react';
 
 export default function GuidedSalesTab({ leads = [], onRefresh }) {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0);
+  const [agentName, setAgentName] = useState('');
   const [selectedLeadId, setSelectedLeadId] = useState('');
   const [mockupLinks, setMockupLinks] = useState({ desktop: '', mobile: '' });
   const [isSaving, setIsSaving] = useState(false);
@@ -18,7 +19,7 @@ export default function GuidedSalesTab({ leads = [], onRefresh }) {
   const selectedLead = leads.find(l => l.id === selectedLeadId);
 
   const handleNext = () => setStep(prev => Math.min(prev + 1, 4));
-  const handlePrev = () => setStep(prev => Math.max(prev - 1, 1));
+  const handlePrev = () => setStep(prev => Math.max(prev - 1, 0));
 
   const saveMockupsToLead = async () => {
     if (!selectedLead) return false;
@@ -26,7 +27,8 @@ export default function GuidedSalesTab({ leads = [], onRefresh }) {
       await axios.put('/api/leads', { 
         id: selectedLead.id, 
         desktop_mockup_url: mockupLinks.desktop, 
-        mobile_mockup_url: mockupLinks.mobile 
+        mobile_mockup_url: mockupLinks.mobile,
+        assigned_to: agentName 
       });
       return true;
     } catch (e) {
@@ -100,6 +102,7 @@ export default function GuidedSalesTab({ leads = [], onRefresh }) {
         <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative' }}>
           <div style={{ position: 'absolute', top: 16, left: 0, right: 0, height: 2, background: 'var(--glass-border)', zIndex: 0 }}></div>
           {[
+            { num: 0, label: 'Kimsin?', icon: UserCircle },
             { num: 1, label: 'Müşteri', icon: UserCircle },
             { num: 2, label: 'Görseller', icon: ImageIcon },
             { num: 3, label: 'Teklif', icon: FileText },
@@ -123,6 +126,37 @@ export default function GuidedSalesTab({ leads = [], onRefresh }) {
 
       {/* Main Content Area */}
       <div className="glass-panel" style={{ minHeight: 400, display: 'flex', flexDirection: 'column' }}>
+
+        {/* STEP 0: Select Agent */}
+        {step === 0 && (
+          <div className="fade-in" style={{ textAlign: 'center', paddingTop: 20 }}>
+            <h2 style={{ fontSize: 24, marginBottom: 16 }}>👋 Selam! Harika bir satış gününe hazır mısın?</h2>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: 32, fontSize: 16 }}>Öncelikle lütfen kim olduğunu seç:</p>
+            
+            <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
+              {['Ufuk', 'Erdem', 'Arslan'].map(name => (
+                <button 
+                  key={name}
+                  onClick={() => { setAgentName(name); setStep(1); }}
+                  style={{
+                    padding: '20px 40px',
+                    fontSize: 18,
+                    fontWeight: 'bold',
+                    borderRadius: 16,
+                    border: agentName === name ? '2px solid #818cf8' : '2px solid var(--glass-border)',
+                    background: agentName === name ? 'rgba(129, 140, 248, 0.1)' : 'var(--bg-color)',
+                    color: agentName === name ? '#818cf8' : 'var(--text-primary)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    boxShadow: agentName === name ? '0 4px 12px rgba(129, 140, 248, 0.2)' : 'none'
+                  }}
+                >
+                  {name}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         
         {/* STEP 1: Select Customer */}
         {step === 1 && (
@@ -138,7 +172,6 @@ export default function GuidedSalesTab({ leads = [], onRefresh }) {
               <label>Kayıtlı Müşteriler</label>
               <select className="glass-select" style={{ padding: '16px', fontSize: 16 }} value={selectedLeadId} onChange={e => {
                 setSelectedLeadId(e.target.value);
-                // Pre-fill mockup links if they already exist
                 const lead = leads.find(l => l.id === e.target.value);
                 if (lead) {
                   setMockupLinks({ desktop: lead.desktop_mockup_url || '', mobile: lead.mobile_mockup_url || '' });
@@ -249,12 +282,12 @@ export default function GuidedSalesTab({ leads = [], onRefresh }) {
 
         {/* Navigation Buttons */}
         <div style={{ marginTop: 'auto', paddingTop: 32, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <button className="btn btn-outline" onClick={handlePrev} disabled={step === 1 || isSaving} style={{ visibility: step === 1 ? 'hidden' : 'visible', display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px' }}>
+          <button className="btn btn-outline" onClick={handlePrev} disabled={step === 0 || isSaving} style={{ visibility: step === 0 ? 'hidden' : 'visible', display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px' }}>
             <ChevronLeft size={16} /> Geri
           </button>
           
-          {step < 3 && (
-            <button className="btn btn-primary" onClick={handleNext} disabled={step === 1 && !selectedLeadId} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px' }}>
+          {step > 0 && step < 3 && (
+            <button className="btn btn-primary" onClick={handleNext} disabled={(step === 1 && !selectedLeadId) || (step === 0 && !agentName)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px' }}>
               İleri <ChevronRight size={16} />
             </button>
           )}
