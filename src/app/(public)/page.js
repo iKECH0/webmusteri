@@ -14,35 +14,8 @@ export default function PublicHomePage() {
     { q: "Arama motorlarında (Google) üst sırada çıkar mıyım?", a: "Sitenizi en güncel SEO (Arama Motoru Optimizasyonu) kurallarına göre kodluyoruz. Bu sayede organik yükselişiniz garanti altına alınır." }
   ];
 
-  const [projects, setProjects] = useState([
-    {
-        "id": "1",
-        "title": "Cafe Roma",
-        "category": "Restoran",
-        "description": "Menü, online rezervasyon ve konum bilgisi içeren modern, mobil uyumlu restoran web sitesi.",
-        "image": "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&q=80&w=800",
-        "link": "#",
-        "order": 0
-    },
-    {
-        "id": "2",
-        "title": "Güzellik Merkezi",
-        "category": "Kuaför / Bakım",
-        "description": "Hizmetlerin sergilendiği, randevu formu ve galeri içeren zarif tasarımlı tanıtım sitesi.",
-        "image": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=800",
-        "link": "#",
-        "order": 1
-    },
-    {
-        "id": "3",
-        "title": "TechStore",
-        "category": "E-Ticaret",
-        "description": "Hızlı, güvenli ödeme altyapılı ve gelişmiş ürün filtrelemeye sahip e-ticaret platformu.",
-        "image": "https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&q=80&w=800",
-        "link": "#",
-        "order": 2
-    }
-  ]);
+  const [projects, setProjects] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // 0. Initialize Smooth Scroll (Lenis)
@@ -86,7 +59,8 @@ export default function PublicHomePage() {
           }
         }
       })
-      .catch(err => console.error('Referanslar yüklenirken hata:', err));
+      .catch(err => console.error('Referanslar yüklenirken hata:', err))
+      .finally(() => setIsLoading(false));
 
     // 2. Set Current Year in Footer
     const yearEl = document.getElementById('current-year');
@@ -287,20 +261,38 @@ export default function PublicHomePage() {
               </div>
               
               <div className="projects-grid" id="projects-grid">
-                  {projects.map(project => (
-                    <article key={project.id} className="project-card" suppressHydrationWarning>
-                        <div className="project-image" style={{ backgroundImage: `url('${project.image}')` }}>
-                            <span className="project-category">{project.category}</span>
-                        </div>
-                        <div className="project-content">
-                            <h3 className="project-title">{project.title}</h3>
-                            <p className="project-desc">{project.description}</p>
-                            <a href={project.link} className="project-link" target="_blank" rel="noreferrer">
-                                Siteyi Görüntüle <i className="ph ph-arrow-right"></i>
-                            </a>
-                        </div>
-                    </article>
-                  ))}
+                  {isLoading ? (
+                    Array.from({ length: 3 }).map((_, idx) => (
+                      <article key={idx} className="project-card skeleton-card">
+                          <div className="project-image skeleton"></div>
+                          <div className="project-content">
+                              <div className="skeleton skeleton-text" style={{ width: '50%', height: '24px', marginBottom: '12px' }}></div>
+                              <div className="skeleton skeleton-text" style={{ width: '100%', height: '14px', marginBottom: '8px' }}></div>
+                              <div className="skeleton skeleton-text" style={{ width: '80%', height: '14px', marginBottom: '24px' }}></div>
+                              <div className="skeleton skeleton-text" style={{ width: '120px', height: '16px' }}></div>
+                          </div>
+                      </article>
+                    ))
+                  ) : projects.length > 0 ? (
+                    projects.map(project => (
+                      <article key={project.id} className="project-card" suppressHydrationWarning>
+                          <div className="project-image" style={{ backgroundImage: `url('${project.image}')` }}>
+                              <span className="project-category">{project.category}</span>
+                          </div>
+                          <div className="project-content">
+                              <h3 className="project-title">{project.title}</h3>
+                              <p className="project-desc">{project.description}</p>
+                              <a href={project.link} className="project-link" target="_blank" rel="noreferrer">
+                                  Siteyi Görüntüle <i className="ph ph-arrow-right"></i>
+                              </a>
+                          </div>
+                      </article>
+                    ))
+                  ) : (
+                    <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '60px 20px', color: 'var(--text-muted)' }}>
+                      <p>Yakında yeni projeler eklenecektir.</p>
+                    </div>
+                  )}
               </div>
           </section>
 
