@@ -718,3 +718,38 @@ footer {
         text-align: center; 
     }
 }
+
+
+/* ==========================================================================
+   Skeleton Loaders
+   ========================================================================== */
+.skeleton {
+    background: linear-gradient(90deg, var(--bg-card) 25%, rgba(79, 93, 250, 0.1) 50%, var(--bg-card) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite linear;
+    border-radius: 4px;
+}
+
+.dark-theme .skeleton {
+    background: linear-gradient(90deg, var(--bg-card) 25%, rgba(255, 255, 255, 0.05) 50%, var(--bg-card) 75%);
+    background-size: 200% 100%;
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.skeleton-card {
+    pointer-events: none;
+}
+
+.skeleton-card .project-image {
+    background-color: var(--bg-card);
+    background-image: none;
+}
+
+.skeleton-text {
+    background-color: var(--bg-card);
+}
+
