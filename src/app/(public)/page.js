@@ -261,6 +261,7 @@ export default function PublicHomePage() {
       <main>
           {/* Hero Section */}
           <section className="hero container reveal">
+              <div className="hero-glow"></div>
               <div className="hero-badge">
                   <span className="live-indicator"></span>
                   Yeni Projeler Eklendi
