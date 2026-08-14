@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Lenis from 'lenis';
 
 export default function PublicHomePage() {
   const [openFaq, setOpenFaq] = useState(null);
@@ -44,16 +45,58 @@ export default function PublicHomePage() {
   ]);
 
   useEffect(() => {
+    // 0. Initialize Smooth Scroll (Lenis)
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      direction: 'vertical',
+      gestureDirection: 'vertical',
+      smooth: true,
+      mouseMultiplier: 1,
+      smoothTouch: false,
+      touchMultiplier: 2,
+      infinite: false,
+    });
+
+    let lenisRafId;
+    function raf(time) {
+      lenis.raf(time);
+      lenisRafId = requestAnimationFrame(raf);
+    }
+    lenisRafId = requestAnimationFrame(raf);
+
+    // 1. Fetch Projects (References) from API
+    fetch('/api/portfolio')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          if (data.length > 0) {
+            const mappedProjects = data.map((item, index) => ({
+              id: item.id || String(index),
+              title: item.title || '',
+              category: 'Referans',
+              description: item.description || '',
+              image: item.image_url || 'https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&q=80&w=800',
+              link: item.url || '#',
+              order: index
+            }));
+            setProjects(mappedProjects);
+          } else {
+            setProjects([]); // Clear default projects when DB is empty
+          }
+        }
+      })
+      .catch(err => console.error('Referanslar yüklenirken hata:', err));
+
     // 2. Set Current Year in Footer
     const yearEl = document.getElementById('current-year');
     if (yearEl) yearEl.textContent = new Date().getFullYear();
     
     // 3. Setup Theme Toggle
     const themeBtn = document.getElementById('theme-toggle');
+    const handleThemeToggle = () => document.body.classList.toggle('dark-theme');
     if (themeBtn) {
-      themeBtn.addEventListener('click', () => {
-        document.body.classList.toggle('dark-theme');
-      });
+      themeBtn.addEventListener('click', handleThemeToggle);
     }
     
     // 4. Setup Mobile Menu
@@ -153,6 +196,9 @@ export default function PublicHomePage() {
       });
 
       return () => {
+        if (themeBtn) themeBtn.removeEventListener('click', handleThemeToggle);
+        lenis.destroy();
+        cancelAnimationFrame(lenisRafId);
         document.removeEventListener('mousemove', handleMouseMove);
         cancelAnimationFrame(animationFrame);
         interactiveEls.forEach(el => {
@@ -162,6 +208,13 @@ export default function PublicHomePage() {
       };
     }
   }, []);
+
+  useEffect(() => {
+    // Re-initialize VanillaTilt when projects change
+    if (typeof window.VanillaTilt !== 'undefined') {
+      window.VanillaTilt.init(document.querySelectorAll(".project-card"));
+    }
+  }, [projects]);
 
   return (
     <>
@@ -234,7 +287,7 @@ export default function PublicHomePage() {
               
               <div className="projects-grid" id="projects-grid">
                   {projects.map(project => (
-                    <article key={project.id} className="project-card" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-glare="true" data-tilt-max-glare="0.2">
+                    <article key={project.id} className="project-card" suppressHydrationWarning>
                         <div className="project-image" style={{ backgroundImage: `url('${project.image}')` }}>
                             <span className="project-category">{project.category}</span>
                         </div>

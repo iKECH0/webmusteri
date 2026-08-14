@@ -18,8 +18,8 @@ export default function PublicLayout({ children }) {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet" />
-        <Script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js" strategy="beforeInteractive" />
-        <Script src="https://unpkg.com/@phosphor-icons/web" strategy="beforeInteractive" />
+        <Script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js" strategy="afterInteractive" />
+        <Script src="https://unpkg.com/@phosphor-icons/web" strategy="afterInteractive" />
       </head>
       <body className="dark-theme">
         {children}
