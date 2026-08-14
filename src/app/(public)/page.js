@@ -108,6 +108,28 @@ export default function PublicHomePage() {
           reveal.classList.add('active');
         }
       });
+
+      // Process Timeline Progress
+      const timelineLine = document.querySelector('.process-timeline-progress-fill');
+      const timelineContainer = document.querySelector('.process-timeline-container');
+      if (timelineLine && timelineContainer) {
+        const containerTop = timelineContainer.getBoundingClientRect().top;
+        const containerHeight = timelineContainer.offsetHeight;
+        if (containerTop < windowHeight / 2) {
+          const scrollDistance = (windowHeight / 2) - containerTop;
+          const progress = Math.max(0, Math.min(100, (scrollDistance / containerHeight) * 100));
+          timelineLine.style.height = progress + '%';
+          
+          const dots = document.querySelectorAll('.process-timeline-dot');
+          dots.forEach(dot => {
+            if (dot.getBoundingClientRect().top < windowHeight / 2 + 50) {
+              dot.classList.add('active');
+            } else {
+              dot.classList.remove('active');
+            }
+          });
+        }
+      }
     };
     window.addEventListener('scroll', revealOnScroll);
     revealOnScroll(); // init
@@ -253,6 +275,27 @@ export default function PublicHomePage() {
               </div>
           </section>
 
+          {/* Tech Stack Marquee */}
+          <div className="marquee-container">
+              <div className="marquee-content">
+                  <span>React</span><span className="dot">•</span>
+                  <span>Next.js</span><span className="dot">•</span>
+                  <span>Node.js</span><span className="dot">•</span>
+                  <span>PostgreSQL</span><span className="dot">•</span>
+                  <span>Figma</span><span className="dot">•</span>
+                  <span>Tailwind</span><span className="dot">•</span>
+                  <span>Vercel</span><span className="dot">•</span>
+                  {/* Duplicate for infinite loop */}
+                  <span aria-hidden="true">React</span><span className="dot" aria-hidden="true">•</span>
+                  <span aria-hidden="true">Next.js</span><span className="dot" aria-hidden="true">•</span>
+                  <span aria-hidden="true">Node.js</span><span className="dot" aria-hidden="true">•</span>
+                  <span aria-hidden="true">PostgreSQL</span><span className="dot" aria-hidden="true">•</span>
+                  <span aria-hidden="true">Figma</span><span className="dot" aria-hidden="true">•</span>
+                  <span aria-hidden="true">Tailwind</span><span className="dot" aria-hidden="true">•</span>
+                  <span aria-hidden="true">Vercel</span><span className="dot" aria-hidden="true">•</span>
+              </div>
+          </div>
+
           {/* Projects Section */}
           <section id="projects" className="projects container reveal">
               <div className="section-header">
@@ -303,76 +346,81 @@ export default function PublicHomePage() {
                   <p>Projelerinizi hayata geçirirken sunduğum avantajlar</p>
               </div>
               
-              <div className="features-grid">
-                  <div className="feature-card">
+              <div className="bento-grid">
+                  <div className="bento-item bento-large glass-panel">
+                      <div className="bento-glow"></div>
                       <div className="feature-icon"><i className="ph ph-lightning"></i></div>
-                      <h3>Hızlı Teslimat</h3>
-                      <p>Zamanınızın değerli olduğunu biliyorum. Projeleri anlaştığımız takvime sadık kalarak, en kısa sürede teslim ediyorum.</p>
+                      <h3>Işık Hızında Performans</h3>
+                      <p>Sitenizin yüklenme hızını saniyelerin altına indirerek, ziyaretçilerinizi sıkılmadan sitede tutuyoruz. Modern mimariler ile 100/100 PageSpeed skoru hedeflenir.</p>
                   </div>
-                  <div className="feature-card">
+                  <div className="bento-item glass-panel">
+                      <div className="bento-glow"></div>
                       <div className="feature-icon"><i className="ph ph-device-mobile"></i></div>
-                      <h3>Mobil Uyumlu Tasarım</h3>
-                      <p>Tasarımlarım tüm cihazlarda kusursuz görünür. Ziyaretçileriniz telefondan girse bile harika bir deneyim yaşar.</p>
+                      <h3>Mobil Öncelikli</h3>
+                      <p>Kullanıcıların %80'i mobil cihazlarda. Siteniz telefonda bir uygulama gibi hissettirecek.</p>
                   </div>
-                  <div className="feature-card">
+                  <div className="bento-item glass-panel">
+                      <div className="bento-glow"></div>
                       <div className="feature-icon"><i className="ph ph-magnifying-glass"></i></div>
-                      <h3>SEO Uyumlu</h3>
-                      <p>Arama motorlarında üst sıralarda çıkmanız için temiz kod ve en iyi SEO pratikleriyle kodlama yapıyorum.</p>
+                      <h3>Google Dostu (SEO)</h3>
+                      <p>Temiz kodlama ve optimize içerik yapısı ile rakiplerinizi organik aramalarda geride bırakın.</p>
                   </div>
-                  <div className="feature-card">
-                      <div className="feature-icon"><i className="ph ph-wallet"></i></div>
-                      <h3>Uygun Fiyat</h3>
-                      <p>Bütçenizi yormayacak, ihtiyacınıza tam uygun, şeffaf ve yüksek fiyat/performans oranına sahip çözümler sunuyorum.</p>
+                  <div className="bento-item bento-wide glass-panel">
+                      <div className="bento-glow"></div>
+                      <div className="feature-icon"><i className="ph ph-shield-check"></i></div>
+                      <h3>Üst Düzey Güvenlik ve Uygun Fiyat</h3>
+                      <p>Premium tasarımı, siber saldırılara karşı maksimum güvenlikle ve bütçe dostu fiyatlandırma ile sunuyoruz. SSL, veri şifreleme ve düzenli yedekleme hizmetleri.</p>
                   </div>
               </div>
           </section>
 
           {/* Pricing Section */}
-          <section id="pricing" className="pricing container reveal" style={{ paddingTop: '100px' }}>
+          <section id="pricing" className="pricing container reveal">
               <div className="section-header">
                   <h2>Hizmet Paketleri</h2>
                   <p>İhtiyacınıza ve bütçenize en uygun çözümü seçin</p>
               </div>
               
-              <div className="pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px', marginTop: '40px' }}>
+              <div className="pricing-grid">
                   {/* Starter */}
-                  <div className="pricing-card glass-panel" style={{ padding: '40px 30px', textAlign: 'center', borderRadius: '24px', border: '1px solid var(--glass-border)' }}>
-                      <h3 style={{ fontSize: '24px', marginBottom: '15px' }}>Başlangıç</h3>
-                      <p style={{ color: 'var(--text-muted)', marginBottom: '30px' }}>Küçük işletmeler ve kişisel portfolyolar için ideal tek sayfalık yapı.</p>
-                      <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 30px 0', textAlign: 'left' }}>
-                          <li style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}><i className="ph-fill ph-check-circle" style={{ color: 'var(--accent-color)' }}></i> Tek Sayfa (One-Page) Tasarım</li>
-                          <li style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}><i className="ph-fill ph-check-circle" style={{ color: 'var(--accent-color)' }}></i> Mobil Uyumlu (Responsive)</li>
-                          <li style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}><i className="ph-fill ph-check-circle" style={{ color: 'var(--accent-color)' }}></i> İletişim Formu</li>
-                          <li style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}><i className="ph-fill ph-check-circle" style={{ color: 'var(--accent-color)' }}></i> Temel SEO Altyapısı</li>
+                  <div className="pricing-card glass-panel" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-glare="true" data-tilt-max-glare="0.1" suppressHydrationWarning>
+                      <h3 className="pricing-title">Başlangıç</h3>
+                      <p className="pricing-desc">Küçük işletmeler ve kişisel portfolyolar için ideal tek sayfalık yapı.</p>
+                      <ul className="pricing-features">
+                          <li><i className="ph-fill ph-check-circle"></i> Tek Sayfa (One-Page) Tasarım</li>
+                          <li><i className="ph-fill ph-check-circle"></i> Mobil Uyumlu (Responsive)</li>
+                          <li><i className="ph-fill ph-check-circle"></i> İletişim Formu</li>
+                          <li><i className="ph-fill ph-check-circle"></i> Temel SEO Altyapısı</li>
                       </ul>
-                      <a href="#contact" className="btn btn-outline" style={{ width: '100%', display: 'block' }}>Teklif Alın</a>
+                      <a href="#contact" className="btn btn-outline pricing-btn">Teklif Alın</a>
                   </div>
                   
                   {/* Professional */}
-                  <div className="pricing-card glass-panel popular" style={{ padding: '40px 30px', textAlign: 'center', borderRadius: '24px', background: 'linear-gradient(135deg, rgba(79, 93, 250, 0.1), rgba(79, 93, 250, 0.05))', border: '2px solid var(--accent-color)', transform: 'scale(1.05)', position: 'relative' }}>
-                      <div style={{ position: 'absolute', top: '-15px', left: '50%', transform: 'translateX(-50%)', background: 'var(--accent-color)', color: 'white', padding: '5px 15px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold' }}>EN ÇOK TERCİH EDİLEN</div>
-                      <h3 style={{ fontSize: '24px', marginBottom: '15px' }}>Kurumsal</h3>
-                      <p style={{ color: 'var(--text-muted)', marginBottom: '30px' }}>Şirketler ve markalar için çok sayfalı, dinamik ve kapsamlı web sitesi.</p>
-                      <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 30px 0', textAlign: 'left' }}>
-                          <li style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}><i className="ph-fill ph-check-circle" style={{ color: 'var(--accent-color)' }}></i> Çok Sayfalı Premium Tasarım</li>
-                          <li style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}><i className="ph-fill ph-check-circle" style={{ color: 'var(--accent-color)' }}></i> Yönetim Paneli (İçerik Yönetimi)</li>
-                          <li style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}><i className="ph-fill ph-check-circle" style={{ color: 'var(--accent-color)' }}></i> Gelişmiş SEO ve Hız Optimizasyonu</li>
-                          <li style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}><i className="ph-fill ph-check-circle" style={{ color: 'var(--accent-color)' }}></i> 1 Yıl Ücretsiz Alan Adı & Hosting</li>
+                  <div className="pricing-card glass-panel popular" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-glare="true" data-tilt-max-glare="0.2" suppressHydrationWarning>
+                      <div className="pricing-glow-border"></div>
+                      <div className="popular-badge">EN ÇOK TERCİH EDİLEN</div>
+                      <h3 className="pricing-title">Kurumsal</h3>
+                      <p className="pricing-desc">Şirketler ve markalar için çok sayfalı, dinamik ve kapsamlı web sitesi.</p>
+                      <ul className="pricing-features">
+                          <li><i className="ph-fill ph-check-circle"></i> Çok Sayfalı Premium Tasarım</li>
+                          <li><i className="ph-fill ph-check-circle"></i> Yönetim Paneli (İçerik Yönetimi)</li>
+                          <li><i className="ph-fill ph-check-circle"></i> Gelişmiş SEO ve Hız Optimizasyonu</li>
+                          <li><i className="ph-fill ph-check-circle"></i> 1 Yıl Ücretsiz Alan Adı & Hosting</li>
                       </ul>
-                      <a href="#contact" className="btn btn-primary" style={{ width: '100%', display: 'block' }}>Teklif Alın</a>
+                      <a href="#contact" className="btn btn-primary pricing-btn">Teklif Alın</a>
                   </div>
 
                   {/* E-Commerce */}
-                  <div className="pricing-card glass-panel" style={{ padding: '40px 30px', textAlign: 'center', borderRadius: '24px', border: '1px solid var(--glass-border)' }}>
-                      <h3 style={{ fontSize: '24px', marginBottom: '15px' }}>E-Ticaret</h3>
-                      <p style={{ color: 'var(--text-muted)', marginBottom: '30px' }}>Ürünlerinizi internetten güvenle satabileceğiniz sanal mağaza.</p>
-                      <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 30px 0', textAlign: 'left' }}>
-                          <li style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}><i className="ph-fill ph-check-circle" style={{ color: 'var(--accent-color)' }}></i> Sınırsız Ürün ve Kategori</li>
-                          <li style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}><i className="ph-fill ph-check-circle" style={{ color: 'var(--accent-color)' }}></i> Güvenli Ödeme (Sanal POS)</li>
-                          <li style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}><i className="ph-fill ph-check-circle" style={{ color: 'var(--accent-color)' }}></i> Kargo ve Sipariş Takip Modülü</li>
-                          <li style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}><i className="ph-fill ph-check-circle" style={{ color: 'var(--accent-color)' }}></i> Sepet Kurtarma ve Promosyonlar</li>
+                  <div className="pricing-card glass-panel" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-glare="true" data-tilt-max-glare="0.1" suppressHydrationWarning>
+                      <h3 className="pricing-title">E-Ticaret</h3>
+                      <p className="pricing-desc">Ürünlerinizi internetten güvenle satabileceğiniz sanal mağaza.</p>
+                      <ul className="pricing-features">
+                          <li><i className="ph-fill ph-check-circle"></i> Sınırsız Ürün ve Kategori</li>
+                          <li><i className="ph-fill ph-check-circle"></i> Güvenli Ödeme (Sanal POS)</li>
+                          <li><i className="ph-fill ph-check-circle"></i> Kargo ve Sipariş Takip Modülü</li>
+                          <li><i className="ph-fill ph-check-circle"></i> Sepet Kurtarma ve Promosyonlar</li>
                       </ul>
-                      <a href="#contact" className="btn btn-outline" style={{ width: '100%', display: 'block' }}>Teklif Alın</a>
+                      <a href="#contact" className="btn btn-outline pricing-btn">Teklif Alın</a>
                   </div>
               </div>
           </section>
@@ -384,7 +432,8 @@ export default function PublicHomePage() {
                   <p>Fikrinizden yayına kadar geçen şeffaf ve hızlı sürecimiz</p>
               </div>
               <div className="process-timeline-container" style={{ position: 'relative', maxWidth: '800px', margin: '40px auto 0', padding: '0 20px' }}>
-                  <div className="process-timeline-line" style={{ position: 'absolute', left: '50%', top: '0', bottom: '0', width: '4px', background: 'linear-gradient(to bottom, var(--accent-color), #8b5cf6, #10b981)', transform: 'translateX(-50%)', borderRadius: '4px', opacity: '0.2' }}></div>
+                  <div className="process-timeline-line" style={{ position: 'absolute', left: '50%', top: '0', bottom: '0', width: '4px', background: 'var(--glass-border)', transform: 'translateX(-50%)', borderRadius: '4px', opacity: '0.5' }}></div>
+                  <div className="process-timeline-progress-fill" style={{ position: 'absolute', left: '50%', top: '0', height: '0%', width: '4px', background: 'linear-gradient(to bottom, var(--accent-color), #8b5cf6, #10b981)', transform: 'translateX(-50%)', borderRadius: '4px', transition: 'height 0.1s ease-out' }}></div>
                   
                   {[
                     { step: '1', title: 'Strateji ve Planlama', desc: 'İhtiyaç analizinizin yapılması, hedeflerin belirlenmesi ve dijital haritanızın çıkarılması.', icon: 'ph-target' },
@@ -394,7 +443,7 @@ export default function PublicHomePage() {
                     { step: '5', title: 'Yayına Alma', desc: 'Projenin anahtar teslim olarak canlıya alınması ve kontrol panelinizin teslimi.', icon: 'ph-rocket' },
                   ].map((s, i) => (
                     <div key={i} className="process-timeline-item" style={{ display: 'flex', justifyContent: i % 2 === 0 ? 'flex-start' : 'flex-end', alignItems: 'center', marginBottom: '40px', width: '100%', position: 'relative' }}>
-                      <div className="process-timeline-dot" style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', width: '48px', height: '48px', borderRadius: '50%', background: 'var(--card-bg)', border: '4px solid var(--accent-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10, color: 'var(--accent-color)', boxShadow: '0 0 0 6px rgba(79, 93, 250, 0.1)' }}>
+                      <div className="process-timeline-dot" style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', width: '48px', height: '48px', borderRadius: '50%', background: 'var(--card-bg)', border: '4px solid var(--glass-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10, color: 'var(--text-muted)', transition: 'all 0.4s ease' }}>
                         <i className={`ph ${s.icon}`} style={{ fontSize: '24px' }}></i>
                       </div>
                       <div className="process-timeline-content" style={{ width: '45%' }}>
@@ -415,37 +464,75 @@ export default function PublicHomePage() {
                   <h2>Ne Dediler?</h2>
                   <p>Benimle çalışan müşterilerimin deneyimleri</p>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px', marginTop: '40px' }}>
-                  <div className="glass-panel" style={{ padding: '30px', borderRadius: '24px', position: 'relative' }}>
-                      <i className="ph-fill ph-quotes" style={{ fontSize: '40px', color: 'var(--accent-light)', position: 'absolute', top: '20px', right: '20px' }}></i>
-                      <p style={{ color: 'var(--text-color)', fontSize: '15px', lineHeight: 1.6, marginBottom: '20px', fontStyle: 'italic' }}>"Sitemiz eski ve yavaştı. Kodiva ile çalıştıktan sonra hem harika bir tasarıma kavuştuk hem de Google'da ilk sayfaya çıktık. İletişimi ve hızı muazzamdı."</p>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                          <div style={{ width: '50px', height: '50px', borderRadius: '50%', background: 'linear-gradient(135deg, #f6d365 0%, #fda085 100%)' }}></div>
-                          <div>
-                              <h4 style={{ margin: 0, fontSize: '16px', color: 'var(--text-color)' }}>Ahmet Yılmaz</h4>
-                              <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Cafe Roma İşletmecisi</span>
+              <div className="testimonials-marquee-container">
+                  <div className="testimonials-marquee-content">
+                      {/* Original Items */}
+                      <div className="glass-panel testimonial-card">
+                          <i className="ph-fill ph-quotes testimonial-quote-icon"></i>
+                          <p className="testimonial-text">"Sitemiz eski ve yavaştı. Kodiva ile çalıştıktan sonra hem harika bir tasarıma kavuştuk hem de Google'da ilk sayfaya çıktık. İletişimi ve hızı muazzamdı."</p>
+                          <div className="testimonial-author">
+                              <div className="testimonial-avatar" style={{ background: 'linear-gradient(135deg, #f6d365 0%, #fda085 100%)' }}></div>
+                              <div>
+                                  <h4>Ahmet Yılmaz</h4>
+                                  <span>Cafe Roma İşletmecisi</span>
+                              </div>
                           </div>
                       </div>
-                  </div>
-                  <div className="glass-panel" style={{ padding: '30px', borderRadius: '24px', position: 'relative' }}>
-                      <i className="ph-fill ph-quotes" style={{ fontSize: '40px', color: 'var(--accent-light)', position: 'absolute', top: '20px', right: '20px' }}></i>
-                      <p style={{ color: 'var(--text-color)', fontSize: '15px', lineHeight: 1.6, marginBottom: '20px', fontStyle: 'italic' }}>"Estetik ve zarafet bizim sektörde her şeydir. Beklentimizin çok üstünde premium bir site teslim aldık. Randevularımız gözle görülür şekilde arttı."</p>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                          <div style={{ width: '50px', height: '50px', borderRadius: '50%', background: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)' }}></div>
-                          <div>
-                              <h4 style={{ margin: 0, fontSize: '16px', color: 'var(--text-color)' }}>Ayşe K.</h4>
-                              <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Güzellik Merkezi Kurucusu</span>
+                      <div className="glass-panel testimonial-card">
+                          <i className="ph-fill ph-quotes testimonial-quote-icon"></i>
+                          <p className="testimonial-text">"Estetik ve zarafet bizim sektörde her şeydir. Beklentimizin çok üstünde premium bir site teslim aldık. Randevularımız gözle görülür şekilde arttı."</p>
+                          <div className="testimonial-author">
+                              <div className="testimonial-avatar" style={{ background: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)' }}></div>
+                              <div>
+                                  <h4>Ayşe K.</h4>
+                                  <span>Güzellik Merkezi Kurucusu</span>
+                              </div>
                           </div>
                       </div>
-                  </div>
-                  <div className="glass-panel" style={{ padding: '30px', borderRadius: '24px', position: 'relative' }}>
-                      <i className="ph-fill ph-quotes" style={{ fontSize: '40px', color: 'var(--accent-light)', position: 'absolute', top: '20px', right: '20px' }}></i>
-                      <p style={{ color: 'var(--text-color)', fontSize: '15px', lineHeight: 1.6, marginBottom: '20px', fontStyle: 'italic' }}>"E-ticaret sitemizi kurarken tüm detaylarla bizzat ilgilendi. Sadece siteyi yapmakla kalmadı, satış stratejileri konusunda da ufkumuzu açtı."</p>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                          <div style={{ width: '50px', height: '50px', borderRadius: '50%', background: 'linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)' }}></div>
-                          <div>
-                              <h4 style={{ margin: 0, fontSize: '16px', color: 'var(--text-color)' }}>Caner T.</h4>
-                              <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>TechStore Kurucusu</span>
+                      <div className="glass-panel testimonial-card">
+                          <i className="ph-fill ph-quotes testimonial-quote-icon"></i>
+                          <p className="testimonial-text">"E-ticaret sitemizi kurarken tüm detaylarla bizzat ilgilendi. Sadece siteyi yapmakla kalmadı, satış stratejileri konusunda da ufkumuzu açtı."</p>
+                          <div className="testimonial-author">
+                              <div className="testimonial-avatar" style={{ background: 'linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)' }}></div>
+                              <div>
+                                  <h4>Caner T.</h4>
+                                  <span>TechStore Kurucusu</span>
+                              </div>
+                          </div>
+                      </div>
+
+                      {/* Duplicate Items for Infinite Scroll */}
+                      <div className="glass-panel testimonial-card" aria-hidden="true">
+                          <i className="ph-fill ph-quotes testimonial-quote-icon"></i>
+                          <p className="testimonial-text">"Sitemiz eski ve yavaştı. Kodiva ile çalıştıktan sonra hem harika bir tasarıma kavuştuk hem de Google'da ilk sayfaya çıktık. İletişimi ve hızı muazzamdı."</p>
+                          <div className="testimonial-author">
+                              <div className="testimonial-avatar" style={{ background: 'linear-gradient(135deg, #f6d365 0%, #fda085 100%)' }}></div>
+                              <div>
+                                  <h4>Ahmet Yılmaz</h4>
+                                  <span>Cafe Roma İşletmecisi</span>
+                              </div>
+                          </div>
+                      </div>
+                      <div className="glass-panel testimonial-card" aria-hidden="true">
+                          <i className="ph-fill ph-quotes testimonial-quote-icon"></i>
+                          <p className="testimonial-text">"Estetik ve zarafet bizim sektörde her şeydir. Beklentimizin çok üstünde premium bir site teslim aldık. Randevularımız gözle görülür şekilde arttı."</p>
+                          <div className="testimonial-author">
+                              <div className="testimonial-avatar" style={{ background: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)' }}></div>
+                              <div>
+                                  <h4>Ayşe K.</h4>
+                                  <span>Güzellik Merkezi Kurucusu</span>
+                              </div>
+                          </div>
+                      </div>
+                      <div className="glass-panel testimonial-card" aria-hidden="true">
+                          <i className="ph-fill ph-quotes testimonial-quote-icon"></i>
+                          <p className="testimonial-text">"E-ticaret sitemizi kurarken tüm detaylarla bizzat ilgilendi. Sadece siteyi yapmakla kalmadı, satış stratejileri konusunda da ufkumuzu açtı."</p>
+                          <div className="testimonial-author">
+                              <div className="testimonial-avatar" style={{ background: 'linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)' }}></div>
+                              <div>
+                                  <h4>Caner T.</h4>
+                                  <span>TechStore Kurucusu</span>
+                              </div>
                           </div>
                       </div>
                   </div>
