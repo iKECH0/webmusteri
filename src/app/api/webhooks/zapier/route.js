@@ -5,11 +5,11 @@ export async function POST(request) {
   try {
     const data = await request.json();
 
-    // Zapier'dan gelen veriler
-    const name = data.name || "İsimsiz Meta Lead";
-    const email = data.email || null;
-    const phone = data.phone || null;
-    const notes = data.notes || "Meta Ads formundan geldi.";
+    // Zapier'dan gelen veriler (Meta'nın orijinal key'leri farklı olabilir)
+    const name = data.name || data.full_name || data.first_name || "İsimsiz Meta Lead";
+    const email = data.email || data.email_address || null;
+    const phone = data.phone || data.phone_number || null;
+    const notes = data.notes || data.campaign_name || "Meta Ads formundan geldi.";
     
     // Benzersiz bir lead id oluştur (Örn: lead_169..._meta)
     const id = `lead_${Date.now()}_meta`;
