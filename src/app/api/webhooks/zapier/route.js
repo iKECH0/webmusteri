@@ -3,7 +3,15 @@ import db from '@/lib/db';
 
 export async function POST(request) {
   try {
-    const data = await request.json();
+    const rawText = await request.text();
+    let data = {};
+    try {
+      data = JSON.parse(rawText);
+    } catch (e) {
+      // Eğer JSON değilse, düz form formatında gelmiş olabilir
+      const params = new URLSearchParams(rawText);
+      data = Object.fromEntries(params);
+    }
 
     // Zapier'dan gelen veriler (Meta'nın orijinal key'leri farklı olabilir)
     const name = data.name || data.full_name || data.first_name || "İsimsiz Meta Lead";
