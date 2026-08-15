@@ -583,14 +583,21 @@ export default function PublicHomePage() {
       </main>
 
       <footer>
-          <div className="footer-container container">
-              <div className="footer-brand">
-                  kodiva<span>website</span> &copy; <span id="current-year"></span>
+          <div className="footer-container container" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px', width: '100%' }}>
+                  <div className="footer-brand">
+                      kodiva<span>website</span> &copy; <span id="current-year"></span>
+                  </div>
+                  <div className="footer-social">
+                      <a href="#" aria-label="Instagram"><i className="ph ph-instagram-logo"></i></a>
+                      <a href="#" aria-label="LinkedIn"><i className="ph ph-linkedin-logo"></i></a>
+                      <a href="#" aria-label="GitHub"><i className="ph ph-github-logo"></i></a>
+                  </div>
               </div>
-              <div className="footer-social">
-                  <a href="#" aria-label="Instagram"><i className="ph ph-instagram-logo"></i></a>
-                  <a href="#" aria-label="LinkedIn"><i className="ph ph-linkedin-logo"></i></a>
-                  <a href="#" aria-label="GitHub"><i className="ph ph-github-logo"></i></a>
+              <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '20px', textAlign: 'center' }}>
+                  <Link href="/gizlilik-politikasi" style={{ color: 'var(--text-muted)', fontSize: '14px', textDecoration: 'none', transition: 'color 0.3s ease' }} onMouseOver={e => e.currentTarget.style.color = 'var(--accent-color)'} onMouseOut={e => e.currentTarget.style.color = 'var(--text-muted)'}>
+                      Gizlilik Politikası
+                  </Link>
               </div>
           </div>
       </footer>
