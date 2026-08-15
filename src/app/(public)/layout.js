@@ -4,6 +4,17 @@ import Script from "next/script";
 export const metadata = {
   title: "Kodiva Web Tasarım Ajansı",
   description: "İşletmenizin Dijital Vitrinini Birlikte İnşa Ettik.",
+  icons: {
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
+      { url: '/favicon.svg', type: 'image/svg+xml' }
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png' }
+    ]
+  },
+  manifest: '/site.webmanifest',
 };
 
 export const viewport = {
