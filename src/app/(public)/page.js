@@ -221,7 +221,10 @@ export default function PublicHomePage() {
       <nav className="navbar">
           <div className="nav-container container">
               <div className="logo">
-                  <a href="#">kodiva<span>website</span></a>
+                  <a href="#" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <img src="/favicon.svg" alt="Kodiva Logo" style={{ height: '36px', width: 'auto' }} />
+                    kodiva<span>website</span>
+                  </a>
               </div>
               
               <div className="nav-links">
@@ -586,7 +589,10 @@ export default function PublicHomePage() {
           <div className="footer-container container" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px', width: '100%' }}>
                   <div className="footer-brand">
-                      kodiva<span>website</span> &copy; <span id="current-year"></span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'center', marginBottom: '10px' }}>
+                    <img src="/favicon.svg" alt="Kodiva Logo" style={{ height: '28px', width: 'auto' }} />
+                    <span>kodiva<span>website</span> &copy; <span id="current-year"></span></span>
+                  </div>
                   </div>
                   <div className="footer-social">
                       <a href="#" aria-label="Instagram"><i className="ph ph-instagram-logo"></i></a>
