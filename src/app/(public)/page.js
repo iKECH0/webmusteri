@@ -3,6 +3,8 @@
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import Lenis from "lenis";
+import ROICalculator from "@/components/ROICalculator";
+import PublicChatWidget from "@/components/PublicChatWidget";
 
 export default function PublicHomePage() {
   const [openFaq, setOpenFaq] = useState(null);
@@ -249,6 +251,19 @@ export default function PublicHomePage() {
         </div>
       </nav>
 
+        {/* ── SCARCITY BANNER ── */}
+        <div style={{
+          backgroundColor: 'rgba(239, 68, 68, 0.1)',
+          borderBottom: '1px solid rgba(239, 68, 68, 0.2)',
+          padding: '10px 20px',
+          textAlign: 'center',
+          fontSize: '0.95rem',
+          fontWeight: '500',
+          color: 'var(--text-color)'
+        }}>
+          🔥 <strong style={{ color: '#ef4444' }}>Ağustos ayına özel:</strong> Sadece 3 işletme için Geçerli İndirimli Başlangıç Paketi! Kontenjan dolmadan yerinizi ayırtın.
+        </div>
+
       <main>
         {/* ── HERO ── */}
         <section className="hero container reveal" aria-label="Hero bölümü">
@@ -360,6 +375,8 @@ export default function PublicHomePage() {
               <p>Premium kalite, kurumsal fiyatların çok altında. Ekstra masraf yok.</p>
             </div>
           </div>
+          
+          <ROICalculator />
         </section>
 
         {/* ── PRICING ── */}
@@ -526,9 +543,11 @@ export default function PublicHomePage() {
       </footer>
 
       {/* ── FLOATING WHATSAPP ── */}
-      <a href="https://wa.me/905555555555" target="_blank" rel="noreferrer" className="floating-wa" aria-label="WhatsApp ile iletişime geç">
-        <i className="ph-fill ph-whatsapp-logo" />
+      <a href="https://wa.me/905555555555" target="_blank" rel="noreferrer" className="floating-wa" aria-label="WhatsApp'tan Ulaşın">
+        <i className="ph ph-whatsapp" />
       </a>
+
+      <PublicChatWidget />
     </>
   );
 }
