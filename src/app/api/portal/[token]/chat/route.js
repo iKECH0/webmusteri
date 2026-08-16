@@ -94,11 +94,16 @@ Müşteri şu anda kendisi için özel oluşturulmuş bir "Teklif ve İnceleme P
           }]
         });
 
-        const res2 = await axios.post(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`, {
-          contents: geminiContents,
-          generationConfig: { temperature: 0.7 }
-        });
-        botMessage = res2.data.candidates?.[0]?.content?.parts?.[0]?.text || 'Notunuzu aldım ve ekibimize ilettim.';
+        try {
+          const res2 = await axios.post(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`, {
+            contents: geminiContents,
+            generationConfig: { temperature: 0.7 }
+          });
+          botMessage = res2.data.candidates?.[0]?.content?.parts?.[0]?.text || 'Notunuzu aldım ve ekibimize ilettim.';
+        } catch (e) {
+          console.error("Second gemini call failed:", e?.response?.data || e.message);
+          botMessage = 'İlettiğiniz bu detayı hemen not aldım ve proje yöneticimize aktardım. Başka bir sorunuz var mı?';
+        }
       } else {
         botMessage = part.text || botMessage;
       }
