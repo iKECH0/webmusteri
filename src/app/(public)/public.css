@@ -1470,7 +1470,7 @@ footer {
   /* Sections */
   .projects-grid { grid-template-columns: 1fr; }
   .bento-grid { grid-template-columns: 1fr; }
-  .bento-large, .bento-wide { grid-column: span 1; }
+  .bento-item.bento-large, .bento-item.bento-wide { grid-column: 1 / -1; grid-row: auto; }
   .pricing-grid { grid-template-columns: 1fr; }
   .stats-container { flex-direction: column; gap: 40px; }
 
