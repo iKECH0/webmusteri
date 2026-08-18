@@ -86,20 +86,39 @@ export default function PublicChatWidget() {
           </div>
           
           <div style={{ flex: 1, padding: '16px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {messages.map((m, i) => (
-              <div key={i} style={{
-                alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start',
-                backgroundColor: m.role === 'user' ? 'var(--accent-color)' : 'var(--bg-secondary)',
-                color: m.role === 'user' ? 'white' : 'var(--text-color)',
-                padding: '10px 14px',
-                borderRadius: m.role === 'user' ? '14px 14px 0 14px' : '14px 14px 14px 0',
-                maxWidth: '85%',
-                fontSize: '0.95rem',
-                whiteSpace: 'pre-wrap'
-              }}>
-                {m.content}
-              </div>
-            ))}
+            {messages.map((m, i) => {
+              const renderText = (text) => {
+                return text.split('\n').map((line, idx) => {
+                  const parts = line.split(/(\*\*.*?\*\*)/g);
+                  return (
+                    <React.Fragment key={idx}>
+                      {parts.map((part, jdx) => {
+                        if (part.startsWith('**') && part.endsWith('**')) {
+                          return <strong key={jdx}>{part.slice(2, -2)}</strong>;
+                        }
+                        return part;
+                      })}
+                      {idx < text.split('\n').length - 1 && <br />}
+                    </React.Fragment>
+                  );
+                });
+              };
+              
+              return (
+                <div key={i} style={{
+                  alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start',
+                  backgroundColor: m.role === 'user' ? 'var(--accent-color)' : 'var(--bg-secondary)',
+                  color: m.role === 'user' ? 'white' : 'var(--text-color)',
+                  padding: '10px 14px',
+                  borderRadius: m.role === 'user' ? '14px 14px 0 14px' : '14px 14px 14px 0',
+                  maxWidth: '85%',
+                  fontSize: '0.95rem',
+                  lineHeight: '1.4'
+                }}>
+                  {renderText(m.content)}
+                </div>
+              );
+            })}
             {isLoading && (
               <div style={{ alignSelf: 'flex-start', backgroundColor: 'var(--bg-secondary)', padding: '10px 14px', borderRadius: '14px 14px 14px 0', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
                 Yazıyor...

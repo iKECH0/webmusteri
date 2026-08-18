@@ -20,11 +20,12 @@ Sen "Kodi" adında, Kodiva Dijital Ajansı'nın zeki, esprili ve çok yetenekli 
 Amacın: Bu ziyaretçiye şık bir web sitesi veya e-ticaret sitesi satmak için onu ikna etmek ve en önemlisi iletişim bilgilerini (İşletme adı ve Telefon numarası) toplamaktır.
 
 ÖNEMLİ KURALLAR:
-1. Kısa ve samimi cevaplar ver. Uzun paragraflardan kaçın. Emoji kullanmayı sev.
+1. Kısa ve samimi cevaplar ver. Uzun paragraflardan kaçın.
 2. Kendini tanıtıp, site yaptırmak isteyip istemediğini sor veya doğrudan bir teklif çıkartmayı teklif et.
-3. Kullanıcıdan işletme adını ve ulaşabileceğimiz bir TELEFON NUMARASINI (çok önemli) mutlaka iste. "Fiyatlar nedir?" derlerse bile "İşletmenizin ne tür bir siteye ihtiyacı olduğunu anlamam için adınızı ve bir numaranızı bırakır mısınız, hemen harika bir teklif hazırlayıp sizi arayalım" şeklinde yönlendir.
-4. Müşteri adını/işletme adını ve TELEFON NUMARASINI verdiği anda, mutlaka "save_lead" fonksiyonunu çağırarak bu kişiyi sistemimize yeni müşteri olarak kaydet!
-5. Asla başka ajanslara yönlendirme yapma, Kodiva'nın tasarımlarının çok hızlı, şık ve bütçe dostu olduğunu vurgula.
+3. Kullanıcıdan işletme adını ve ulaşabileceğimiz bir TELEFON NUMARASINI mutlaka iste. 
+4. Müşteri telefonunu verdiğinde, "save_lead" fonksiyonunu çağır! 
+5. Fonksiyonu çağırdıktan sonra SOHBETİ BİTİRME. "Telefonunuzu kaydettim, harika! Peki hangi sektörde hizmet veriyorsunuz? Nasıl bir tasarıma ihtiyacınız var?" gibi sorular sorarak müşterinin isteklerini de öğren.
+6. Müşteri ek bilgiler (sektör, istekler) verdikçe "update_lead_notes" fonksiyonunu çağırarak bu notları sisteme aktar!
 `;
 
     const geminiContents = [];
@@ -45,7 +46,7 @@ Amacın: Bu ziyaretçiye şık bir web sitesi veya e-ticaret sitesi satmak için
         functionDeclarations: [
           {
             name: "save_lead",
-            description: "Kullanıcı işletme adını ve telefon numarasını verdiği anda bu fonksiyonu çağırarak kişiyi CRM (Yeni Müşteri) sistemine kaydet.",
+            description: "Kullanıcı işletme adını ve telefon numarasını verdiği anda bu fonksiyonu çağırarak kişiyi sisteme kaydet.",
             parameters: {
               type: "OBJECT",
               properties: {
@@ -54,38 +55,87 @@ Amacın: Bu ziyaretçiye şık bir web sitesi veya e-ticaret sitesi satmak için
               },
               required: ["name", "phone"]
             }
+          },
+          {
+            name: "update_lead_notes",
+            description: "Müşteri, sektörü veya web sitesiyle ilgili yeni istekler (örneğin e-ticaret, randevu sistemi vs.) söylediğinde notları sisteme güncelle.",
+            parameters: {
+              type: "OBJECT",
+              properties: {
+                phone: { type: "STRING", description: "Müşterinin daha önce verdiği telefon numarası." },
+                notes: { type: "STRING", description: "Müşterinin yeni istekleri ve sektörü ile ilgili eklenecek not." }
+              },
+              required: ["phone", "notes"]
+            }
           }
         ]
       }
     ];
 
-    const res = await axios.post(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`, {
-      contents: geminiContents,
-      tools: tools,
-      generationConfig: { temperature: 0.7 }
-    });
+    const generateResponse = async (contents) => {
+      const res = await axios.post(\`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=\${apiKey}\`, {
+        contents: contents,
+        tools: tools,
+        generationConfig: { temperature: 0.7 }
+      });
+      return res.data.candidates?.[0];
+    };
 
-    const candidate = res.data.candidates?.[0];
+    let candidate = await generateResponse(geminiContents);
     let botMessage = 'Cevap alınamadı.';
 
     if (candidate?.content?.parts) {
       const part = candidate.content.parts[0];
-      if (part.functionCall && part.functionCall.name === 'save_lead') {
-        const { name, phone } = part.functionCall.args;
+      
+      if (part.functionCall) {
+        let functionResponse = { success: true };
         
-        try {
-          // 1. Save Lead to DB
-          const leadId = `lead_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-          await db.query(
-            'INSERT INTO leads (id, name, phone, status, category, notes) VALUES ($1, $2, $3, $4, $5, $6)', 
-            [leadId, name, phone, 'new', 'Potansiyel Müşteri', 'Web sitesi asistanı (Kodi) üzerinden numara bıraktı.']
-          );
+        if (part.functionCall.name === 'save_lead') {
+          const { name, phone } = part.functionCall.args;
+          try {
+            const leadId = \`lead_\${Date.now()}_\${Math.random().toString(36).substr(2, 9)}\`;
+            await db.query(
+              'INSERT INTO leads (id, name, phone, status, category, notes) VALUES ($1, $2, $3, $4, $5, $6)', 
+              [leadId, name, phone, 'new', 'Potansiyel Müşteri', 'Web sitesi asistanı (Kodi) üzerinden numara bıraktı.']
+            );
+            functionResponse = { message: "Başarıyla kaydedildi." };
+          } catch(e) {
+            console.error("Lead saving failed:", e.message);
+            functionResponse = { message: "Kaydedilirken hata oluştu." };
+          }
+        } 
+        else if (part.functionCall.name === 'update_lead_notes') {
+          const { phone, notes } = part.functionCall.args;
+          try {
+            await db.query(
+              "UPDATE leads SET notes = notes || '\nYeni Not: ' || $1 WHERE phone = $2",
+              [notes, phone]
+            );
+            functionResponse = { message: "Notlar başarıyla güncellendi." };
+          } catch(e) {
+             functionResponse = { message: "Notlar güncellenemedi." };
+          }
+        }
 
-          // 2. Reply to function call gracefully
-          botMessage = 'Harika! Telefon numaranızı proje yöneticimize anında ilettim. Size çok yakında muhteşem bir teklif ile dönüş yapacağız. Başka sormak istediğiniz bir şey var mı? 🚀';
-        } catch(e) {
-          console.error("Lead saving failed:", e.message);
-          botMessage = 'Numaranızı not aldım, teşekkürler! Size en kısa sürede ulaşacağız.';
+        // Add function call and response to history
+        geminiContents.push({
+          role: 'model',
+          parts: [{ functionCall: part.functionCall }]
+        });
+        geminiContents.push({
+          role: 'user',
+          parts: [{
+            functionResponse: {
+              name: part.functionCall.name,
+              response: functionResponse
+            }
+          }]
+        });
+
+        // Make second request to let AI respond
+        candidate = await generateResponse(geminiContents);
+        if (candidate?.content?.parts) {
+           botMessage = candidate.content.parts[0].text || botMessage;
         }
       } else {
         botMessage = part.text || botMessage;
