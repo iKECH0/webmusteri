@@ -251,18 +251,7 @@ export default function PublicHomePage() {
         </div>
       </nav>
 
-        {/* ── SCARCITY BANNER ── */}
-        <div style={{
-          backgroundColor: 'rgba(239, 68, 68, 0.1)',
-          borderBottom: '1px solid rgba(239, 68, 68, 0.2)',
-          padding: '10px 20px',
-          textAlign: 'center',
-          fontSize: '0.95rem',
-          fontWeight: '500',
-          color: 'var(--text-color)'
-        }}>
-          🔥 <strong style={{ color: '#ef4444' }}>Ağustos ayına özel:</strong> Sadece 3 işletme için Geçerli İndirimli Başlangıç Paketi! Kontenjan dolmadan yerinizi ayırtın.
-        </div>
+
 
       <main>
         {/* ── HERO ── */}
@@ -546,6 +535,33 @@ export default function PublicHomePage() {
       <a href="https://wa.me/905555555555" target="_blank" rel="noreferrer" className="floating-wa" aria-label="WhatsApp'tan Ulaşın">
         <i className="ph ph-whatsapp" />
       </a>
+
+      {/* ── FLOATING SCARCITY BANNER ── */}
+      <div className="floating-banner" style={{
+        position: 'fixed',
+        bottom: '20px',
+        left: '20px',
+        zIndex: 9999,
+        backgroundColor: 'var(--card-bg)',
+        backdropFilter: 'blur(10px)',
+        border: '1px solid rgba(239, 68, 68, 0.3)',
+        borderRadius: 'var(--radius-md)',
+        padding: '16px',
+        boxShadow: 'var(--shadow-lg)',
+        maxWidth: '300px',
+        display: 'flex',
+        gap: '12px',
+        alignItems: 'flex-start',
+        animation: 'slideUp 0.5s ease-out'
+      }}>
+        <div style={{ fontSize: '24px', flexShrink: 0 }}>🔥</div>
+        <div>
+          <strong style={{ color: '#ef4444', display: 'block', marginBottom: '4px', fontSize: '0.95rem' }}>Ağustos Ayına Özel Fırsat</strong>
+          <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-color)', lineHeight: 1.4 }}>
+            Sadece <strong>3 işletme</strong> için geçerli indirimli başlangıç paketi! Kontenjan dolmadan yerinizi ayırtın.
+          </p>
+        </div>
+      </div>
 
       <PublicChatWidget />
     </>

@@ -31,10 +31,13 @@ Amacın: Bu ziyaretçiye şık bir web sitesi veya e-ticaret sitesi satmak için
     geminiContents.push({ role: 'user', parts: [{ text: `[SİSTEM TALİMATI: ${systemPrompt}]\n\nMerhaba, az önce sitenize girdim.` }] });
 
     messages.forEach(m => {
-      geminiContents.push({
-        role: m.role === 'assistant' ? 'model' : 'user',
-        parts: [{ text: m.content }]
-      });
+      const role = m.role === 'assistant' ? 'model' : 'user';
+      const lastContent = geminiContents[geminiContents.length - 1];
+      if (lastContent && lastContent.role === role) {
+        lastContent.parts[0].text += '\n' + m.content;
+      } else {
+        geminiContents.push({ role, parts: [{ text: m.content }] });
+      }
     });
 
     const tools = [
