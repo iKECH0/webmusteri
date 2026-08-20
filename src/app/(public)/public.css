@@ -78,14 +78,13 @@ body {
   color: var(--text-color);
   line-height: 1.65;
   overflow-x: hidden;
-  cursor: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-optical-sizing: auto;
   transition: background-color 0.4s ease, color 0.4s ease;
 }
 
-a, button { cursor: none; }
+a, button { cursor: pointer; }
 
 ul { list-style: none; }
 
@@ -102,49 +101,9 @@ h1, h2, h3, h4, h5 {
   padding: 0 24px;
 }
 
-/* ==========================================================================
-   Custom Cursor — GPU-accelerated with translate3d
-   ========================================================================== */
-.custom-cursor {
-  position: fixed;
-  top: 0; left: 0;
-  width: 8px; height: 8px;
-  background-color: var(--accent-color);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 99999;
-  will-change: transform;
-  transform: translate3d(0, 0, 0);
-}
-
-.custom-cursor-follower {
-  position: fixed;
-  top: 0; left: 0;
-  width: 36px; height: 36px;
-  border: 1.5px solid var(--accent-color);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 99998;
-  will-change: transform;
-  transform: translate3d(0, 0, 0);
-  transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease, opacity 0.3s ease;
-  opacity: 0.6;
-}
-
-.custom-cursor.hover {
-  width: 14px; height: 14px;
-}
-
-.custom-cursor-follower.hover {
-  width: 52px; height: 52px;
-  background-color: var(--accent-light);
-  opacity: 0.4;
-}
-
-@media (hover: none) and (pointer: coarse) {
-  body { cursor: auto; }
-  a, button { cursor: auto; }
-  .custom-cursor, .custom-cursor-follower { display: none !important; }
+/* Custom Cursor removed - standard system cursor active */
+.custom-cursor, .custom-cursor-follower {
+  display: none !important;
 }
 
 /* ==========================================================================

@@ -26,9 +26,6 @@ export default function PublicHomePage() {
   const [projects, setProjects] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [scrollProgress, setScrollProgress] = useState(0);
-
-  const cursorRef = useRef(null);
-  const followerRef = useRef(null);
   const rafIdRef = useRef(null);
 
   const faqs = [
@@ -174,41 +171,6 @@ export default function PublicHomePage() {
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
 
-    // Custom cursor — only desktop
-    const cursor = cursorRef.current;
-    const follower = followerRef.current;
-    let cursorAnimFrame;
-    if (cursor && follower && window.innerWidth > 768) {
-      let mx = 0, my = 0, fx = 0, fy = 0;
-      const onMouse = (e) => { mx = e.clientX; my = e.clientY; };
-      document.addEventListener("mousemove", onMouse, { passive: true });
-
-      const animCursor = () => {
-        fx += (mx - fx) * 0.18;
-        fy += (my - fy) * 0.18;
-        cursor.style.transform = `translate3d(${mx - 4}px, ${my - 4}px, 0)`;
-        follower.style.transform = `translate3d(${fx - 18}px, ${fy - 18}px, 0)`;
-        cursorAnimFrame = requestAnimationFrame(animCursor);
-      };
-      animCursor();
-
-      const hover = () => { cursor.classList.add("hover"); follower.classList.add("hover"); };
-      const unhover = () => { cursor.classList.remove("hover"); follower.classList.remove("hover"); };
-      document.querySelectorAll("a, button").forEach((el) => {
-        el.addEventListener("mouseenter", hover);
-        el.addEventListener("mouseleave", unhover);
-      });
-
-      return () => {
-        themeBtn?.removeEventListener("click", handleThemeToggle);
-        hamburger?.removeEventListener("click", toggleMenu);
-        window.removeEventListener("scroll", onScroll);
-        revealObs.disconnect();
-        document.removeEventListener("mousemove", onMouse);
-        cancelAnimationFrame(cursorAnimFrame);
-      };
-    }
-
     return () => {
       themeBtn?.removeEventListener("click", handleThemeToggle);
       hamburger?.removeEventListener("click", toggleMenu);
@@ -219,10 +181,6 @@ export default function PublicHomePage() {
 
   return (
     <>
-      {/* Custom Cursor */}
-      <div className="custom-cursor" ref={cursorRef} />
-      <div className="custom-cursor-follower" ref={followerRef} />
-
       {/* Grid background */}
       <div className="background-pattern" />
 
