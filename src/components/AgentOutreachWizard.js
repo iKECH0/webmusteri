@@ -270,12 +270,15 @@ export default function AgentOutreachWizard({ leads = [], templates = [], curren
           {getFilledMessage(currentLead)}
         </div>
 
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button onClick={copyMessage} style={{ flex: 1, padding: '11px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', cursor: 'pointer', fontWeight: 600, fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <button onClick={copyMessage} style={{ flex: 1, minWidth: 120, padding: '11px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', cursor: 'pointer', fontWeight: 600, fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
             {copied ? <Check size={15} color="#22c55e" /> : <Copy size={15} />}
             {copied ? 'Kopyalandı!' : 'Metni Kopyala'}
           </button>
-          <button onClick={() => setStep(3)} style={{ flex: 2, padding: '11px', borderRadius: 10, background: 'linear-gradient(135deg, #6366f1, #a855f7)', border: 'none', color: '#fff', cursor: 'pointer', fontWeight: 700, fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+          <button onClick={handleSkip} style={{ padding: '11px 14px', borderRadius: 10, background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171', cursor: 'pointer', fontWeight: 600, fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5 }}>
+            <SkipForward size={14} /> Atla
+          </button>
+          <button onClick={() => setStep(3)} style={{ flex: 2, minWidth: 160, padding: '11px', borderRadius: 10, background: 'linear-gradient(135deg, #6366f1, #a855f7)', border: 'none', color: '#fff', cursor: 'pointer', fontWeight: 700, fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
             <Eye size={15} /> Demoyu Kontrol Et <ChevronRight size={15} />
           </button>
         </div>
