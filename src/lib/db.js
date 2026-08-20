@@ -7,33 +7,36 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL
 });
 
-export const db = {
-  query: async (text, params) => {
-    return await pool.query(text, params);
-  }
-};
+let isInitialized = false;
+let initPromise = null;
 
 export async function initDB() {
-  await db.query(`
+  // 1. Settings
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS settings (
       key TEXT PRIMARY KEY,
       value TEXT
     );
+  `);
 
-    -- Temsilciler (Agents) Tablosu
+  // 2. Agents (Temsilciler)
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS agents (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
-      slug TEXT UNIQUE NOT NULL, -- URL için: /panel/ahmet
+      slug TEXT UNIQUE NOT NULL,
       phone TEXT,
-      password_hash TEXT NOT NULL, -- Basit şifre hash
-      role TEXT DEFAULT 'agent', -- 'agent' | 'admin'
+      password_hash TEXT NOT NULL,
+      role TEXT DEFAULT 'agent',
       is_active INTEGER DEFAULT 1,
       avatar_url TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
+  `);
 
+  // 3. Leads (Müşteriler)
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS leads (
       id TEXT PRIMARY KEY,
       place_id TEXT UNIQUE,
@@ -56,137 +59,142 @@ export async function initDB() {
       revenue REAL DEFAULT 0,
       desktop_mockup_url TEXT,
       mobile_mockup_url TEXT,
-      assigned_to TEXT REFERENCES agents(id), -- Temsilci ID'si
-      referred_by TEXT REFERENCES agents(id), -- Referans linkiyle gelen müşteri
+      assigned_to TEXT,
+      referred_by TEXT,
       lat REAL,
       lng REAL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
+  `);
 
-    CREATE TABLE IF NOT EXISTS call_logs (
-      id TEXT PRIMARY KEY,
-      lead_id TEXT NOT NULL,
-      note TEXT,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE
-    );
+  // Column migrations for leads
+  const leadColumns = [
+    `ALTER TABLE leads ADD COLUMN IF NOT EXISTS desktop_mockup_url TEXT;`,
+    `ALTER TABLE leads ADD COLUMN IF NOT EXISTS mobile_mockup_url TEXT;`,
+    `ALTER TABLE leads ADD COLUMN IF NOT EXISTS assigned_to TEXT;`,
+    `ALTER TABLE leads ADD COLUMN IF NOT EXISTS referred_by TEXT;`,
+    `ALTER TABLE leads ADD COLUMN IF NOT EXISTS portal_token TEXT;`,
+    `ALTER TABLE leads ADD COLUMN IF NOT EXISTS portal_viewed INTEGER DEFAULT 0;`,
+    `ALTER TABLE leads ADD COLUMN IF NOT EXISTS ai_score INTEGER DEFAULT 0;`,
+    `ALTER TABLE leads ADD COLUMN IF NOT EXISTS rating REAL;`,
+    `ALTER TABLE leads ADD COLUMN IF NOT EXISTS review_count INTEGER;`,
+    `ALTER TABLE leads ADD COLUMN IF NOT EXISTS next_followup_date TEXT;`,
+    `ALTER TABLE leads ADD COLUMN IF NOT EXISTS revenue REAL DEFAULT 0;`,
+    `ALTER TABLE leads ADD COLUMN IF NOT EXISTS tags TEXT DEFAULT '[]';`
+  ];
 
-    -- İletişim Takip Günlüğü (Activity Logs) - Yeni
+  for (const colQuery of leadColumns) {
+    try {
+      await pool.query(colQuery);
+    } catch (e) {
+      // Ignore if already exists
+    }
+  }
+
+  // 4. Activity Logs (İletişim Takip Günlüğü)
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS activity_logs (
       id TEXT PRIMARY KEY,
       lead_id TEXT NOT NULL,
-      agent_id TEXT NOT NULL REFERENCES agents(id),
-      type TEXT NOT NULL, -- 'call' | 'whatsapp' | 'visit' | 'email' | 'note' | 'status_change'
+      agent_id TEXT NOT NULL,
+      type TEXT NOT NULL,
       note TEXT,
-      duration_seconds INTEGER, -- Arama süresi (opsiyonel)
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE
-    );
-
-    CREATE TABLE IF NOT EXISTS portal_notes (
-      id TEXT PRIMARY KEY,
-      lead_id TEXT NOT NULL,
-      content TEXT NOT NULL,
-      is_read INTEGER DEFAULT 0,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE
-    );
-
-    CREATE TABLE IF NOT EXISTS search_schedules (
-      id TEXT PRIMARY KEY,
-      queries TEXT NOT NULL,
-      schedule_type TEXT DEFAULT 'once',
-      schedule_day INTEGER DEFAULT 1,
-      last_run TEXT,
-      is_active INTEGER DEFAULT 1,
+      duration_seconds INTEGER,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
+  `);
 
-    CREATE TABLE IF NOT EXISTS email_campaigns (
-      id TEXT PRIMARY KEY,
-      name TEXT NOT NULL,
-      subject TEXT NOT NULL,
-      body TEXT NOT NULL,
-      sent_count INTEGER DEFAULT 0,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-
-    CREATE TABLE IF NOT EXISTS email_logs (
-      id TEXT PRIMARY KEY,
-      lead_id TEXT,
-      campaign_id TEXT,
-      email TEXT,
-      status TEXT DEFAULT 'pending',
-      sent_at TIMESTAMP,
-      FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE
-    );
-
-    CREATE TABLE IF NOT EXISTS quotes (
-      id TEXT PRIMARY KEY,
-      lead_id TEXT NOT NULL,
-      title TEXT,
-      items TEXT NOT NULL,
-      total REAL,
-      notes TEXT,
-      status TEXT DEFAULT 'draft',
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE
-    );
-
-    CREATE TABLE IF NOT EXISTS portfolio_references (
-      id TEXT PRIMARY KEY,
-      title TEXT NOT NULL,
-      url TEXT,
-      image_url TEXT,
-      description TEXT,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-
-    -- Mesaj Şablonları (Message Templates) - Yeni
+  // 5. Message Templates (Mesaj Şablonları)
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS message_templates (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
-      category TEXT NOT NULL, -- 'first_contact' | 'follow_up' | 'proposal' | 'closing' | 'custom'
-      channel TEXT NOT NULL, -- 'whatsapp' | 'email' | 'sms'
+      category TEXT NOT NULL,
+      channel TEXT NOT NULL,
       content TEXT NOT NULL,
-      variables TEXT DEFAULT '[]', -- JSON array: ['{firma_adi}', '{portal_link}']
-      is_global INTEGER DEFAULT 1, -- 1: herkes kullanabilir, 0: kişiye özel
-      created_by TEXT REFERENCES agents(id),
+      variables TEXT DEFAULT '[]',
+      is_global INTEGER DEFAULT 1,
+      created_by TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
+  `);
 
-    -- Referans Linkleri (Referrals) - Yeni
+  // 6. Referrals (Referans Linkleri)
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS referrals (
       id TEXT PRIMARY KEY,
-      agent_id TEXT NOT NULL REFERENCES agents(id),
-      code TEXT UNIQUE NOT NULL, -- Kısa kod: ahmet, mehmet
+      agent_id TEXT NOT NULL,
+      code TEXT UNIQUE NOT NULL,
       clicks INTEGER DEFAULT 0,
       conversions INTEGER DEFAULT 0,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `);
 
-  try {
-    await db.query(`ALTER TABLE leads ADD COLUMN desktop_mockup_url TEXT;`);
-  } catch (e) { /* Ignore if exists */ }
+  // 7. Call Logs
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS call_logs (
+      id TEXT PRIMARY KEY,
+      lead_id TEXT NOT NULL,
+      note TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
 
-  try {
-    await db.query(`ALTER TABLE leads ADD COLUMN mobile_mockup_url TEXT;`);
-  } catch (e) { /* Ignore if exists */ }
+  // 8. Portal Notes
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS portal_notes (
+      id TEXT PRIMARY KEY,
+      lead_id TEXT NOT NULL,
+      content TEXT NOT NULL,
+      is_read INTEGER DEFAULT 0,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
 
-  try {
-    await db.query(`ALTER TABLE leads ADD COLUMN assigned_to TEXT;`);
-  } catch (e) { /* Ignore if exists */ }
+  // 9. Search Schedules
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS search_schedules (
+      id TEXT PRIMARY KEY,
+      queries TEXT NOT NULL,
+      schedule_type TEXT DEFAULT 'once',
+      schedule_day INTEGER DEFAULT 1,
+      schedule_time TEXT DEFAULT '09:00',
+      is_active INTEGER DEFAULT 1,
+      last_run_at TIMESTAMP,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
 
-  try {
-    await db.query(`ALTER TABLE leads ADD COLUMN referred_by TEXT;`);
-  } catch (e) { /* Ignore if exists */ }
+  isInitialized = true;
 }
 
-// We don't auto-call initDB here because top-level await is tricky in Next.js edge/serverless without strict configs.
-// Instead, we can call it inside the API routes if necessary, or let the user hit an init endpoint.
-// But for now, we'll expose a wrapper.
+export async function ensureInit() {
+  if (isInitialized) return;
+  if (!initPromise) {
+    initPromise = initDB().catch(err => {
+      console.error("Auto DB Init error:", err);
+      initPromise = null;
+      throw err;
+    });
+  }
+  await initPromise;
+}
+
+export const db = {
+  query: async (text, params) => {
+    // Auto initialize if not initialized yet
+    if (!isInitialized) {
+      try {
+        await ensureInit();
+      } catch (err) {
+        console.error("DB init failed before query, attempting direct query:", err);
+      }
+    }
+    return await pool.query(text, params);
+  }
+};
 
 export default db;

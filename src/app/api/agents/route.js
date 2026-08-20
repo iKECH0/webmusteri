@@ -195,12 +195,22 @@ export async function PUT(request) {
 // DELETE - Temsilci sil
 export async function DELETE(request) {
   try {
-    const { id } = await request.json();
+    const { searchParams } = new URL(request.url);
+    let id = searchParams.get('id');
+    if (!id) {
+      try {
+        const body = await request.json();
+        id = body?.id;
+      } catch (e) {
+        // ignore
+      }
+    }
     if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
 
-    // Önce referans linkini sil
+    // İlişkili kayıtları temizle
+    await db.query('UPDATE leads SET assigned_to = NULL WHERE assigned_to = $1', [id]);
+    await db.query('DELETE FROM activity_logs WHERE agent_id = $1', [id]);
     await db.query('DELETE FROM referrals WHERE agent_id = $1', [id]);
-    // Sonra temsilciyi sil
     await db.query('DELETE FROM agents WHERE id = $1', [id]);
 
     return NextResponse.json({ success: true });
