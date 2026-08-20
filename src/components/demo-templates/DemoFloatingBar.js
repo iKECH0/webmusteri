@@ -8,7 +8,7 @@ export default function DemoFloatingBar({ businessName, phone, refCode }) {
 
   if (closed) return null;
 
-  const agencyPhone = "905555555555"; // Your agency WhatsApp number or dynamic
+  const agencyPhone = "905432300157"; // Kodiva Ajans resmi iletişim ve yayına alma hattı
   const message = `Merhaba Kodiva Ajans, "${businessName}" için hazırladığınız canlı demo web sitesini inceledim. Sitemi yayına almak ve teklifinizi görüşmek istiyorum. (Ref: ${refCode || 'web'})`;
   const whatsappUrl = `https://wa.me/${agencyPhone}?text=${encodeURIComponent(message)}`;
 

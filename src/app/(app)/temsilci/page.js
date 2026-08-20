@@ -6,8 +6,9 @@ import {
   Users, Phone, MessageSquare, CheckCircle, Clock, 
   Send, ExternalLink, RefreshCw, LogOut, ChevronRight, 
   Plus, Check, Flame, Trophy, Copy, FileText, Search, Sparkles,
-  Trash2, XCircle
+  Trash2, XCircle, Zap
 } from 'lucide-react';
+import AgentOutreachWizard from '@/components/AgentOutreachWizard';
 
 export default function AgentLoginPage({ initialSlug }) {
   const [agents, setAgents] = useState([]);
@@ -34,6 +35,7 @@ export default function AgentLoginPage({ initialSlug }) {
   const [selectedTemplate, setSelectedTemplate] = useState('');
   const [copiedCode, setCopiedCode] = useState(false);
   const [demoCopied, setDemoCopied] = useState({});
+  const [wizardOpen, setWizardOpen] = useState(false);
 
   useEffect(() => {
     // Check saved session
@@ -330,6 +332,14 @@ export default function AgentLoginPage({ initialSlug }) {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {/* ⚡ SATIŞ AKIŞI SİHİRBAZI BUTONU */}
+          <button
+            onClick={() => setWizardOpen(true)}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 10, background: 'linear-gradient(135deg, #6366f1, #a855f7)', border: 'none', color: '#fff', fontSize: 13, cursor: 'pointer', fontWeight: 700, boxShadow: '0 4px 14px rgba(99,102,241,0.4)' }}
+          >
+            <Zap size={15} /> Mesaja Başla
+          </button>
+
           <button 
             onClick={copyMyRefLink}
             style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 12px', borderRadius: 8, background: 'rgba(255,255,255,0.06)', border: '1px solid var(--glass-border)', color: '#fff', fontSize: 12, cursor: 'pointer' }}
@@ -683,6 +693,18 @@ export default function AgentLoginPage({ initialSlug }) {
         </div>
       )}
 
+      {/* ⚡ SATIŞ AKIŞI SİHİRBAZI */}
+      {wizardOpen && (
+        <AgentOutreachWizard
+          leads={[...myLeads, ...poolLeads]}
+          templates={templates}
+          currentAgent={currentAgent}
+          onClose={() => { setWizardOpen(false); loadAgentDashboard(currentAgent.id); }}
+          onLeadUpdated={() => loadAgentDashboard(currentAgent.id)}
+        />
+      )}
+
     </div>
   );
 }
+
