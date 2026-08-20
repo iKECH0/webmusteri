@@ -6,6 +6,21 @@ import Lenis from "lenis";
 import ROICalculator from "@/components/ROICalculator";
 import PublicChatWidget from "@/components/PublicChatWidget";
 
+// Referans kodu URL'den al ve sakla (client-side hydration öncesi)
+if (typeof window !== 'undefined') {
+  const params = new URLSearchParams(window.location.search);
+  const ref = params.get('ref');
+  if (ref && !localStorage.getItem('referral_code')) {
+    localStorage.setItem('referral_code', ref);
+    // Referans tıklamasını kaydet (fire and forget)
+    fetch('/api/referrals', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: ref, action: 'click' })
+    }).catch(() => {});
+  }
+}
+
 export default function PublicHomePage() {
   const [openFaq, setOpenFaq] = useState(null);
   const [projects, setProjects] = useState([]);

@@ -20,6 +20,20 @@ export async function initDB() {
       value TEXT
     );
 
+    -- Temsilciler (Agents) Tablosu
+    CREATE TABLE IF NOT EXISTS agents (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      slug TEXT UNIQUE NOT NULL, -- URL için: /panel/ahmet
+      phone TEXT,
+      password_hash TEXT NOT NULL, -- Basit şifre hash
+      role TEXT DEFAULT 'agent', -- 'agent' | 'admin'
+      is_active INTEGER DEFAULT 1,
+      avatar_url TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
     CREATE TABLE IF NOT EXISTS leads (
       id TEXT PRIMARY KEY,
       place_id TEXT UNIQUE,
@@ -42,7 +56,8 @@ export async function initDB() {
       revenue REAL DEFAULT 0,
       desktop_mockup_url TEXT,
       mobile_mockup_url TEXT,
-      assigned_to TEXT,
+      assigned_to TEXT REFERENCES agents(id), -- Temsilci ID'si
+      referred_by TEXT REFERENCES agents(id), -- Referans linkiyle gelen müşteri
       lat REAL,
       lng REAL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -53,6 +68,18 @@ export async function initDB() {
       id TEXT PRIMARY KEY,
       lead_id TEXT NOT NULL,
       note TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE
+    );
+
+    -- İletişim Takip Günlüğü (Activity Logs) - Yeni
+    CREATE TABLE IF NOT EXISTS activity_logs (
+      id TEXT PRIMARY KEY,
+      lead_id TEXT NOT NULL,
+      agent_id TEXT NOT NULL REFERENCES agents(id),
+      type TEXT NOT NULL, -- 'call' | 'whatsapp' | 'visit' | 'email' | 'note' | 'status_change'
+      note TEXT,
+      duration_seconds INTEGER, -- Arama süresi (opsiyonel)
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE
     );
@@ -115,18 +142,46 @@ export async function initDB() {
       description TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
+
+    -- Mesaj Şablonları (Message Templates) - Yeni
+    CREATE TABLE IF NOT EXISTS message_templates (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      category TEXT NOT NULL, -- 'first_contact' | 'follow_up' | 'proposal' | 'closing' | 'custom'
+      channel TEXT NOT NULL, -- 'whatsapp' | 'email' | 'sms'
+      content TEXT NOT NULL,
+      variables TEXT DEFAULT '[]', -- JSON array: ['{firma_adi}', '{portal_link}']
+      is_global INTEGER DEFAULT 1, -- 1: herkes kullanabilir, 0: kişiye özel
+      created_by TEXT REFERENCES agents(id),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+    -- Referans Linkleri (Referrals) - Yeni
+    CREATE TABLE IF NOT EXISTS referrals (
+      id TEXT PRIMARY KEY,
+      agent_id TEXT NOT NULL REFERENCES agents(id),
+      code TEXT UNIQUE NOT NULL, -- Kısa kod: ahmet, mehmet
+      clicks INTEGER DEFAULT 0,
+      conversions INTEGER DEFAULT 0,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
   `);
 
   try {
     await db.query(`ALTER TABLE leads ADD COLUMN desktop_mockup_url TEXT;`);
   } catch (e) { /* Ignore if exists */ }
-  
+
   try {
     await db.query(`ALTER TABLE leads ADD COLUMN mobile_mockup_url TEXT;`);
   } catch (e) { /* Ignore if exists */ }
 
   try {
     await db.query(`ALTER TABLE leads ADD COLUMN assigned_to TEXT;`);
+  } catch (e) { /* Ignore if exists */ }
+
+  try {
+    await db.query(`ALTER TABLE leads ADD COLUMN referred_by TEXT;`);
   } catch (e) { /* Ignore if exists */ }
 }
 

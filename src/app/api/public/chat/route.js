@@ -4,7 +4,7 @@ import db from '@/lib/db';
 
 export async function POST(request) {
   try {
-    const { messages } = await request.json(); // Array of { role, content }
+    const { messages } = await request.json();
 
     if (!messages || !messages.length) {
       return NextResponse.json({ error: 'Messages array is required' }, { status: 400 });
@@ -73,7 +73,7 @@ Amacın: Bu ziyaretçiye şık bir web sitesi veya e-ticaret sitesi satmak için
     ];
 
     const generateResponse = async (contents) => {
-      const res = await axios.post(\`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=\${apiKey}\`, {
+      const res = await axios.post(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`, {
         contents: contents,
         tools: tools,
         generationConfig: { temperature: 0.7 }
@@ -93,7 +93,7 @@ Amacın: Bu ziyaretçiye şık bir web sitesi veya e-ticaret sitesi satmak için
         if (part.functionCall.name === 'save_lead') {
           const { name, phone } = part.functionCall.args;
           try {
-            const leadId = \`lead_\${Date.now()}_\${Math.random().toString(36).substr(2, 9)}\`;
+            const leadId = `lead_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
             await db.query(
               'INSERT INTO leads (id, name, phone, status, category, notes) VALUES ($1, $2, $3, $4, $5, $6)', 
               [leadId, name, phone, 'new', 'Potansiyel Müşteri', 'Web sitesi asistanı (Kodi) üzerinden numara bıraktı.']
