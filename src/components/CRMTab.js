@@ -16,6 +16,8 @@ const SUGGESTED_TAGS = ['Sıcak Lead', 'VIP', 'Sezonluk', 'Halı Yıkama', 'Oto 
 export default function CRMTab({ leads, onRefresh }) {
   const [crmSearch, setCrmSearch] = useState('');
   const [crmFilter, setCrmFilter] = useState('all');
+  const [agentFilter, setAgentFilter] = useState('all');
+  const [agents, setAgents] = useState([]);
   const [viewMode, setViewMode] = useState('list'); // 'list' | 'kanban'
   
   const [notes, setNotes] = useState({});
@@ -25,6 +27,19 @@ export default function CRMTab({ leads, onRefresh }) {
   const [tags, setTags] = useState({});
   const [desktopMockups, setDesktopMockups] = useState({});
   const [mobileMockups, setMobileMockups] = useState({});
+
+  useEffect(() => {
+    fetchAgents();
+  }, []);
+
+  const fetchAgents = async () => {
+    try {
+      const res = await axios.get('/api/agents');
+      setAgents(res.data || []);
+    } catch (e) {
+      console.error("Agents fetch error:", e);
+    }
+  };
   
   const [callLogInputs, setCallLogInputs] = useState({});
   const [expandedCard, setExpandedCard] = useState(null);
@@ -322,7 +337,13 @@ ${link}
       crmFilter === 'contacted' ? lead.status !== 'new' :
       crmFilter === 'closed' ? lead.status === 'closed' : 
       crmFilter === 'hot' ? lead.ai_score >= 80 : true;
-    return matchSearch && matchFilter;
+
+    const matchAgent = 
+      agentFilter === 'all' ? true :
+      agentFilter === 'unassigned' ? !lead.assigned_to :
+      lead.assigned_to === agentFilter;
+
+    return matchSearch && matchFilter && matchAgent;
   });
 
   const getScoreColor = (score) => {
@@ -402,6 +423,20 @@ ${link}
               placeholder="İsim, telefon veya etiketle ara..."
               value={crmSearch} onChange={e => setCrmSearch(e.target.value)} />
           </div>
+
+          <select 
+            className="glass-select" 
+            value={agentFilter} 
+            onChange={e => setAgentFilter(e.target.value)}
+            style={{ padding: '8px 12px', fontSize: '13px', borderRadius: 8 }}
+          >
+            <option value="all">👥 Tüm Temsilciler</option>
+            <option value="unassigned">🌊 Atanmamış (Havuz)</option>
+            {agents.map(a => (
+              <option key={a.id} value={a.id}>👤 {a.name}</option>
+            ))}
+          </select>
+
           <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
             {[
               { key: 'all', label: 'Tümü' },
@@ -526,16 +561,40 @@ ${link}
                     </div>
                   </div>
 
-                  {/* Status Selector */}
-                  <select className="glass-select" style={{ width: '100%', marginTop: '16px', padding: '8px 12px', fontSize: '13px' }}
-                    value={lead.status}
-                    onChange={e => updateLead(lead.id, { status: e.target.value })}>
-                    <option value="new">Yeni (İşlem Yapılmadı)</option>
-                    <option value="contacted">İletişime Geçildi</option>
-                    <option value="interested">İlgileniyor</option>
-                    <option value="rejected">İlgilenmiyor</option>
-                    <option value="closed">Müşteri Oldu 🎉</option>
-                  </select>
+                  {/* Assigned Agent & Status Selector */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '14px' }}>
+                    <div>
+                      <label style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 600, display: 'block', marginBottom: '4px' }}>
+                        Temsilci:
+                      </label>
+                      <select 
+                        className="glass-select" 
+                        style={{ width: '100%', padding: '6px 8px', fontSize: '12px' }}
+                        value={lead.assigned_to || ''}
+                        onChange={e => updateLead(lead.id, { assigned_to: e.target.value || null })}
+                      >
+                        <option value="">(Havuzda)</option>
+                        {agents.map(a => (
+                          <option key={a.id} value={a.id}>👤 {a.name}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 600, display: 'block', marginBottom: '4px' }}>
+                        Durum:
+                      </label>
+                      <select className="glass-select" style={{ width: '100%', padding: '6px 8px', fontSize: '12px' }}
+                        value={lead.status}
+                        onChange={e => updateLead(lead.id, { status: e.target.value })}>
+                        <option value="new">Yeni</option>
+                        <option value="contacted">İletişime Geçildi</option>
+                        <option value="interested">İlgileniyor</option>
+                        <option value="rejected">İlgilenmiyor</option>
+                        <option value="closed">Müşteri Oldu 🎉</option>
+                      </select>
+                    </div>
+                  </div>
 
                   {/* Expand Button */}
                   <button className="btn btn-outline" style={{ marginTop: '12px', width: '100%', fontSize: '13px', padding: '8px' }}
