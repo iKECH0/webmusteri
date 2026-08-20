@@ -133,7 +133,11 @@ export async function POST(request) {
 }
 
 export async function DELETE(request) {
-  const { id } = await request.json();
+  const { id, ids } = await request.json();
+  if (ids && ids.length > 0) {
+    await db.query('DELETE FROM leads WHERE id = ANY($1)', [ids]);
+    return NextResponse.json({ success: true, count: ids.length });
+  }
   if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
 
   // FOREIGN KEY CASCADE is set, but let's be explicit if we want
