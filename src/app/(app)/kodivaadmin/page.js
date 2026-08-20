@@ -186,7 +186,7 @@ export default function Home() {
           {activeTab === 'agents' && <AgentsTab leads={leads} onRefresh={fetchLeads} />}
           {activeTab === 'outreach' && <OutreachTab leads={leads} onRefresh={fetchLeads} />}
           {activeTab === 'search' && <SearchTab fetchLeads={fetchLeads} />}
-          {activeTab === 'crm' && <CRMTab leads={leads} fetchLeads={fetchLeads} />}
+          {activeTab === 'crm' && <CRMTab leads={leads} onRefresh={fetchLeads} fetchLeads={fetchLeads} />}
           {activeTab === 'analysis' && <AnalysisTab leads={leads} />}
           {activeTab === 'schedule' && <ScheduleTab />}
           {activeTab === 'settings' && <SettingsTab />}

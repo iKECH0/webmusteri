@@ -13,12 +13,17 @@ const STATUS_MAP = {
 
 const SUGGESTED_TAGS = ['Sıcak Lead', 'VIP', 'Sezonluk', 'Halı Yıkama', 'Oto Yıkama', 'Büyük İşletme'];
 
-export default function CRMTab({ leads, onRefresh }) {
+export default function CRMTab({ leads = [], onRefresh, fetchLeads }) {
   const [crmSearch, setCrmSearch] = useState('');
   const [crmFilter, setCrmFilter] = useState('all');
   const [agentFilter, setAgentFilter] = useState('all');
   const [agents, setAgents] = useState([]);
   const [viewMode, setViewMode] = useState('list'); // 'list' | 'kanban'
+  
+  const refreshCallback = () => {
+    if (typeof onRefresh === 'function') onRefresh();
+    if (typeof fetchLeads === 'function') fetchLeads();
+  };
   
   const [notes, setNotes] = useState({});
   const [followupDates, setFollowupDates] = useState({});
@@ -55,6 +60,7 @@ export default function CRMTab({ leads, onRefresh }) {
   const [salesModalLead, setSalesModalLead] = useState(null);
 
   const initLeadData = (lead) => {
+    if (!lead || !lead.id) return;
     if (notes[lead.id] === undefined) setNotes(p => ({ ...p, [lead.id]: lead.notes || '' }));
     if (followupDates[lead.id] === undefined) setFollowupDates(p => ({ ...p, [lead.id]: lead.next_followup_date || '' }));
     if (revenues[lead.id] === undefined) setRevenues(p => ({ ...p, [lead.id]: lead.revenue || '' }));
@@ -68,7 +74,7 @@ export default function CRMTab({ leads, onRefresh }) {
 
   const updateLead = async (id, data) => {
     await axios.put('/api/leads', { id, ...data });
-    onRefresh();
+    refreshCallback();
   };
 
   const saveLead = async (lead) => {
@@ -91,7 +97,7 @@ export default function CRMTab({ leads, onRefresh }) {
   const deleteLead = async (id) => {
     if (!confirm('Bu firmayı silmek istediğinize emin misiniz?')) return;
     await axios.delete('/api/leads', { data: { id } });
-    onRefresh();
+    refreshCallback();
   };
 
   const handleDragStart = (e, leadId) => {
@@ -299,7 +305,7 @@ ${link}
     if (!token) {
       token = Math.random().toString(36).substring(2, 20) + Date.now().toString(36);
       await axios.put('/api/leads', { id: lead.id, portal_token: token });
-      onRefresh(); // Refresh lead data to get the new token
+      refreshCallback(); // Refresh lead data to get the new token
     }
     const link = `${window.location.origin}/portal/${token}`;
     navigator.clipboard.writeText(link);
@@ -312,7 +318,7 @@ ${link}
     if (!token) {
       token = Math.random().toString(36).substring(2, 20) + Date.now().toString(36);
       await axios.put('/api/leads', { id: lead.id, portal_token: token });
-      onRefresh();
+      refreshCallback();
     }
     const link = `${window.location.origin}/demo/${token}`;
     navigator.clipboard.writeText(link);
@@ -342,15 +348,20 @@ ${link}
     document.body.removeChild(link);
   };
 
-  const filteredLeads = leads.filter(lead => {
-    const q = crmSearch.toLowerCase();
-    const matchSearch = !q || lead.name.toLowerCase().includes(q) || (lead.phone || '').includes(q) || (lead.tags || []).some(t => t.toLowerCase().includes(q));
+  const filteredLeads = (leads || []).filter(lead => {
+    if (!lead) return false;
+    const q = (crmSearch || '').toLowerCase();
+    const matchSearch = !q || 
+      (lead.name || '').toLowerCase().includes(q) || 
+      (lead.phone || '').includes(q) || 
+      (Array.isArray(lead.tags) ? lead.tags : []).some(t => (t || '').toLowerCase().includes(q));
+      
     const matchFilter =
       crmFilter === 'all' ? true :
       crmFilter === 'nowebsite' ? !lead.has_website :
-      crmFilter === 'contacted' ? lead.status !== 'new' :
+      crmFilter === 'contacted' ? (lead.status && lead.status !== 'new') :
       crmFilter === 'closed' ? lead.status === 'closed' : 
-      crmFilter === 'hot' ? lead.ai_score >= 80 : true;
+      crmFilter === 'hot' ? (lead.ai_score || 0) >= 80 : true;
 
     const matchAgent = 
       agentFilter === 'all' ? true :
@@ -367,13 +378,13 @@ ${link}
   };
 
   // Stats
-  const total = leads.length;
-  const noWebsite = leads.filter(l => !l.has_website).length;
-  const contacted = leads.filter(l => l.status !== 'new').length;
-  const closed = leads.filter(l => l.status === 'closed').length;
-  const totalRevenue = leads.reduce((sum, l) => sum + (l.revenue || 0), 0);
+  const total = (leads || []).length;
+  const noWebsite = (leads || []).filter(l => l && !l.has_website).length;
+  const contacted = (leads || []).filter(l => l && l.status && l.status !== 'new').length;
+  const closed = (leads || []).filter(l => l && l.status === 'closed').length;
+  const totalRevenue = (leads || []).reduce((sum, l) => sum + (parseFloat(l?.revenue) || 0), 0);
   const today = new Date().toISOString().split('T')[0];
-  const todayFollowups = leads.filter(l => l.next_followup_date === today);
+  const todayFollowups = (leads || []).filter(l => l && l.next_followup_date === today);
 
   return (
     <div>
@@ -472,7 +483,7 @@ ${link}
         ) : viewMode === 'kanban' ? (
           <div style={{ display: 'flex', gap: 20, overflowX: 'auto', paddingBottom: 16 }}>
             {Object.entries(STATUS_MAP).map(([statusKey, statusInfo]) => {
-              const columnLeads = filteredLeads.filter(l => l.status === statusKey);
+              const columnLeads = filteredLeads.filter(l => (l?.status || 'new') === statusKey);
               return (
                 <div key={statusKey} 
                   onDragOver={handleDragOver} 
@@ -486,14 +497,14 @@ ${link}
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minHeight: 150 }}>
                     {columnLeads.map(lead => {
+                      if (!lead) return null;
                       initLeadData(lead);
-                      const wsStatus = checkingWebsite[lead.id];
                       return (
                         <div key={lead.id} 
                           draggable
                           onDragStart={(e) => handleDragStart(e, lead.id)}
                           style={{ background: 'white', color: '#0f172a', padding: 16, borderRadius: 12, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', cursor: 'grab', borderLeft: `4px solid ${statusKey === 'closed' ? '#10b981' : (statusKey === 'rejected' ? '#ef4444' : '#3b82f6')}` }}>
-                          <h4 style={{ margin: '0 0 8px 0', fontSize: 15 }}>{lead.name}</h4>
+                          <h4 style={{ margin: '0 0 8px 0', fontSize: 15, fontWeight: 700 }}>{lead.name}</h4>
                           <div style={{ fontSize: 12, color: '#64748b', display: 'flex', flexDirection: 'column', gap: 4 }}>
                             {lead.phone && <div>📞 {lead.phone}</div>}
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
