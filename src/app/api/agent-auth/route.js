@@ -45,9 +45,11 @@ export async function POST(request) {
     const token = generateToken();
     const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 gün
 
-    // Basit session saklama (gerçek projede ayrı tablo veya JWT kullanılmalı)
-    // Şimdilik token'ı agent tablosunda tutalım (tek session)
-    await db.query('UPDATE agents SET session_token = $1, session_expires = $2 WHERE id = $3', [token, expiresAt.toISOString(), agent.id]);
+    try {
+      await db.query('UPDATE agents SET session_token = $1, session_expires = $2 WHERE id = $3', [token, expiresAt.toISOString(), agent.id]);
+    } catch (sessionErr) {
+      console.warn("Session token update warning:", sessionErr);
+    }
 
     const response = NextResponse.json({
       success: true,

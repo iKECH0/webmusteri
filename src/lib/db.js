@@ -30,10 +30,29 @@ export async function initDB() {
       role TEXT DEFAULT 'agent',
       is_active INTEGER DEFAULT 1,
       avatar_url TEXT,
+      session_token TEXT,
+      session_expires TIMESTAMP,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `);
+
+  const agentColumns = [
+    `ALTER TABLE agents ADD COLUMN IF NOT EXISTS session_token TEXT;`,
+    `ALTER TABLE agents ADD COLUMN IF NOT EXISTS session_expires TIMESTAMP;`,
+    `ALTER TABLE agents ADD COLUMN IF NOT EXISTS phone TEXT;`,
+    `ALTER TABLE agents ADD COLUMN IF NOT EXISTS avatar_url TEXT;`,
+    `ALTER TABLE agents ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'agent';`,
+    `ALTER TABLE agents ADD COLUMN IF NOT EXISTS is_active INTEGER DEFAULT 1;`
+  ];
+
+  for (const colQuery of agentColumns) {
+    try {
+      await pool.query(colQuery);
+    } catch (e) {
+      // Ignore if already exists
+    }
+  }
 
   // 3. Leads (Müşteriler)
   await pool.query(`
