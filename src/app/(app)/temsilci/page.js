@@ -5,7 +5,8 @@ import axios from 'axios';
 import { 
   Users, Phone, MessageSquare, CheckCircle, Clock, 
   Send, ExternalLink, RefreshCw, LogOut, ChevronRight, 
-  Plus, Check, Flame, Trophy, Copy, FileText, Search, Sparkles
+  Plus, Check, Flame, Trophy, Copy, FileText, Search, Sparkles,
+  Trash2, XCircle
 } from 'lucide-react';
 
 export default function AgentLoginPage({ initialSlug }) {
@@ -127,14 +128,21 @@ export default function AgentLoginPage({ initialSlug }) {
   // Claim lead from pool
   const handleClaimLead = async (leadId) => {
     try {
-      await axios.post('/api/leads', {
-        action: 'claim',
-        assigned_to: currentAgent.id,
-        lead_ids: [leadId]
-      });
+      await axios.put('/api/leads', { id: leadId, assigned_to: currentAgent.id });
       loadAgentDashboard(currentAgent.id);
     } catch (err) {
       alert('Müşteri alınamadı.');
+    }
+  };
+
+  // Ele / Reject lead from pool
+  const handleRejectFromPool = async (leadId, leadName) => {
+    if (!confirm(`"${leadName}" firmasını havuzdan elemek istiyor musunuz? Durum "İlgilenmiyor" olarak işaretlenecek.`)) return;
+    try {
+      await axios.put('/api/leads', { id: leadId, status: 'rejected' });
+      loadAgentDashboard(currentAgent.id);
+    } catch (err) {
+      alert('İşlem başarısız.');
     }
   };
 
@@ -565,20 +573,31 @@ export default function AgentLoginPage({ initialSlug }) {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {poolLeads.map(lead => (
-                  <div key={lead.id} className="glass-panel" style={{ padding: 16, borderRadius: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+                  <div key={lead.id} className="glass-panel" style={{ padding: '14px 18px', borderRadius: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
                     <div>
                       <h4 style={{ margin: '0 0 4px', fontSize: 15, fontWeight: 700 }}>{lead.name}</h4>
-                      <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-                        {lead.category || 'Esnaf'} • {lead.phone || 'Telefon yok'}
+                      <div style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'flex', gap: 10 }}>
+                        <span>{lead.category || 'Esnaf'}</span>
+                        {lead.phone && <span style={{ color: '#38bdf8', fontWeight: 600 }}>📞 {lead.phone}</span>}
                       </div>
                     </div>
 
-                    <button 
-                      onClick={() => handleClaimLead(lead.id)}
-                      style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '10px 16px', borderRadius: 10, background: 'var(--accent-color)', color: '#fff', border: 'none', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}
-                    >
-                      <Plus size={16} /> Kendime Al
-                    </button>
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                      <button 
+                        onClick={() => handleClaimLead(lead.id)}
+                        style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 16px', borderRadius: 10, background: 'var(--accent-color)', color: '#fff', border: 'none', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}
+                      >
+                        <Plus size={15} /> Kendime Al
+                      </button>
+
+                      <button 
+                        onClick={() => handleRejectFromPool(lead.id, lead.name)}
+                        style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '9px 14px', borderRadius: 10, background: 'rgba(239,68,68,0.12)', color: '#f87171', border: '1px solid rgba(239,68,68,0.25)', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}
+                        title="Bu müşteriyi havuzdan ele / ilgilenmiyor işaretle"
+                      >
+                        <XCircle size={15} /> Ele
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
