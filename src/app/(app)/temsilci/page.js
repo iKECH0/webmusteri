@@ -5,7 +5,7 @@ import axios from 'axios';
 import { 
   Users, Phone, MessageSquare, CheckCircle, Clock, 
   Send, ExternalLink, RefreshCw, LogOut, ChevronRight, 
-  Plus, Check, Flame, Trophy, Copy, FileText, Search
+  Plus, Check, Flame, Trophy, Copy, FileText, Search, Sparkles
 } from 'lucide-react';
 
 export default function AgentLoginPage({ initialSlug }) {
@@ -32,6 +32,7 @@ export default function AgentLoginPage({ initialSlug }) {
   const [newStatus, setNewStatus] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState('');
   const [copiedCode, setCopiedCode] = useState(false);
+  const [demoCopied, setDemoCopied] = useState({});
 
   useEffect(() => {
     // Check saved session
@@ -160,15 +161,30 @@ export default function AgentLoginPage({ initialSlug }) {
     }
   };
 
+  // Copy demo link
+  const copyLeadDemoLink = (lead) => {
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const demoUrl = lead.portal_token 
+      ? `${origin}/demo/${lead.portal_token}?ref=${currentAgent?.slug || ''}`
+      : `${origin}/demo?name=${encodeURIComponent(lead.name)}&phone=${encodeURIComponent(lead.phone || '')}&ref=${currentAgent?.slug || ''}`;
+    navigator.clipboard.writeText(demoUrl);
+    setDemoCopied(p => ({ ...p, [lead.id]: true }));
+    setTimeout(() => setDemoCopied(p => ({ ...p, [lead.id]: false })), 2000);
+  };
+
   // Send WhatsApp message
   const handleSendWhatsApp = (lead, customText = '') => {
-    let text = customText || `Merhaba ${lead.name}, Kodiva Dijital'den arıyorum. İşletmeniz için hazırladığımız özel web sitesi teklifini iletmek istedim.`;
+    let text = customText || `Merhaba {firma_adi} ailesi 👋\n\nİşletmeniz için özel bir canlı web sitesi demosu hazırladık. Telefonunuzdan hemen inceleyebilirsiniz:\n{demo_link}\n\nBeğenirseniz 24 saat içinde alan adınızla yayına alabiliriz!`;
     
     // Replace variables
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
     const portalUrl = lead.portal_token ? `${origin}/portal/${lead.portal_token}?ref=${currentAgent?.slug || ''}` : `${origin}/?ref=${currentAgent?.slug || ''}`;
-    
+    const demoUrl = lead.portal_token 
+      ? `${origin}/demo/${lead.portal_token}?ref=${currentAgent?.slug || ''}` 
+      : `${origin}/demo?name=${encodeURIComponent(lead.name)}&phone=${encodeURIComponent(lead.phone || '')}&ref=${currentAgent?.slug || ''}`;
+
     text = text.replace(/{firma_adi}/g, lead.name)
+               .replace(/{demo_link}/g, demoUrl)
                .replace(/{portal_link}/g, portalUrl)
                .replace(/{temsilci_adi}/g, currentAgent?.name || '');
 
@@ -443,36 +459,86 @@ export default function AgentLoginPage({ initialSlug }) {
                       )}
 
                       {/* Action Buttons */}
-                      <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 4 }}>
                         
-                        {lead.phone && (
-                          <>
-                            <button 
-                              onClick={() => handleQuickCall(lead)}
-                              style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px', borderRadius: 10, background: 'rgba(56,189,248,0.15)', color: '#38bdf8', border: '1px solid rgba(56,189,248,0.3)', fontWeight: 600, fontSize: 13, cursor: 'pointer' }}
-                            >
-                              <Phone size={15} /> Ara
-                            </button>
+                        {/* Demo Link Bar */}
+                        <div style={{ display: 'flex', gap: 6 }}>
+                          <a 
+                            href={`/demo/${lead.portal_token || lead.id}?ref=${currentAgent?.slug || ''}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{
+                              flex: 1,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: 6,
+                              padding: '8px 12px',
+                              borderRadius: 10,
+                              background: 'rgba(99,102,241,0.15)',
+                              color: '#818cf8',
+                              border: '1px solid rgba(99,102,241,0.3)',
+                              fontSize: 12,
+                              fontWeight: 700,
+                              textDecoration: 'none'
+                            }}
+                          >
+                            <Sparkles size={14} /> Canlı Tasarımı Aç 🌐
+                          </a>
 
-                            <button 
-                              onClick={() => handleSendWhatsApp(lead)}
-                              style={{ flex: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px', borderRadius: 10, background: '#22c55e', color: '#fff', border: 'none', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}
-                            >
-                              <MessageSquare size={15} /> WhatsApp
-                            </button>
-                          </>
-                        )}
+                          <button 
+                            onClick={() => copyLeadDemoLink(lead)}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: 4,
+                              padding: '8px 12px',
+                              borderRadius: 10,
+                              background: demoCopied[lead.id] ? 'rgba(34,197,94,0.2)' : 'rgba(255,255,255,0.06)',
+                              color: demoCopied[lead.id] ? '#4ade80' : '#cbd5e1',
+                              border: '1px solid var(--glass-border)',
+                              fontSize: 12,
+                              fontWeight: 600,
+                              cursor: 'pointer'
+                            }}
+                            title="Demo Linkini Kopyala"
+                          >
+                            <Copy size={13} /> {demoCopied[lead.id] ? 'Kopyalandı!' : 'Linki Al'}
+                          </button>
+                        </div>
 
-                        <button 
-                          onClick={() => {
-                            setSelectedLeadForAction(lead);
-                            setActionType('note');
-                            setNewStatus(lead.status);
-                          }}
-                          style={{ padding: '10px 14px', borderRadius: 10, background: 'rgba(255,255,255,0.08)', color: '#fff', border: '1px solid var(--glass-border)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
-                        >
-                          Not / Durum ✏️
-                        </button>
+                        {/* Contact & Status Bar */}
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          {lead.phone && (
+                            <>
+                              <button 
+                                onClick={() => handleQuickCall(lead)}
+                                style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px', borderRadius: 10, background: 'rgba(56,189,248,0.15)', color: '#38bdf8', border: '1px solid rgba(56,189,248,0.3)', fontWeight: 600, fontSize: 13, cursor: 'pointer' }}
+                              >
+                                <Phone size={15} /> Ara
+                              </button>
+
+                              <button 
+                                onClick={() => handleSendWhatsApp(lead)}
+                                style={{ flex: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px', borderRadius: 10, background: '#22c55e', color: '#fff', border: 'none', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}
+                              >
+                                <MessageSquare size={15} /> WhatsApp
+                              </button>
+                            </>
+                          )}
+
+                          <button 
+                            onClick={() => {
+                              setSelectedLeadForAction(lead);
+                              setActionType('note');
+                              setNewStatus(lead.status);
+                            }}
+                            style={{ padding: '10px 14px', borderRadius: 10, background: 'rgba(255,255,255,0.08)', color: '#fff', border: '1px solid var(--glass-border)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                          >
+                            Not / Durum ✏️
+                          </button>
+                        </div>
 
                       </div>
 

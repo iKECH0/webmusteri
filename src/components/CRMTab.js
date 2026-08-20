@@ -1,7 +1,7 @@
 "use client";
 import { useState } from 'react';
 import axios from 'axios';
-import { Download, Filter, Search, MessageCircle, AlignLeft, Save, Trash2, Phone, MapPin, Globe, ExternalLink, PhoneCall, Mail, Calendar, Link, Tag, Star, Activity, MessageSquare, Copy, X } from 'lucide-react';
+import { Download, Filter, Search, MessageCircle, AlignLeft, Save, Trash2, Phone, MapPin, Globe, ExternalLink, PhoneCall, Mail, Calendar, Link, Tag, Star, Activity, MessageSquare, Copy, X, Sparkles } from 'lucide-react';
 
 const STATUS_MAP = {
   new: { label: 'Yeni', cls: 'status-warning' },
@@ -46,6 +46,7 @@ export default function CRMTab({ leads, onRefresh }) {
   const [callLogs, setCallLogs] = useState({});
   const [checkingWebsite, setCheckingWebsite] = useState({});
   const [portalCopied, setPortalCopied] = useState({});
+  const [demoCopied, setDemoCopied] = useState({});
   const [calSyncing, setCalSyncing] = useState({});
   const [aiPitches, setAiPitches] = useState({});
   const [generatingPitch, setGeneratingPitch] = useState({});
@@ -304,6 +305,19 @@ ${link}
     navigator.clipboard.writeText(link);
     setPortalCopied(p => ({ ...p, [lead.id]: true }));
     setTimeout(() => setPortalCopied(p => ({ ...p, [lead.id]: false })), 2500);
+  };
+
+  const copyDemoLink = async (lead) => {
+    let token = lead.portal_token;
+    if (!token) {
+      token = Math.random().toString(36).substring(2, 20) + Date.now().toString(36);
+      await axios.put('/api/leads', { id: lead.id, portal_token: token });
+      onRefresh();
+    }
+    const link = `${window.location.origin}/demo/${token}`;
+    navigator.clipboard.writeText(link);
+    setDemoCopied(p => ({ ...p, [lead.id]: true }));
+    setTimeout(() => setDemoCopied(p => ({ ...p, [lead.id]: false })), 2500);
   };
 
   const downloadCSV = () => {
@@ -702,9 +716,14 @@ ${link}
                           onClick={() => saveLead(lead)}>
                           <Save size={14} /> Bilgileri Kaydet
                         </button>
+                        <button className="btn btn-outline" style={{ padding: '8px 12px', fontSize: 13, borderColor: demoCopied[lead.id] ? '#10b981' : '#818cf8', color: demoCopied[lead.id] ? '#34d399' : '#818cf8' }}
+                          onClick={() => copyDemoLink(lead)}
+                          title="Müşteriye özel sektörüne göre hazırlanmış Canlı Demo web sitesi linki">
+                          <Sparkles size={14} /> {demoCopied[lead.id] ? 'Kopyalandı!' : '⚡ Canlı Demo'}
+                        </button>
                         <button className="btn btn-outline" style={{ padding: '8px 12px', fontSize: 13, borderColor: portalCopied[lead.id] ? '#10b981' : undefined, color: portalCopied[lead.id] ? '#34d399' : undefined }}
                           onClick={() => copyPortalLink(lead)}>
-                          <Link size={14} /> {portalCopied[lead.id] ? 'Kopyalandı!' : 'Portal Linki'}
+                          <Link size={14} /> {portalCopied[lead.id] ? 'Kopyalandı!' : 'Portal'}
                         </button>
                         <button className="btn btn-outline" style={{ padding: '8px 12px', borderColor: '#ef4444', color: '#ef4444' }}
                           onClick={() => deleteLead(lead.id)}>

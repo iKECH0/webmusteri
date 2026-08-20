@@ -317,15 +317,27 @@ export default function GuidedSalesTab({ leads = [], onRefresh }) {
               WhatsApp ile Gönder
             </a>
 
-            <div style={{ marginTop: 40, paddingTop: 24, borderTop: '1px solid var(--glass-border)' }}>
-              <span style={{ color: 'var(--text-secondary)', fontSize: 13, display: 'block', marginBottom: 8 }}>Veya bağlantıyı kopyalayın:</span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, maxWidth: 500, margin: '0 auto' }}>
-                <input type="text" readOnly className="glass-input" value={`${window.location.origin}/portal/${portalToken}`} style={{ margin: 0, padding: 12, background: 'rgba(0,0,0,0.2)' }} />
-                <button className="btn btn-outline" style={{ padding: '12px 16px', whiteSpace: 'nowrap' }} onClick={() => {
-                  navigator.clipboard.writeText(`${window.location.origin}/portal/${portalToken}`);
-                  alert('Kopyalandı!');
-                }}>Kopyala</button>
+            <div style={{ marginTop: 32, paddingTop: 20, borderTop: '1px solid var(--glass-border)', display: 'flex', flexDirection: 'column', gap: 16 }}>
+              
+              <div>
+                <span style={{ color: '#818cf8', fontSize: 13, fontWeight: 700, display: 'block', marginBottom: 6 }}>⚡ Canlı Web Sitesi Tasarım Demosu:</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, maxWidth: 520, margin: '0 auto' }}>
+                  <input type="text" readOnly className="glass-input" value={`${typeof window !== 'undefined' ? window.location.origin : ''}/demo/${portalToken}`} style={{ margin: 0, padding: 10, fontSize: 13, background: 'rgba(99,102,241,0.1)' }} />
+                  <a href={`${typeof window !== 'undefined' ? window.location.origin : ''}/demo/${portalToken}`} target="_blank" rel="noreferrer" className="btn btn-primary" style={{ padding: '10px 14px', whiteSpace: 'nowrap', fontSize: 13, textDecoration: 'none' }}>Aç 🌐</a>
+                </div>
               </div>
+
+              <div>
+                <span style={{ color: 'var(--text-secondary)', fontSize: 13, display: 'block', marginBottom: 6 }}>📄 Fiyat & Sunum Portalı Linki:</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, maxWidth: 520, margin: '0 auto' }}>
+                  <input type="text" readOnly className="glass-input" value={`${typeof window !== 'undefined' ? window.location.origin : ''}/portal/${portalToken}`} style={{ margin: 0, padding: 10, fontSize: 13, background: 'rgba(0,0,0,0.2)' }} />
+                  <button className="btn btn-outline" style={{ padding: '10px 14px', whiteSpace: 'nowrap', fontSize: 13 }} onClick={() => {
+                    navigator.clipboard.writeText(`${window.location.origin}/portal/${portalToken}`);
+                    alert('Portal linki kopyalandı!');
+                  }}>Kopyala</button>
+                </div>
+              </div>
+
             </div>
           </div>
         )}

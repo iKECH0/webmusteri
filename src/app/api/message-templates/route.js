@@ -37,14 +37,64 @@ export async function GET(request) {
       query += ' WHERE ' + conditions.join(' AND ');
     }
 
-    query += ' ORDER BY category, created_at DESC';
-
     const res = await db.query(query, params);
-    const templates = res.rows.map(t => ({
+    let templates = res.rows.map(t => ({
       ...t,
       variables: JSON.parse(t.variables || '[]'),
       is_global: !!t.is_global
     }));
+
+    // Auto-seed default templates if empty
+    if (templates.length === 0) {
+      const defaults = [
+        {
+          id: 'tpl_demo_1',
+          name: '⚡ Canlı Tasarım Demosu (En Çok Satan)',
+          category: 'first_contact',
+          channel: 'whatsapp',
+          content: 'Merhaba {firma_adi} ailesi 👋\n\nBölgenizdeki başarılı işletmeleri incelerken kaliteniz dikkatimizi çekti. Firmanıza özel canlı ve çalışan bir web sitesi demosu tasarladık! 🚀\n\nTelefonunuzdan 1 dakikada inceleyebilirsiniz:\n{demo_link}\n\nBeğenirseniz 24 saat içinde kendi alan adınızla yayına alabiliriz. İnceledikten sonra görüşlerinizi paylaşırsanız sevinirim! 😊',
+          variables: JSON.stringify(['{firma_adi}', '{demo_link}', '{temsilci_adi}']),
+          is_global: 1
+        },
+        {
+          id: 'tpl_demo_2',
+          name: '🔥 Özel İndirimli Demo Tanıtımı',
+          category: 'proposal',
+          channel: 'whatsapp',
+          content: 'Selamlar {firma_adi} yetkilisi,\n\nİşletmeniz için hazırladığımız özel canlı web sitesi önizlemesini buradan görebilirsiniz:\n{demo_link}\n\nBu aya özel indirimli anahtar teslim paketimizle sitenizi kurup Google Haritalar\'da müşteri sayınızı katlayabiliriz. Detayları konuşalım mı?',
+          variables: JSON.stringify(['{firma_adi}', '{demo_link}', '{temsilci_adi}']),
+          is_global: 1
+        },
+        {
+          id: 'tpl_demo_3',
+          name: '⏰ Takip & Hatırlatma (Demo İnceleme)',
+          category: 'follow_up',
+          channel: 'whatsapp',
+          content: 'Merhaba {firma_adi},\n\nGeçtiğimiz günlerde firmanız için hazırladığımız canlı web sitesi tasarımını inceleme fırsatınız oldu mu? 😊\n\nLink: {demo_link}\n\nHerhangi bir sorunuz varsa veya düzenleme istediğiniz bir yer olursa yardımcı olmaktan mutluluk duyarım.',
+          variables: JSON.stringify(['{firma_adi}', '{demo_link}', '{temsilci_adi}']),
+          is_global: 1
+        }
+      ];
+
+      for (const d of defaults) {
+        try {
+          await db.query(
+            `INSERT INTO message_templates (id, name, category, channel, content, variables, is_global)
+             VALUES ($1, $2, $3, $4, $5, $6, $7) ON CONFLICT (id) DO NOTHING`,
+            [d.id, d.name, d.category, d.channel, d.content, d.variables, d.is_global]
+          );
+        } catch (e) {
+          console.error("Seed error:", e);
+        }
+      }
+
+      const reCheck = await db.query(query, params);
+      templates = reCheck.rows.map(t => ({
+        ...t,
+        variables: JSON.parse(t.variables || '[]'),
+        is_global: !!t.is_global
+      }));
+    }
 
     return NextResponse.json(templates);
   } catch (error) {
