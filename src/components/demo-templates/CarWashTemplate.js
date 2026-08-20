@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Phone, MapPin, ChevronRight, Star, Shield, Clock, Zap, Check, MessageCircle } from 'lucide-react';
 import DemoFloatingBar from './DemoFloatingBar';
+import DemoCursor from './DemoCursor';
 
 function useInView(threshold = 0.15) {
   const ref = useRef(null);
@@ -100,6 +101,7 @@ export default function CarWashTemplate({ businessName, phone, address, rating, 
 
   return (
     <div style={{ background: '#080c14', color: '#e8edf5', fontFamily: '"Inter", "SF Pro Display", system-ui, sans-serif', overflowX: 'hidden' }}>
+      <DemoCursor color="#38bdf8" />
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
