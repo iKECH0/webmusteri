@@ -1,12 +1,7 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import db from '@/lib/db';
-import CarWashTemplate from '@/components/demo-templates/CarWashTemplate';
-import CarpetCleaningTemplate from '@/components/demo-templates/CarpetCleaningTemplate';
-import SalonTemplate from '@/components/demo-templates/SalonTemplate';
-import RestaurantTemplate from '@/components/demo-templates/RestaurantTemplate';
-import TechnicalServiceTemplate from '@/components/demo-templates/TechnicalServiceTemplate';
-import CorporateTemplate from '@/components/demo-templates/CorporateTemplate';
 import { detectSector } from '../page';
+import DemoClientPage from './DemoClientPage';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,7 +9,7 @@ export async function generateMetadata({ params }) {
   const { token } = await params;
   try {
     const res = await db.query(
-      'SELECT name, category FROM leads WHERE portal_token = $1 OR id = $1 LIMIT 1',
+      'SELECT name, category FROM leads WHERE portal_token = $1 OR id::text = $1 LIMIT 1',
       [token]
     );
     if (res.rows.length > 0) {
@@ -42,7 +37,7 @@ export default async function LeadDemoPage({ params, searchParams }) {
 
   try {
     const res = await db.query(
-      'SELECT * FROM leads WHERE portal_token = $1 OR id = $1 LIMIT 1',
+      'SELECT * FROM leads WHERE portal_token = $1 OR id::text = $1 LIMIT 1',
       [token]
     );
     if (res.rows.length > 0) {
@@ -52,38 +47,31 @@ export default async function LeadDemoPage({ params, searchParams }) {
     console.error("Demo fetch error:", err);
   }
 
-  // If lead found in DB
   const businessName = lead ? lead.name : decodeURIComponent(token).replace(/-/g, ' ');
-  const category = lead ? lead.category : '';
-  const phone = lead ? lead.phone : '0555 000 00 00';
-  const address = lead ? lead.address : 'İstanbul, Türkiye';
-  const rating = lead?.rating || '4.9';
-  const reviewCount = lead?.review_count || '150+';
+  const category = lead ? (lead.category || '') : '';
+  const phone = lead ? (lead.phone || '0555 000 00 00') : '0555 000 00 00';
+  const address = lead ? (lead.address || 'İstanbul, Türkiye') : 'İstanbul, Türkiye';
+  const rating = String(lead?.rating || '4.9');
+  const reviewCount = String(lead?.review_count || '150+');
   const refCode = lead?.referred_by || lead?.assigned_to || sParams?.ref || 'web';
 
   const sector = detectSector(category, businessName, forcedSector);
 
-  const props = {
-    businessName,
-    phone,
-    address,
-    rating,
-    reviewCount,
-    refCode
-  };
-
-  switch (sector) {
-    case 'oto-yikama':
-      return <CarWashTemplate {...props} />;
-    case 'hali-yikama':
-      return <CarpetCleaningTemplate {...props} />;
-    case 'kuafor':
-      return <SalonTemplate {...props} />;
-    case 'restoran':
-      return <RestaurantTemplate {...props} />;
-    case 'teknik-servis':
-      return <TechnicalServiceTemplate {...props} />;
-    default:
-      return <CorporateTemplate {...props} />;
-  }
+  return (
+    <Suspense fallback={
+      <div style={{ background: '#0a0d14', color: '#fff', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>
+        Demo Yükleniyor...
+      </div>
+    }>
+      <DemoClientPage
+        businessName={businessName}
+        phone={phone}
+        address={address}
+        rating={rating}
+        reviewCount={reviewCount}
+        refCode={refCode}
+        sector={sector}
+      />
+    </Suspense>
+  );
 }
