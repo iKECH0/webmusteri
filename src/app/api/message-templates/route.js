@@ -112,8 +112,8 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Tüm alanlar zorunludur' }, { status: 400 });
     }
 
-    const validCategories = ['first_contact', 'follow_up', 'proposal', 'closing', 'custom'];
-    const validChannels = ['whatsapp', 'email', 'sms'];
+    const validCategories = ['first_contact', 'follow_up', 'proposal', 'closing', 'ai_prompt', 'cold_call', 'objection', 'social', 'custom'];
+    const validChannels = ['whatsapp', 'email', 'sms', 'ai', 'phone', 'social', 'general'];
 
     if (!validCategories.includes(category)) {
       return NextResponse.json({ error: 'Geçersiz kategori' }, { status: 400 });
@@ -190,7 +190,14 @@ export async function PUT(request) {
 // DELETE - Şablon sil
 export async function DELETE(request) {
   try {
-    const { id } = await request.json();
+    const { searchParams } = new URL(request.url);
+    let id = searchParams.get('id');
+    if (!id) {
+      try {
+        const body = await request.json();
+        id = body?.id;
+      } catch (e) {}
+    }
     if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
 
     await db.query('DELETE FROM message_templates WHERE id = $1', [id]);

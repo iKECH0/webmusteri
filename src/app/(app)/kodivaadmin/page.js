@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, Suspense, lazy } from 'react';
 import axios from 'axios';
-import { Search, Map, Users, BarChart2, Clock, Settings as SettingsIcon, Mail, FileText, Target, Menu, X, MessageSquare } from 'lucide-react';
+import { Search, Map, Users, BarChart2, Clock, Settings as SettingsIcon, Mail, FileText, Target, Menu, X, MessageSquare, Sparkles } from 'lucide-react';
 import SearchTab from '@/components/SearchTab';
 import CRMTab from '@/components/CRMTab';
 import AnalysisTab from '@/components/AnalysisTab';
@@ -15,6 +15,7 @@ import ReferencesTab from '@/components/ReferencesTab';
 import GuidedSalesTab from '@/components/GuidedSalesTab';
 import OutreachTab from '@/components/OutreachTab';
 import AgentsTab from '@/components/AgentsTab';
+import PromptsTab from '@/components/PromptsTab';
 
 import dynamic from 'next/dynamic';
 const MapTab = dynamic(() => import('@/components/MapTab'), { ssr: false });
@@ -24,6 +25,7 @@ const MENU_CATEGORIES = [
     title: "Ana Operasyon",
     items: [
       { key: 'guided-sales', label: 'Hızlı Satış Asistanı', icon: Target },
+      { key: 'prompts', label: 'Hazır Metinler & Promptlar', icon: Sparkles },
       { key: 'agents', label: 'Satış Ekibi & Temsilciler', icon: Users },
       { key: 'outreach', label: 'Toplu İlk Temas', icon: Users },
       { key: 'crm', label: 'CRM & Kanban', icon: Users },
@@ -183,6 +185,7 @@ export default function Home() {
         {/* Tab Content Rendering */}
         <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%' }}>
           {activeTab === 'guided-sales' && <GuidedSalesTab leads={leads} onRefresh={fetchLeads} />}
+          {activeTab === 'prompts' && <PromptsTab />}
           {activeTab === 'agents' && <AgentsTab leads={leads} onRefresh={fetchLeads} />}
           {activeTab === 'outreach' && <OutreachTab leads={leads} onRefresh={fetchLeads} />}
           {activeTab === 'search' && <SearchTab fetchLeads={fetchLeads} />}
