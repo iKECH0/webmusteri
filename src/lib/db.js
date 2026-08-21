@@ -187,6 +187,44 @@ export async function initDB() {
     );
   `);
 
+  // 10. Website Scans (Sağlık Analizleri)
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS scans (
+      id TEXT PRIMARY KEY,
+      url TEXT NOT NULL,
+      normalized_url TEXT NOT NULL,
+      email TEXT,
+      phone TEXT,
+      status TEXT DEFAULT 'pending',
+      overall_score INTEGER,
+      screenshot_url TEXT,
+      error_message TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      completed_at TIMESTAMP
+    );
+  `);
+
+  // 11. Scan Results (Kategori Bulguları)
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS scan_results (
+      id TEXT PRIMARY KEY,
+      scan_id TEXT NOT NULL REFERENCES scans(id) ON DELETE CASCADE,
+      category TEXT NOT NULL,
+      score INTEGER NOT NULL,
+      findings JSONB NOT NULL DEFAULT '[]'::jsonb,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+
+  // Indexes for quick lookups
+  try {
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_scans_normalized_url ON scans(normalized_url);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_scans_created_at ON scans(created_at DESC);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_scan_results_scan_id ON scan_results(scan_id);`);
+  } catch (e) {
+    // Ignore index creation errors if any
+  }
+
   isInitialized = true;
 }
 

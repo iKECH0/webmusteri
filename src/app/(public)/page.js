@@ -201,6 +201,7 @@ export default function PublicHomePage() {
             <a href="#why-me">Hizmetler</a>
             <a href="#pricing">Paketler</a>
             <a href="#process">Süreç</a>
+            <Link href="/analiz" style={{ color: '#818cf8', fontWeight: 700 }}>⚡ Site Analizi</Link>
             <a href="#contact">İletişim</a>
           </div>
           <div className="nav-actions">
@@ -208,19 +209,24 @@ export default function PublicHomePage() {
               <i className="ph ph-sun sun-icon" />
               <i className="ph ph-moon moon-icon" />
             </button>
-            <a href="#contact" className="btn btn-primary">Teklif Al</a>
+            <Link href="/analiz" className="btn btn-primary" style={{ background: 'linear-gradient(135deg, #6366f1, #a855f7)' }}>
+              Site Analizi 🚀
+            </Link>
             <button className="hamburger" id="hamburger" aria-label="Menüyü aç">
               <i className="ph ph-list" />
             </button>
           </div>
         </div>
         <div className="mobile-menu" id="mobile-menu" role="menu">
+          <Link href="/analiz" className="mobile-link" style={{ color: '#818cf8', fontWeight: 700 }}>⚡ Ücretsiz Site Analizi</Link>
           <a href="#projects" className="mobile-link">Projeler</a>
           <a href="#why-me" className="mobile-link">Hizmetler</a>
           <a href="#pricing" className="mobile-link">Paketler</a>
           <a href="#process" className="mobile-link">Süreç</a>
           <a href="#contact" className="mobile-link">İletişim</a>
-          <a href="#contact" className="btn btn-primary mobile-cta">Teklif Al</a>
+          <Link href="/analiz" className="btn btn-primary mobile-cta" style={{ background: 'linear-gradient(135deg, #6366f1, #a855f7)' }}>
+            Ücretsiz Site Analizi 🚀
+          </Link>
         </div>
       </nav>
 
@@ -241,11 +247,11 @@ export default function PublicHomePage() {
             Farklı sektörlerden işletmeler için hızlı, modern ve mobil uyumlu web siteleri yapıyorum. Sadece şablonla değil — sıfırdan, sizin için.
           </p>
           <div className="hero-cta">
-            <a href="#projects" className="btn btn-primary btn-large">
+            <Link href="/analiz" className="btn btn-primary btn-large" style={{ background: 'linear-gradient(135deg, #6366f1, #a855f7)', boxShadow: '0 8px 24px rgba(99,102,241,0.35)' }}>
+              Ücretsiz Site Analizi Yap <i className="ph ph-lightning" />
+            </Link>
+            <a href="#projects" className="btn btn-outline btn-large">
               Projeleri İncele <i className="ph ph-arrow-right" />
-            </a>
-            <a href="#contact" className="btn btn-outline btn-large">
-              Ücretsiz Danışın
             </a>
           </div>
         </section>
