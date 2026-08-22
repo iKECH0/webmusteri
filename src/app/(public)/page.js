@@ -198,7 +198,7 @@ export default function PublicHomePage() {
           </div>
           <div className="nav-links">
             <a href="#projects">Projeler</a>
-            <a href="#why-me">Hizmetler</a>
+            <Link href="/hizmetler" style={{ color: '#c17f3a', fontWeight: 700 }}>💎 Hizmetler & Fiyatlar</Link>
             <a href="#pricing">Paketler</a>
             <a href="#process">Süreç</a>
             <Link href="/analiz" style={{ color: '#818cf8', fontWeight: 700 }}>⚡ Site Analizi</Link>
@@ -209,8 +209,8 @@ export default function PublicHomePage() {
               <i className="ph ph-sun sun-icon" />
               <i className="ph ph-moon moon-icon" />
             </button>
-            <Link href="/analiz" className="btn btn-primary" style={{ background: 'linear-gradient(135deg, #6366f1, #a855f7)' }}>
-              Site Analizi 🚀
+            <Link href="/hizmetler" className="btn btn-primary" style={{ background: 'linear-gradient(135deg, #c17f3a, #b06e2e)' }}>
+              Paket Satın Al 💳
             </Link>
             <button className="hamburger" id="hamburger" aria-label="Menüyü aç">
               <i className="ph ph-list" />
@@ -218,14 +218,14 @@ export default function PublicHomePage() {
           </div>
         </div>
         <div className="mobile-menu" id="mobile-menu" role="menu">
+          <Link href="/hizmetler" className="mobile-link" style={{ color: '#c17f3a', fontWeight: 700 }}>💎 Hizmetler & Paketler (Shopier)</Link>
           <Link href="/analiz" className="mobile-link" style={{ color: '#818cf8', fontWeight: 700 }}>⚡ Ücretsiz Site Analizi</Link>
           <a href="#projects" className="mobile-link">Projeler</a>
-          <a href="#why-me" className="mobile-link">Hizmetler</a>
           <a href="#pricing" className="mobile-link">Paketler</a>
           <a href="#process" className="mobile-link">Süreç</a>
           <a href="#contact" className="mobile-link">İletişim</a>
-          <Link href="/analiz" className="btn btn-primary mobile-cta" style={{ background: 'linear-gradient(135deg, #6366f1, #a855f7)' }}>
-            Ücretsiz Site Analizi 🚀
+          <Link href="/hizmetler" className="btn btn-primary mobile-cta" style={{ background: 'linear-gradient(135deg, #c17f3a, #b06e2e)' }}>
+            Hizmet Paketleri & Güvenli Ödeme 🔒
           </Link>
         </div>
       </nav>
@@ -250,9 +250,25 @@ export default function PublicHomePage() {
             <Link href="/analiz" className="btn btn-primary btn-large" style={{ background: 'linear-gradient(135deg, #6366f1, #a855f7)', boxShadow: '0 8px 24px rgba(99,102,241,0.35)' }}>
               Ücretsiz Site Analizi Yap <i className="ph ph-lightning" />
             </Link>
+            <Link href="/hizmetler" className="btn btn-accent btn-large" style={{ background: 'linear-gradient(135deg, #c17f3a, #b06e2e)', boxShadow: '0 8px 24px rgba(193,127,58,0.35)' }}>
+              Paketleri İncele & Satın Al <i className="ph ph-shopping-bag" />
+            </Link>
             <a href="#projects" className="btn btn-outline btn-large">
-              Projeleri İncele <i className="ph ph-arrow-right" />
+              Referanslar <i className="ph ph-arrow-right" />
             </a>
+          </div>
+
+          {/* Hero Trust Micro-Badges */}
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '24px', flexWrap: 'wrap', marginTop: '28px', color: 'var(--text-muted, #94a3b8)', fontSize: '13px', fontWeight: 600 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <i className="ph-fill ph-shield-check" style={{ color: '#22c55e', fontSize: '16px' }} /> Shopier %100 Güvenli Ödeme
+            </span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <i className="ph-fill ph-credit-card" style={{ color: '#c17f3a', fontSize: '16px' }} /> Tüm Kartlara Taksit
+            </span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <i className="ph-fill ph-lightning" style={{ color: '#818cf8', fontSize: '16px' }} /> 24 Saatte Hızlı Başlangıç
+            </span>
           </div>
         </section>
 
@@ -388,6 +404,76 @@ export default function PublicHomePage() {
                 <li><i className="ph-fill ph-check-circle" /> Sepet Kurtarma</li>
               </ul>
               <a href="#contact" className="btn btn-outline pricing-btn">Teklif Alın</a>
+            </div>
+          </div>
+        </section>
+
+        {/* ── SHOPIER GÜVENLİ ÖDEME & GÜVENCE VURGUSU ── */}
+        <section className="container reveal" style={{ marginBottom: '80px' }} aria-label="Güvenli Ödeme">
+          <div style={{
+            background: 'linear-gradient(135deg, rgba(193, 127, 58, 0.08) 0%, rgba(99, 102, 241, 0.08) 50%, rgba(34, 197, 94, 0.08) 100%)',
+            border: '1px solid rgba(193, 127, 58, 0.3)',
+            borderRadius: 'var(--radius-xl, 24px)',
+            padding: '48px 36px',
+            position: 'relative',
+            overflow: 'hidden',
+            boxShadow: '0 20px 50px rgba(0,0,0,0.2)'
+          }}>
+            <div style={{ position: 'absolute', top: '-60px', right: '-60px', width: '200px', height: '200px', background: 'radial-gradient(circle, rgba(193,127,58,0.2) 0%, transparent 70%)', filter: 'blur(30px)', pointerEvents: 'none' }} />
+            
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '36px', alignItems: 'center' }}>
+              <div>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 14px', borderRadius: '30px', background: 'rgba(34, 197, 94, 0.12)', border: '1px solid rgba(34, 197, 94, 0.3)', color: '#22c55e', fontSize: '13px', fontWeight: 800, marginBottom: '16px' }}>
+                  <i className="ph-fill ph-shield-check" /> 256-BIT SSL & 3D SECURE GÜVENCESİ
+                </div>
+                <h2 style={{ fontSize: 'clamp(26px, 3.5vw, 36px)', fontWeight: 900, color: 'var(--text-color, #fff)', lineHeight: 1.2, margin: '0 0 16px' }}>
+                  Shopier ile <span style={{ color: '#c17f3a' }}>%100 Güvenli</span> Ödeme Altyapısı
+                </h2>
+                <p style={{ fontSize: '15px', color: 'var(--text-muted, #94a3b8)', lineHeight: 1.7, margin: '0 0 24px' }}>
+                  Kodiva üzerinden satın alacağınız tüm paketlerde ödemeleriniz Türkiye&apos;nin en güvenilir ödeme aracısı <strong>Shopier</strong> üzerinden 3D Secure korumasıyla gerçekleşir. Kredi kartı bilgileriniz hiçbir zaman sistemimizde saklanmaz.
+                </p>
+                <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
+                  <Link href="/hizmetler" className="btn btn-primary" style={{ background: 'linear-gradient(135deg, #c17f3a, #b06e2e)', boxShadow: '0 8px 25px rgba(193,127,58,0.35)', padding: '14px 28px', fontSize: '15px' }}>
+                    Tüm Paketleri Gör & Satın Al <i className="ph ph-arrow-right" />
+                  </Link>
+                  <Link href="/analiz" className="btn btn-outline" style={{ padding: '14px 24px', fontSize: '15px' }}>
+                    ⚡ Önce Ücretsiz Sitenizi Test Edin
+                  </Link>
+                </div>
+              </div>
+
+              {/* 3 Güven Rozeti Kartı */}
+              <div style={{ display: 'grid', gap: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', padding: '18px 20px', borderRadius: '16px', background: 'var(--card-bg, rgba(255,255,255,0.03))', border: '1px solid var(--glass-border, rgba(255,255,255,0.08))' }}>
+                  <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(193, 127, 58, 0.15)', color: '#c17f3a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', flexShrink: 0 }}>
+                    <i className="ph-fill ph-credit-card" />
+                  </div>
+                  <div>
+                    <h4 style={{ margin: '0 0 4px', fontSize: '15px', fontWeight: 800, color: 'var(--text-color, #fff)' }}>Tüm Kartlara Taksit İmkanı</h4>
+                    <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-muted, #94a3b8)', lineHeight: 1.5 }}>Visa, Mastercard ve Troy logolu tüm banka/kredi kartlarıyla anında ve taksitle güvenli ödeme.</p>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', padding: '18px 20px', borderRadius: '16px', background: 'var(--card-bg, rgba(255,255,255,0.03))', border: '1px solid var(--glass-border, rgba(255,255,255,0.08))' }}>
+                  <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(34, 197, 94, 0.15)', color: '#22c55e', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', flexShrink: 0 }}>
+                    <i className="ph-fill ph-seal-check" />
+                  </div>
+                  <div>
+                    <h4 style={{ margin: '0 0 4px', fontSize: '15px', fontWeight: 800, color: 'var(--text-color, #fff)' }}>Yönetici Onaylı Manuel Aktivasyon</h4>
+                    <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-muted, #94a3b8)', lineHeight: 1.5 }}>Ödemeniz sonrası proje yöneticimiz doğrudan sizinle iletişime geçer ve tasarım süreciniz 24 saatte başlar.</p>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', padding: '18px 20px', borderRadius: '16px', background: 'var(--card-bg, rgba(255,255,255,0.03))', border: '1px solid var(--glass-border, rgba(255,255,255,0.08))' }}>
+                  <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', flexShrink: 0 }}>
+                    <i className="ph-fill ph-file-text" />
+                  </div>
+                  <div>
+                    <h4 style={{ margin: '0 0 4px', fontSize: '15px', fontWeight: 800, color: 'var(--text-color, #fff)' }}>Resmi Fatura & 1 Yıl Garanti</h4>
+                    <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-muted, #94a3b8)', lineHeight: 1.5 }}>Teslim edilen tüm projeler kurumsal e-fatura ve 1 yıllık teknik destek / garanti güvencesiyle sunulur.</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
