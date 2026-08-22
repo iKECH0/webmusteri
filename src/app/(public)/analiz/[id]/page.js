@@ -25,6 +25,8 @@ export default function SiteAnalizReportPage({ params }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
+  const [aiSummary, setAiSummary] = useState(null);
+  const [aiLoading, setAiLoading] = useState(false);
 
   // Filters
   const [activeCategory, setActiveCategory] = useState('all');
@@ -47,10 +49,24 @@ export default function SiteAnalizReportPage({ params }) {
         setTimeout(fetchScan, 2000);
       } else {
         setLoading(false);
+        fetchAiSummary();
       }
     } catch (err) {
       setError(err.message || 'Rapor yüklenemedi.');
       setLoading(false);
+    }
+  };
+
+  const fetchAiSummary = async () => {
+    setAiLoading(true);
+    try {
+      const res = await fetch(`/api/scan/${scanId}/ai-summary`);
+      const data = await res.json();
+      if (data.summary) setAiSummary(data.summary);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setAiLoading(false);
     }
   };
 
@@ -139,6 +155,23 @@ export default function SiteAnalizReportPage({ params }) {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <button
+              onClick={() => {
+                import('@/lib/pdfGenerator').then(({ generateAuditPDF }) => {
+                  generateAuditPDF(scan, allFindings, aiSummary);
+                });
+              }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                padding: '8px 14px', borderRadius: 10,
+                background: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255,255,255,0.12)',
+                color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer'
+              }}
+            >
+              <Layers size={14} /> PDF İndir
+            </button>
+
             <button
               onClick={copyReportLink}
               style={{
@@ -306,6 +339,92 @@ export default function SiteAnalizReportPage({ params }) {
             );
           })}
         </div>
+
+        {/* ── PRIORITY RECOMMENDATIONS & AI SUMMARY ── */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24, marginBottom: 40 }}>
+          
+          {/* AI SUMMARY */}
+          <div style={{
+            background: 'linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(168,85,247,0.08) 100%)',
+            border: '1px solid rgba(168,85,247,0.3)',
+            borderRadius: 24,
+            padding: '28px 32px',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+              <div style={{ background: 'rgba(168, 85, 247, 0.2)', padding: 8, borderRadius: 10 }}>
+                <Sparkles size={20} color="#a855f7" />
+              </div>
+              <div>
+                <h3 style={{ fontSize: 18, fontWeight: 800, color: '#fff', margin: 0 }}>Yapay Zeka Özeti</h3>
+                <div style={{ fontSize: 13, color: '#94a3b8' }}>Analiz sonuçlarının akıllı değerlendirmesi</div>
+              </div>
+            </div>
+            
+            {aiLoading ? (
+               <div style={{ display: 'flex', alignItems: 'center', gap: 12, color: '#a855f7', fontSize: 14, fontWeight: 600 }}>
+                 <div style={{ width: 16, height: 16, borderRadius: '50%', border: '2px solid rgba(168,85,247,0.3)', borderTopColor: '#a855f7', animation: 'spin 1s linear infinite' }} />
+                 Yönetici özeti oluşturuluyor...
+               </div>
+            ) : aiSummary ? (
+              <div style={{ fontSize: 14, color: '#cbd5e1', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>
+                {aiSummary}
+              </div>
+            ) : null}
+          </div>
+
+          {/* PRIORITY RECOMMENDATIONS */}
+          {allFindings.filter(f => f.status === 'critical' || f.status === 'warning').length > 0 && (
+            <div style={{
+              background: 'rgba(255,255,255,0.02)',
+              border: '1px solid rgba(255,255,255,0.06)',
+              borderRadius: 24,
+              padding: '28px 32px',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+                <div style={{ background: 'rgba(239, 68, 68, 0.1)', padding: 8, borderRadius: 10 }}>
+                  <AlertTriangle size={20} color="#ef4444" />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: 18, fontWeight: 800, color: '#fff', margin: 0 }}>Öncelikli Aksiyon Planı</h3>
+                  <div style={{ fontSize: 13, color: '#94a3b8' }}>En kısa sürede çözmeniz gereken hatalar</div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {allFindings
+                  .filter(f => f.status === 'critical' || f.status === 'warning')
+                  .sort((a, b) => {
+                    if (a.status === 'critical' && b.status !== 'critical') return -1;
+                    if (a.status !== 'critical' && b.status === 'critical') return 1;
+                    return 0;
+                  })
+                  .slice(0, 5)
+                  .map((f, i) => (
+                    <div key={i} style={{ 
+                      display: 'flex', alignItems: 'flex-start', gap: 14, 
+                      padding: '16px', background: 'rgba(0,0,0,0.2)', 
+                      borderRadius: 14, borderLeft: `3px solid ${f.status === 'critical' ? '#ef4444' : '#fbbf24'}`
+                    }}>
+                      <div style={{ 
+                        width: 24, height: 24, borderRadius: '50%', flexShrink: 0,
+                        background: f.status === 'critical' ? 'rgba(239,68,68,0.2)' : 'rgba(245,158,11,0.2)',
+                        color: f.status === 'critical' ? '#ef4444' : '#fbbf24',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 12, fontWeight: 800
+                      }}>
+                        {i + 1}
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 4 }}>{f.title}</div>
+                        <div style={{ fontSize: 13, color: '#94a3b8', lineHeight: 1.5 }}>{f.advice || f.description}</div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          )}
+        </div>
+
 
         {/* ── HIGH-CONVERTING CTA (KODIVA LEAD MAGNET) ── */}
         <div style={{

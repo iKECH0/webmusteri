@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import db, { ensureInit } from '@/lib/db';
-import { runFullWebsiteScan, normalizeUrl } from '@/lib/scanner';
+import { runFullWebsiteScan, normalizeUrl, validateUrlForSSRF } from '@/lib/scanner';
 import crypto from 'crypto';
 
 // Rate limiting map (in-memory per instance)
@@ -43,6 +43,12 @@ export async function POST(request) {
     const normalized = normalizeUrl(url);
     if (!normalized || normalized.length < 3 || !normalized.includes('.')) {
       return NextResponse.json({ error: 'Geçersiz web sitesi adresi. Örn: ornekfirma.com' }, { status: 400 });
+    }
+
+    try {
+      validateUrlForSSRF(normalized);
+    } catch (ssrfErr) {
+      return NextResponse.json({ error: ssrfErr.message }, { status: 400 });
     }
 
     // 2. Cache Check (Recent scan within last 2 hours)

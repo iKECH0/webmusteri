@@ -15,6 +15,32 @@ export function normalizeUrl(input) {
   return clean;
 }
 
+/**
+ * Validates domain/IP against SSRF risks.
+ * Rejects private IPs, loopback, and metadata endpoints.
+ */
+export function validateUrlForSSRF(normalized) {
+  const blockedPatterns = [
+    /^localhost$/i,
+    /^127\.\d+\.\d+\.\d+$/, // loopback
+    /^10\.\d+\.\d+\.\d+$/, // private Class A
+    /^192\.168\.\d+\.\d+$/, // private Class C
+    /^172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+$/, // private Class B
+    /^169\.254\.\d+\.\d+$/, // AWS metadata / link-local
+    /\[?::1\]?/, // IPv6 loopback
+    /\.local$/i,
+    /\.internal$/i,
+    /\.test$/i,
+    /\.arpa$/i
+  ];
+
+  for (const pattern of blockedPatterns) {
+    if (pattern.test(normalized)) {
+      throw new Error(`Güvenlik politikası gereği bu adrese ( ${normalized} ) analiz yapılamaz.`);
+    }
+  }
+}
+
 export function toFullUrl(normalized) {
   return `https://${normalized}`;
 }
@@ -24,6 +50,7 @@ export function toFullUrl(normalized) {
  */
 export async function runFullWebsiteScan(targetUrl) {
   const normalized = normalizeUrl(targetUrl);
+  validateUrlForSSRF(normalized);
   let fullUrl = `https://${normalized}`;
 
   let html = '';

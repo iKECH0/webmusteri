@@ -216,6 +216,66 @@ export async function initDB() {
     );
   `);
 
+  // 12. Products (Web Design Packages)
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS products (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      slug TEXT UNIQUE NOT NULL,
+      description TEXT,
+      price REAL NOT NULL,
+      currency TEXT DEFAULT 'TRY',
+      features JSONB,
+      duration_months INTEGER,
+      shopier_url TEXT,
+      is_active INTEGER DEFAULT 1,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+
+  // 13. Payments (Shopier transactions)
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS payments (
+      id TEXT PRIMARY KEY,
+      customer_id TEXT,
+      customer_name TEXT,
+      customer_email TEXT,
+      product_id TEXT,
+      amount REAL,
+      currency TEXT DEFAULT 'TRY',
+      shopier_order_id TEXT,
+      payment_status TEXT DEFAULT 'PENDING',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      paid_at TIMESTAMP
+    );
+  `);
+
+  // 14. Subscriptions (Activated Services)
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS subscriptions (
+      id TEXT PRIMARY KEY,
+      customer_id TEXT NOT NULL,
+      product_id TEXT NOT NULL,
+      payment_id TEXT,
+      status TEXT DEFAULT 'PENDING_ACTIVATION',
+      activated_at TIMESTAMP,
+      expires_at TIMESTAMP,
+      activated_by TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+
+  // 15. Admin Action Logs
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS admin_action_logs (
+      id TEXT PRIMARY KEY,
+      admin_id TEXT NOT NULL,
+      action_type TEXT NOT NULL,
+      details TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+
   // Indexes for quick lookups
   try {
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_scans_normalized_url ON scans(normalized_url);`);
@@ -223,6 +283,22 @@ export async function initDB() {
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_scan_results_scan_id ON scan_results(scan_id);`);
   } catch (e) {
     // Ignore index creation errors if any
+  }
+
+  // Seed products
+  try {
+    const prodCount = await pool.query('SELECT COUNT(*) FROM products');
+    if (parseInt(prodCount.rows[0].count) === 0) {
+      await pool.query(`
+        INSERT INTO products (id, name, slug, description, price, features, duration_months, shopier_url)
+        VALUES 
+        ('prod_starter', 'Başlangıç Paketi', 'starter', 'Küçük işletmeler ve yeni girişimler için ideal profesyonel başlangıç.', 9500, '[]', 12, 'https://shopier.com/ornek-link-1'),
+        ('prod_corporate', 'Kurumsal Paket', 'corporate', 'Prestijli ve kurumsal bir görünüm arayan köklü firmalar için.', 18500, '[]', 12, 'https://shopier.com/ornek-link-2'),
+        ('prod_ecommerce', 'E-Ticaret Paketi', 'ecommerce', 'Ürünlerini online satmak isteyen işletmeler için tam kapsamlı çözüm.', 34000, '[]', 12, 'https://shopier.com/ornek-link-3')
+      `);
+    }
+  } catch (seedErr) {
+    console.error("Seeding products error:", seedErr);
   }
 
   isInitialized = true;

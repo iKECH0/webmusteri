@@ -408,6 +408,43 @@ export default function SiteAnalizLandingPage() {
         </div>
       </section>
 
+      {/* ── SSS & SEO İÇERİĞİ ── */}
+      <section style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px 80px' }}>
+        <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 24, padding: '40px' }}>
+          <h2 style={{ fontSize: 24, fontWeight: 800, margin: '0 0 24px', color: '#fff', textAlign: 'center' }}>Sıkça Sorulan Sorular & Web Sitesi Analizi Nedir?</h2>
+          
+          <div style={{ display: 'grid', gap: 24 }}>
+            <div>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#a5b4fc', marginBottom: 8 }}>Web sitesi sağlık analizi (Site Audit) nedir?</h3>
+              <p style={{ fontSize: 14, color: '#94a3b8', lineHeight: 1.6, margin: 0 }}>
+                Web sitesi analizi, sitenizin arama motoru optimizasyonu (SEO), mobil uyumluluk, performans (sayfa hızı) ve güvenlik kriterlerini detaylıca tarayan bir teşhis aracıdır. Kodiva analiz motoru 100'den fazla farklı kriteri test ederek sitenizin genel bir sağlık skorunu çıkarır ve hataları listeler.
+              </p>
+            </div>
+            
+            <div>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#a5b4fc', marginBottom: 8 }}>Ücretsiz analiz sonucunda PDF rapor alabilir miyim?</h3>
+              <p style={{ fontSize: 14, color: '#94a3b8', lineHeight: 1.6, margin: 0 }}>
+                Evet. Tarama tamamlandıktan sonra sonuç sayfasının sağ üst köşesindeki "PDF İndir" butonuna tıklayarak kapsamlı raporunuzu indirebilir ve yazılım ekibinizle veya yöneticilerinizle paylaşabilirsiniz.
+              </p>
+            </div>
+
+            <div>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#a5b4fc', marginBottom: 8 }}>Web sitemin hızı (PageSpeed) neden bu kadar önemli?</h3>
+              <p style={{ fontSize: 14, color: '#94a3b8', lineHeight: 1.6, margin: 0 }}>
+                Google'ın resmi verilerine göre mobil sayfa açılış hızı 1 saniyeden 3 saniyeye çıktığında, ziyaretçinin siteden çıkma (bounce) ihtimali %32 artmaktadır. Core Web Vitals (Önemli Web Metrikleri) skorlarınız doğrudan Google arama sıralamanızı etkiler.
+              </p>
+            </div>
+            
+            <div>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#a5b4fc', marginBottom: 8 }}>Analiz sonrasında çıkan hataları nasıl çözebilirim?</h3>
+              <p style={{ fontSize: 14, color: '#94a3b8', lineHeight: 1.6, margin: 0 }}>
+                Raporunuzda sunulan "Öncelikli Aksiyon Planı" ve yapay zeka tavsiyelerini takip ederek kendi yazılımcınızla ilerleyebilirsiniz. Profesyonel destek almak isterseniz KODİVA uzmanlarından WhatsApp üzerinden anında destek ve fiyat teklifi alabilirsiniz.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── FOOTER ── */}
       <footer style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '30px 24px', textAlign: 'center', color: '#64748b', fontSize: 13 }}>
         <p style={{ margin: '0 0 8px' }}>© {new Date().getFullYear()} Kodiva Web Tasarım Ajansı. Tüm Hakları Saklıdır.</p>

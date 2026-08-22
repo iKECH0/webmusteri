@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, Suspense, lazy } from 'react';
 import axios from 'axios';
-import { Search, Map, Users, BarChart2, Clock, Settings as SettingsIcon, Mail, FileText, Target, Menu, X, MessageSquare, Sparkles } from 'lucide-react';
+import { Search, Map, Users, BarChart2, Clock, Settings as SettingsIcon, Mail, FileText, Target, Menu, X, MessageSquare, Sparkles, CreditCard } from 'lucide-react';
 import SearchTab from '@/components/SearchTab';
 import CRMTab from '@/components/CRMTab';
 import AnalysisTab from '@/components/AnalysisTab';
@@ -16,6 +16,7 @@ import GuidedSalesTab from '@/components/GuidedSalesTab';
 import OutreachTab from '@/components/OutreachTab';
 import AgentsTab from '@/components/AgentsTab';
 import PromptsTab from '@/components/PromptsTab';
+import PaymentsTab from '@/components/PaymentsTab';
 
 import dynamic from 'next/dynamic';
 const MapTab = dynamic(() => import('@/components/MapTab'), { ssr: false });
@@ -45,6 +46,7 @@ const MENU_CATEGORIES = [
   {
     title: "Rapor & Sistem",
     items: [
+      { key: 'payments', label: 'Ödemeler & Abonelikler', icon: CreditCard },
       { key: 'analysis', label: 'Analiz', icon: BarChart2 },
       { key: 'competitor', label: 'Rakipler', icon: Target },
       { key: 'references', label: 'Referanslar', icon: FileText },
@@ -184,6 +186,7 @@ export default function Home() {
         
         {/* Tab Content Rendering */}
         <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%' }}>
+          {activeTab === 'payments' && <PaymentsTab />}
           {activeTab === 'guided-sales' && <GuidedSalesTab leads={leads} onRefresh={fetchLeads} />}
           {activeTab === 'prompts' && <PromptsTab />}
           {activeTab === 'agents' && <AgentsTab leads={leads} onRefresh={fetchLeads} />}

@@ -8,6 +8,7 @@ export default function PortalPage({ params }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [actionDone, setActionDone] = useState('');
+  const [subscriptions, setSubscriptions] = useState([]);
 
   // Chatbot states
   const [chatOpen, setChatOpen] = useState(false);
@@ -69,6 +70,14 @@ export default function PortalPage({ params }) {
         else {
           setData(d);
           setMessages([{ role: 'assistant', content: `Sayın ${d.lead.name} yetkilisi, dijital dönüşüm teklifinize hoş geldiniz. Sunumumuz veya teklif detayları hakkında sormak istediğiniz her konuda size buradan yardımcı olabilirim.` }]);
+          
+          // Fetch subscriptions
+          fetch(`/api/portal/${token}/subscriptions`)
+            .then(r => r.json())
+            .then(subData => {
+              if (subData.subscriptions) setSubscriptions(subData.subscriptions);
+            })
+            .catch(() => {});
         }
         setLoading(false);
       })
@@ -254,8 +263,51 @@ export default function PortalPage({ params }) {
       {/* Main Content Container */}
       <div className="content-container">
         
+        {/* Active Subscriptions / Packages */}
+        {subscriptions.length > 0 && (
+          <div className="glass-card glass-card-padding" style={{ marginBottom: 32, borderLeft: '4px solid #10b981', background: 'linear-gradient(to right, rgba(255, 255, 255, 0.95), rgba(240, 253, 250, 0.5))' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+              <div style={{ background: '#ecfdf5', color: '#10b981', padding: 8, borderRadius: 10, display: 'inline-flex' }}>
+                <ShieldCheck size={24} />
+              </div>
+              <div>
+                <h3 style={{ fontSize: 18, fontWeight: 700, color: '#065f46', margin: 0 }}>Aktif Hizmetlerim ve Paketlerim</h3>
+                <p style={{ fontSize: 13, color: '#047857', margin: 0 }}>Kodiva güvencesiyle aktif olan dijital hizmetleriniz.</p>
+              </div>
+            </div>
 
-        
+            <div style={{ display: 'grid', gap: 12 }}>
+              {subscriptions.map(s => {
+                const isActive = s.status === 'ACTIVE';
+                return (
+                  <div key={s.id} style={{ padding: '16px', background: 'rgba(255,255,255,0.7)', border: '1px solid rgba(0,0,0,0.05)', borderRadius: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+                    <div>
+                      <div style={{ fontWeight: 700, color: '#0f172a', fontSize: 14 }}>{s.product_name || s.product_id}</div>
+                      {s.product_description && <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>{s.product_description}</div>}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                      <div style={{ textAlign: 'right' }}>
+                        <span style={{ 
+                          padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700, 
+                          background: isActive ? 'rgba(16,185,129,0.1)' : 'rgba(245,158,11,0.1)', 
+                          color: isActive ? '#10b981' : '#f59e0b' 
+                        }}>
+                          {isActive ? 'Aktif' : 'Aktivasyon Bekliyor'}
+                        </span>
+                        {isActive && s.expires_at && (
+                          <div style={{ fontSize: 11, color: '#64748b', marginTop: 4 }}>
+                            Bitiş: {new Date(s.expires_at).toLocaleDateString('tr-TR')}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Why Digital? (The Problem/Opportunity) */}
         <div className="glass-card glass-card-padding why-grid" style={{ marginBottom: 32 }}>
           <div>
