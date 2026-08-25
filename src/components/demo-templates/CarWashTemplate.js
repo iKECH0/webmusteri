@@ -524,7 +524,8 @@ export default function CarWashTemplate({ businessName, phone, address, rating, 
             <div>
               <div style={{ fontSize: 28, fontWeight: 800, color: '#fff' }}>{rating || '4.9'}</div>
               <div style={{ fontSize: 13, color: '#94a3b8' }}>Google Puanı</div>
-            </div>div>
+            </div>
+            <div>
               <div style={{ fontSize: 28, fontWeight: 800, color: '#fff' }}>{reviewCount || '328'}+</div>
               <div style={{ fontSize: 13, color: '#94a3b8' }}>Mutlu Müşteri</div>
             </div>
