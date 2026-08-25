@@ -53,7 +53,7 @@ export default async function LeadDemoPage({ params, searchParams }) {
 
   return (
     <Suspense fallback={
-      <div style={{ background: '#0a0d14', color: '#fff', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>
+      <div style={{ background: '#f7f4ee', color: '#1c1a16', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>
         Demo Yükleniyor...
       </div>
     }>

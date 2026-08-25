@@ -85,6 +85,10 @@ export default function CarpetCleaningTemplate({ businessName, phone, address, r
         .why-row:hover { border-color: ${ACCENT}30; background: ${ACCENT}06; }
         .rcard { background: ${CARD}; border: 1px solid rgba(255,255,255,.06); border-radius: 16px; padding: 28px; transition: border-color .3s, transform .3s; }
         .rcard:hover { border-color: rgba(255,255,255,.12); transform: translateY(-3px); }
+        @media (max-width: 768px) {
+          .carpet-hero-grid, .carpet-whyus-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+          .carpet-stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+        }
       `}</style>
 
       {/* NAV */}
@@ -112,7 +116,7 @@ export default function CarpetCleaningTemplate({ businessName, phone, address, r
           <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(255,255,255,.016) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.016) 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
           <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(to bottom, transparent 60%, ${BG} 100%)` }} />
         </div>
-        <div style={{ position: 'relative', zIndex: 1, maxWidth: 1100, margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center' }}>
+        <div className="carpet-hero-grid" style={{ position: 'relative', zIndex: 1, maxWidth: 1100, margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center' }}>
           <div>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: `${ACCENT}12`, border: `1px solid ${ACCENT}30`, borderRadius: 999, padding: '6px 14px', marginBottom: 28, animation: 'heroFadeUp .7s ease both' }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 6px #22c55e' }} />
@@ -123,14 +127,14 @@ export default function CarpetCleaningTemplate({ businessName, phone, address, r
               <span style={{ background: `linear-gradient(90deg, ${ACCENT}, #34d399, #6ee7b7)`, backgroundSize: '200% auto', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', animation: 'gradientMove 4s linear infinite' }}>Versiyonunu</span>
               <br />Sunuyoruz
             </h1>
-            <p style={{ fontSize: 16, color: '#475569', lineHeight: 1.75, maxWidth: 420, marginBottom: 40, animation: 'heroFadeUp .7s .2s ease both' }}>
+            <p style={{ fontSize: 16, color: '#94a3b8', lineHeight: 1.75, maxWidth: 420, marginBottom: 40, animation: 'heroFadeUp .7s .2s ease both' }}>
               Uzman ekibimiz ve endüstriyel ekipmanlarımızla halı, koltuk ve perdelerinizi sıfır gibi yapıyoruz. Evden almadan veya kapıda teslimat seçenekleriyle.
             </p>
             <div style={{ display: 'flex', gap: 12, animation: 'heroFadeUp .7s .3s ease both' }}>
               <a href={waUrl} target="_blank" rel="noreferrer" className="btn-primary"><MessageCircle size={16} /> WhatsApp ile Randevu</a>
               {phone && <a href={`tel:${phone}`} className="btn-secondary"><Phone size={16} /> {phone}</a>}
             </div>
-            {address && <div style={{ marginTop: 28, display: 'flex', alignItems: 'center', gap: 8, color: '#475569', fontSize: 13, animation: 'heroFadeUp .7s .4s ease both' }}><MapPin size={14} /><span>{address}</span></div>}
+            {address && <div style={{ marginTop: 28, display: 'flex', alignItems: 'center', gap: 8, color: '#94a3b8', fontSize: 13, animation: 'heroFadeUp .7s .4s ease both' }}><MapPin size={14} /><span>{address}</span></div>}
           </div>
 
           {/* SVG Illustration */}
@@ -140,7 +144,7 @@ export default function CarpetCleaningTemplate({ businessName, phone, address, r
                 <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#ef4444' }} />
                 <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#f59e0b' }} />
                 <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#22c55e' }} />
-                <span style={{ marginLeft: 8, fontSize: 12, color: '#475569' }}>{businessName} · Premium Yıkama Servisi</span>
+                <span style={{ marginLeft: 8, fontSize: 12, color: '#94a3b8' }}>{businessName} · Premium Yıkama Servisi</span>
               </div>
               <div style={{ height: 200, background: 'linear-gradient(135deg, #0b1a12, #0e2018)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
                 <div style={{ position: 'absolute', width: 260, height: 260, background: `radial-gradient(circle, ${ACCENT}12, transparent 70%)`, borderRadius: '50%' }} />
@@ -156,7 +160,7 @@ export default function CarpetCleaningTemplate({ businessName, phone, address, r
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', borderTop: '1px solid rgba(255,255,255,.05)' }}>
                 {[{ l: 'Teslimat', v: 'Aynı Gün' }, { l: 'Garanti', v: '100%' }, { l: 'Ücretsiz', v: 'Taşıma' }].map((s, i) => (
                   <div key={i} style={{ padding: '16px', borderRight: i < 2 ? '1px solid rgba(255,255,255,.05)' : 'none' }}>
-                    <div style={{ fontSize: 11, color: '#475569' }}>{s.l}</div>
+                    <div style={{ fontSize: 11, color: '#94a3b8' }}>{s.l}</div>
                     <div style={{ fontSize: 14, fontWeight: 700, color: ACCENT, marginTop: 4 }}>{s.v}</div>
                   </div>
                 ))}
@@ -168,11 +172,11 @@ export default function CarpetCleaningTemplate({ businessName, phone, address, r
 
       {/* STATS */}
       <div ref={statsRef} style={{ borderTop: '1px solid rgba(255,255,255,.05)', borderBottom: '1px solid rgba(255,255,255,.05)' }}>
-        <div style={{ maxWidth: 900, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(3,1fr)' }}>
+        <div className="carpet-stats-grid" style={{ maxWidth: 900, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(3,1fr)' }}>
           {[{ v: c1, s: '+', l: 'Memnun Müşteri' }, { v: c2, s: '%', l: 'Müşteri Memnuniyeti' }, { v: c3, s: '+', l: 'Yıllık Deneyim' }].map((s, i) => (
             <div key={i} style={{ padding: '48px 32px', textAlign: 'center', borderRight: i < 2 ? '1px solid rgba(255,255,255,.05)' : 'none', opacity: statsInView ? 1 : 0, transition: `opacity .6s ${i * .15}s ease` }}>
               <div style={{ fontSize: 48, fontWeight: 900, letterSpacing: '-2px', color: '#f1f5f9', lineHeight: 1 }}>{statsInView ? s.v.toLocaleString('tr-TR') : '0'}{s.s}</div>
-              <div style={{ fontSize: 13, color: '#475569', marginTop: 8 }}>{s.l}</div>
+              <div style={{ fontSize: 13, color: '#94a3b8', marginTop: 8 }}>{s.l}</div>
             </div>
           ))}
         </div>
@@ -189,7 +193,7 @@ export default function CarpetCleaningTemplate({ businessName, phone, address, r
             <div key={i} className="scard" style={{ opacity: servicesInView ? 1 : 0, transform: servicesInView ? 'translateY(0)' : 'translateY(32px)', transition: `opacity .6s ${i * .1}s ease, transform .6s ${i * .1}s cubic-bezier(.2,0,0,1)` }}>
               <div style={{ fontSize: 11, fontWeight: 600, color: ACCENT, letterSpacing: 1, marginBottom: 10, textTransform: 'uppercase' }}>{s.sub}</div>
               <h3 style={{ fontSize: 20, fontWeight: 800, marginBottom: 10, letterSpacing: '-.5px' }}>{s.title}</h3>
-              <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.65, marginBottom: 20 }}>{s.desc}</p>
+              <p style={{ fontSize: 14, color: '#94a3b8', lineHeight: 1.65, marginBottom: 20 }}>{s.desc}</p>
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 24 }}>
                 {s.features.map((f, j) => <li key={j} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#94a3b8' }}><Check size={13} style={{ color: ACCENT, flexShrink: 0 }} />{f}</li>)}
               </ul>
@@ -204,11 +208,11 @@ export default function CarpetCleaningTemplate({ businessName, phone, address, r
 
       {/* WHY */}
       <section id="why" style={{ padding: '96px 32px', background: 'rgba(255,255,255,.012)', borderTop: '1px solid rgba(255,255,255,.04)', borderBottom: '1px solid rgba(255,255,255,.04)' }} ref={whyRef}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center' }}>
+        <div className="carpet-whyus-grid" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center' }}>
           <div>
             <div style={{ fontSize: 12, fontWeight: 700, color: ACCENT, letterSpacing: 1.5, marginBottom: 16, textTransform: 'uppercase' }}>Neden Biz</div>
             <h2 style={{ fontSize: 'clamp(24px, 3vw, 38px)', fontWeight: 900, letterSpacing: '-1.5px', lineHeight: 1.15, marginBottom: 24 }}>Güven, hız ve<br />mükemmel sonuç</h2>
-            <p style={{ fontSize: 15, color: '#475569', lineHeight: 1.75, marginBottom: 36 }}>{businessName} olarak her müşterimize özel ilgi gösteriyoruz. Standardize değil, kişiselleştirilmiş hizmet.</p>
+            <p style={{ fontSize: 15, color: '#94a3b8', lineHeight: 1.75, marginBottom: 36 }}>{businessName} olarak her müşterimize özel ilgi gösteriyoruz. Standardize değil, kişiselleştirilmiş hizmet.</p>
             <a href={waUrl} target="_blank" rel="noreferrer" className="btn-primary"><MessageCircle size={16} /> Ücretsiz Fiyat Al</a>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -222,7 +226,7 @@ export default function CarpetCleaningTemplate({ businessName, phone, address, r
                 <div style={{ width: 44, height: 44, borderRadius: 10, background: `${ACCENT}10`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{w.icon}</div>
                 <div>
                   <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 4 }}>{w.title}</div>
-                  <div style={{ fontSize: 13, color: '#475569', lineHeight: 1.6 }}>{w.desc}</div>
+                  <div style={{ fontSize: 13, color: '#94a3b8', lineHeight: 1.6 }}>{w.desc}</div>
                 </div>
               </div>
             ))}
@@ -249,7 +253,7 @@ export default function CarpetCleaningTemplate({ businessName, phone, address, r
                 <div style={{ width: 36, height: 36, borderRadius: '50%', background: `linear-gradient(135deg, ${ACCENT}, #34d399)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 14 }}>{r.n[0]}</div>
                 <div>
                   <div style={{ fontWeight: 700, fontSize: 14 }}>{r.n}</div>
-                  <div style={{ fontSize: 12, color: '#475569' }}>{r.t}</div>
+                  <div style={{ fontSize: 12, color: '#94a3b8' }}>{r.t}</div>
                 </div>
               </div>
             </div>
@@ -261,7 +265,7 @@ export default function CarpetCleaningTemplate({ businessName, phone, address, r
       <section style={{ padding: '96px 32px', borderTop: '1px solid rgba(255,255,255,.05)' }}>
         <div style={{ maxWidth: 680, margin: '0 auto', textAlign: 'center' }}>
           <h2 style={{ fontSize: 'clamp(26px, 3.5vw, 46px)', fontWeight: 900, letterSpacing: '-2px', lineHeight: 1.1, marginBottom: 20 }}>Temiz bir ev için<br /><span style={{ background: `linear-gradient(90deg, ${ACCENT}, #34d399)`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>hemen randevu alın</span></h2>
-          <p style={{ fontSize: 16, color: '#475569', lineHeight: 1.7, marginBottom: 40 }}>WhatsApp'tan yazın, aynı gün veya ertesi gün için uygun zaman ayarlayalım.</p>
+          <p style={{ fontSize: 16, color: '#94a3b8', lineHeight: 1.7, marginBottom: 40 }}>WhatsApp'tan yazın, aynı gün veya ertesi gün için uygun zaman ayarlayalım.</p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
             <a href={waUrl} target="_blank" rel="noreferrer" className="btn-primary" style={{ padding: '15px 32px', fontSize: 15 }}><MessageCircle size={18} /> WhatsApp ile Yaz</a>
             {phone && <a href={`tel:${phone}`} className="btn-secondary" style={{ padding: '15px 28px', fontSize: 15 }}><Phone size={18} /> {phone}</a>}
@@ -271,7 +275,7 @@ export default function CarpetCleaningTemplate({ businessName, phone, address, r
 
       <footer style={{ borderTop: '1px solid rgba(255,255,255,.05)', padding: '28px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
         <div style={{ fontSize: 14, fontWeight: 700 }}>{businessName}</div>
-        {address && <div style={{ fontSize: 13, color: '#475569', display: 'flex', alignItems: 'center', gap: 6 }}><MapPin size={13} />{address}</div>}
+        {address && <div style={{ fontSize: 13, color: '#94a3b8', display: 'flex', alignItems: 'center', gap: 6 }}><MapPin size={13} />{address}</div>}
         <div style={{ fontSize: 12, color: '#334155' }}>Kodiva Ajans tarafından tasarlandı</div>
       </footer>
 

@@ -82,10 +82,10 @@ function BeforeAfterSlider({ beforeImg, afterImg, beforeLabel = 'ÖNCE', afterLa
   return (
     <div
       ref={containerRef}
+      className="comparison-slider"
       style={{
         position: 'relative',
         width: '100%',
-        height: '500px',
         overflow: 'hidden',
         borderRadius: '16px',
         cursor: 'ew-resize',
@@ -407,6 +407,8 @@ export default function CarWashTemplate({ businessName, phone, address, rating, 
           cursor: pointer;
           padding: 8px;
         }
+
+        .comparison-slider { height: 500px; }
 
         @media (max-width: 768px) {
           .hamburger { display: block; }

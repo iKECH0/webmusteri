@@ -26,19 +26,19 @@ function DemoContent() {
   const props = { businessName: name, phone, address, rating, reviewCount, refCode };
 
   switch (sector) {
-    case 'oto-yikama':   return <CarWashTemplate {...props} />;
-    case 'hali-yikama':  return <CarpetCleaningTemplate {...props} />;
-    case 'kuafor':       return <SalonTemplate {...props} />;
-    case 'restoran':     return <RestaurantTemplate {...props} />;
+    case 'oto-yikama': return <CarWashTemplate {...props} />;
+    case 'hali-yikama': return <CarpetCleaningTemplate {...props} />;
+    case 'kuafor': return <SalonTemplate {...props} />;
+    case 'restoran': return <RestaurantTemplate {...props} />;
     case 'teknik-servis': return <TechnicalServiceTemplate {...props} />;
-    default:             return <CorporateTemplate {...props} />;
+    default: return <CorporateTemplate {...props} />;
   }
 }
 
 export default function DemoPage() {
   return (
     <Suspense fallback={
-      <div style={{ background: '#0a0d14', color: '#fff', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>
+      <div style={{ background: '#f7f4ee', color: '#1c1a16', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>
         Demo Yükleniyor...
       </div>
     }>

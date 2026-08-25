@@ -32,7 +32,6 @@ export default function PublicLayout({ children }) {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet" />
-        <Script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js" strategy="afterInteractive" />
         <Script src="https://unpkg.com/@phosphor-icons/web" strategy="afterInteractive" />
         <Script
           id="meta-pixel"
@@ -53,7 +52,7 @@ export default function PublicLayout({ children }) {
           }}
         />
       </head>
-      <body className="dark-theme">
+      <body>
         <noscript>
           <img height="1" width="1" style={{ display: 'none' }} src="https://www.facebook.com/tr?id=1696269471434036&ev=PageView&noscript=1" alt="" />
         </noscript>

@@ -31,7 +31,14 @@ export default function RestaurantTemplate({ businessName, phone, address, ratin
 
   return (
     <div style={{ background: '#120d0a', color: '#fef3c7', fontFamily: 'system-ui, -apple-system, sans-serif', minHeight: '100vh', overflowX: 'hidden' }}>
-      
+      <style>{`
+        @media (max-width: 480px) {
+          .phone-text { display: none; }
+          .nav-phone-btn { padding: 9px !important; }
+          .nav-cta-btn { padding: 9px 12px !important; font-size: 13px !important; }
+          .nav-buttons { gap: 8px !important; }
+        }
+      `}</style>
       {/* Top Navbar */}
       <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 28px', borderBottom: '1px solid rgba(255,255,255,0.08)', background: 'rgba(18,13,10,0.85)', backdropFilter: 'blur(12px)', position: 'sticky', top: 0, zIndex: 50 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -44,13 +51,13 @@ export default function RestaurantTemplate({ businessName, phone, address, ratin
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div className="nav-buttons" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {phone && (
-            <a href={`tel:${phone}`} style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#fff', textDecoration: 'none', fontSize: '14px', fontWeight: 600, background: 'rgba(255,255,255,0.06)', padding: '8px 14px', borderRadius: '8px' }}>
-              <Phone size={15} color="#f59e0b" /> {phone}
+            <a href={`tel:${phone}`} className="nav-phone-btn" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#fff', textDecoration: 'none', fontSize: '14px', fontWeight: 600, background: 'rgba(255,255,255,0.06)', padding: '8px 14px', borderRadius: '8px' }}>
+              <Phone size={15} color="#f59e0b" /> <span className="phone-text">{phone}</span>
             </a>
           )}
-          <a href={waUrl} target="_blank" rel="noreferrer" style={{ background: 'linear-gradient(135deg, #ea580c, #c2410c)', color: '#fff', padding: '9px 18px', borderRadius: '8px', textDecoration: 'none', fontWeight: 700, fontSize: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <a href={waUrl} target="_blank" rel="noreferrer" className="nav-cta-btn" style={{ background: 'linear-gradient(135deg, #ea580c, #c2410c)', color: '#fff', padding: '9px 18px', borderRadius: '8px', textDecoration: 'none', fontWeight: 700, fontSize: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <ShoppingBag size={16} /> Online Sipariş Ver
           </a>
         </div>
@@ -65,7 +72,7 @@ export default function RestaurantTemplate({ businessName, phone, address, ratin
             <Sparkles size={15} /> Geleneksel Tarifler & Taze Malzemeler
           </div>
 
-          <h1 style={{ fontSize: '46px', fontWeight: 900, lineHeight: 1.15, margin: '0 0 20px', letterSpacing: '-1px' }}>
+          <h1 style={{ fontSize: 'clamp(28px, 5vw, 46px)', fontWeight: 900, lineHeight: 1.15, margin: '0 0 20px', letterSpacing: '-1px' }}>
             Damağınızda İz Bırakacak <span style={{ background: 'linear-gradient(135deg, #fbbf24, #f97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Unutulmaz Lezzetler</span>
           </h1>
 
@@ -145,7 +152,7 @@ export default function RestaurantTemplate({ businessName, phone, address, ratin
 
               <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
                 <span style={{ fontSize: '18px', fontWeight: 900, color: '#fbbf24' }}>{item.price}</span>
-                <a href={waUrl} target="_blank" rel="noreferrer" style={{ background: 'rgba(234,88,12,0.2)', color: '#fb923c', padding: '6px 12px', borderRadius: '6px', fontSize: '11px', fontWeight: 800, textDecoration: 'none' }}>
+                <a href={waUrl} target="_blank" rel="noreferrer" style={{ background: 'rgba(234,88,12,0.2)', color: '#fb923c', padding: '8px 16px', borderRadius: '6px', fontSize: '13px', fontWeight: 800, textDecoration: 'none' }}>
                   Sipariş Et +
                 </a>
               </div>
@@ -194,7 +201,7 @@ export default function RestaurantTemplate({ businessName, phone, address, ratin
       </section>
 
       {/* Footer */}
-      <footer style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '24px', textAlign: 'center', color: '#64748b', fontSize: '13px' }}>
+      <footer style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '24px', textAlign: 'center', color: '#94a3b8', fontSize: '13px' }}>
         &copy; {new Date().getFullYear()} {businessName}. Tüm Hakları Saklıdır.
       </footer>
 

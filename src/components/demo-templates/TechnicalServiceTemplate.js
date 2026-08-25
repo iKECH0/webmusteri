@@ -10,9 +10,17 @@ export default function TechnicalServiceTemplate({ businessName, phone, address,
 
   return (
     <div style={{ background: '#09111e', color: '#f8fafc', fontFamily: 'system-ui, -apple-system, sans-serif', minHeight: '100vh', overflowX: 'hidden' }}>
+      <style>{`
+        @media (max-width: 480px) {
+          .phone-text { display: none; }
+          .nav-phone-btn { padding: 9px !important; }
+          .nav-cta-btn { padding: 9px 12px !important; font-size: 13px !important; }
+          .nav-buttons { gap: 8px !important; }
+        }
+      `}</style>
       
       {/* Top Emergency Notice */}
-      <div style={{ background: '#dc2626', color: '#fff', padding: '8px 16px', textAlign: 'center', fontSize: '13px', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+      <div style={{ background: '#dc2626', color: '#fff', padding: '8px 16px', textAlign: 'center', fontSize: 'clamp(11px, 3vw, 13px)', fontWeight: 800, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
         <AlertTriangle size={16} /> 7/24 ACİL SERVİS &bull; 30 DAKİKADA KAPINIZDA USTA DESTEĞİ
       </div>
 
@@ -28,13 +36,13 @@ export default function TechnicalServiceTemplate({ businessName, phone, address,
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div className="nav-buttons" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {phone && (
-            <a href={`tel:${phone}`} style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#fff', textDecoration: 'none', fontSize: '14px', fontWeight: 600, background: 'rgba(255,255,255,0.06)', padding: '8px 14px', borderRadius: '8px' }}>
-              <Phone size={15} color="#ef4444" /> {phone}
+            <a href={`tel:${phone}`} className="nav-phone-btn" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#fff', textDecoration: 'none', fontSize: '14px', fontWeight: 600, background: 'rgba(255,255,255,0.06)', padding: '8px 14px', borderRadius: '8px' }}>
+              <Phone size={15} color="#ef4444" /> <span className="phone-text">{phone}</span>
             </a>
           )}
-          <a href={phone ? `tel:${phone}` : waUrl} style={{ background: '#dc2626', color: '#fff', padding: '9px 18px', borderRadius: '8px', textDecoration: 'none', fontWeight: 800, fontSize: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <a href={phone ? `tel:${phone}` : waUrl} className="nav-cta-btn" style={{ background: '#dc2626', color: '#fff', padding: '9px 18px', borderRadius: '8px', textDecoration: 'none', fontWeight: 800, fontSize: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <Phone size={16} /> Acil Usta Çağır
           </a>
         </div>
@@ -49,7 +57,7 @@ export default function TechnicalServiceTemplate({ businessName, phone, address,
             <Zap size={15} /> Kırmadan Dökmeden Cihazla Arıza Tespiti
           </div>
 
-          <h1 style={{ fontSize: '46px', fontWeight: 900, lineHeight: 1.15, margin: '0 0 20px', letterSpacing: '-1px' }}>
+          <h1 style={{ fontSize: 'clamp(28px, 5vw, 46px)', fontWeight: 900, lineHeight: 1.15, margin: '0 0 20px', letterSpacing: '-1px' }}>
             Tesisat & Arızalara <span style={{ background: 'linear-gradient(135deg, #f87171, #fbbf24)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Hızlı, Garantili & Kesin</span> Çözüm
           </h1>
 
@@ -160,7 +168,7 @@ export default function TechnicalServiceTemplate({ businessName, phone, address,
       </section>
 
       {/* Footer */}
-      <footer style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '24px', textAlign: 'center', color: '#64748b', fontSize: '13px' }}>
+      <footer style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '24px', textAlign: 'center', color: '#94a3b8', fontSize: '13px' }}>
         &copy; {new Date().getFullYear()} {businessName}. Tüm Hakları Saklıdır.
       </footer>
 

@@ -10,7 +10,14 @@ export default function CorporateTemplate({ businessName, phone, address, rating
 
   return (
     <div style={{ background: '#0a0f1d', color: '#f8fafc', fontFamily: 'system-ui, -apple-system, sans-serif', minHeight: '100vh', overflowX: 'hidden' }}>
-      
+      <style>{`
+        @media (max-width: 480px) {
+          .phone-text { display: none; }
+          .nav-phone-btn { padding: 9px !important; }
+          .nav-cta-btn { padding: 9px 12px !important; font-size: 13px !important; }
+          .nav-buttons { gap: 8px !important; }
+        }
+      `}</style>
       {/* Top Navbar */}
       <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 28px', borderBottom: '1px solid rgba(255,255,255,0.08)', background: 'rgba(10,15,29,0.85)', backdropFilter: 'blur(12px)', position: 'sticky', top: 0, zIndex: 50 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -23,13 +30,13 @@ export default function CorporateTemplate({ businessName, phone, address, rating
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div className="nav-buttons" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {phone && (
-            <a href={`tel:${phone}`} style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#fff', textDecoration: 'none', fontSize: '14px', fontWeight: 600, background: 'rgba(255,255,255,0.06)', padding: '8px 14px', borderRadius: '8px' }}>
-              <Phone size={15} color="#818cf8" /> {phone}
+            <a href={`tel:${phone}`} className="nav-phone-btn" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#fff', textDecoration: 'none', fontSize: '14px', fontWeight: 600, background: 'rgba(255,255,255,0.06)', padding: '8px 14px', borderRadius: '8px' }}>
+              <Phone size={15} color="#818cf8" /> <span className="phone-text">{phone}</span>
             </a>
           )}
-          <a href={waUrl} target="_blank" rel="noreferrer" style={{ background: 'linear-gradient(135deg, #6366f1, #4f46e5)', color: '#fff', padding: '9px 18px', borderRadius: '8px', textDecoration: 'none', fontWeight: 700, fontSize: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <a href={waUrl} target="_blank" rel="noreferrer" className="nav-cta-btn" style={{ background: 'linear-gradient(135deg, #6366f1, #4f46e5)', color: '#fff', padding: '9px 18px', borderRadius: '8px', textDecoration: 'none', fontWeight: 700, fontSize: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <MessageCircle size={16} /> Teklif Al
           </a>
         </div>
@@ -44,7 +51,7 @@ export default function CorporateTemplate({ businessName, phone, address, rating
             <Sparkles size={15} /> Güvenilir, Profesyonel ve Hızlı Çözümler
           </div>
 
-          <h1 style={{ fontSize: '46px', fontWeight: 900, lineHeight: 1.15, margin: '0 0 20px', letterSpacing: '-1px' }}>
+          <h1 style={{ fontSize: 'clamp(28px, 5vw, 46px)', fontWeight: 900, lineHeight: 1.15, margin: '0 0 20px', letterSpacing: '-1px' }}>
             İhtiyacınıza Özel <span style={{ background: 'linear-gradient(135deg, #818cf8, #38bdf8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Kaliteli & Garantili</span> Hizmet
           </h1>
 
@@ -153,7 +160,7 @@ export default function CorporateTemplate({ businessName, phone, address, rating
       </section>
 
       {/* Footer */}
-      <footer style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '24px', textAlign: 'center', color: '#64748b', fontSize: '13px' }}>
+      <footer style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '24px', textAlign: 'center', color: '#94a3b8', fontSize: '13px' }}>
         &copy; {new Date().getFullYear()} {businessName}. Tüm Hakları Saklıdır.
       </footer>
 

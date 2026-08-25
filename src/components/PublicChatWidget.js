@@ -54,11 +54,12 @@ export default function PublicChatWidget() {
   };
 
   return (
-    <div style={{ position: 'fixed', bottom: '90px', right: '20px', zIndex: 9999 }}>
+    <div style={{ position: 'fixed', bottom: '90px', right: '16px', zIndex: 9999 }}>
       {isOpen ? (
         <div style={{
-          width: '320px',
+          width: 'min(340px, calc(100vw - 32px))',
           height: '450px',
+          maxHeight: 'calc(100vh - 120px)',
           backgroundColor: 'var(--bg-color)',
           borderRadius: 'var(--radius-lg)',
           boxShadow: 'var(--shadow-lg)',
