@@ -82,10 +82,10 @@ function BeforeAfterSlider({ beforeImg, afterImg, beforeLabel = 'ÖNCE', afterLa
   return (
     <div
       ref={containerRef}
-      className="comparison-slider"
       style={{
         position: 'relative',
         width: '100%',
+        height: '500px',
         overflow: 'hidden',
         borderRadius: '16px',
         cursor: 'ew-resize',
@@ -408,78 +408,27 @@ export default function CarWashTemplate({ businessName, phone, address, rating, 
           padding: 8px;
         }
 
-        .comparison-slider { height: 500px; }
-
         @media (max-width: 768px) {
           .hamburger { display: block; }
           .desktop-nav { display: none; }
           .mobile-menu {
             position: fixed;
-            top: 64px; left: 0; right: 0;
+            top: 64px;
+            left: 0;
+            right: 0;
             background: rgba(8,12,20,0.98);
             backdrop-filter: blur(20px);
-            padding: 24px 20px;
-            display: flex; flex-direction: column; gap: 20px;
+            padding: 24px 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
             z-index: 99;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
           }
-
-          /* Hero: tek sütun */
-          .hero-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
-          .hero-text h1 { font-size: 32px !important; letter-spacing: -1px !important; }
-          .hero-btns { flex-direction: column !important; gap: 10px !important; }
-          .hero-btns a, .hero-btns button { width: 100% !important; justify-content: center !important; }
-
-          /* Genel section padding */
-          section, [data-section] { padding-left: 16px !important; padding-right: 16px !important; }
-
-          /* Stats: 2 sütun */
-          .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
-
-          /* Servis grid: 1 sütun */
-          .services-grid { grid-template-columns: 1fr !important; }
-
-          /* Paketler: 1 sütun, öne çıkan scale yok */
-          .package-card.featured { transform: scale(1) !important; }
-          .packages-grid { grid-template-columns: 1fr !important; }
-
-          /* İnceleme kartları: scroll yerine tek sütun */
-          .reviews-scroll { flex-direction: column !important; overflow: visible !important; }
-          .review-card { min-width: unset !important; width: 100% !important; }
-
-          /* Neden biz: tek sütun */
-          .why-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
-
-          /* Galeri: 2 sütun */
-          .gallery-grid { grid-template-columns: repeat(2, 1fr) !important; }
-
-          /* CTA section: tek sütun, ortalı */
-          .cta-section { padding: 60px 16px !important; }
-          .cta-section h2 { font-size: 28px !important; }
-
-          /* Footer: tek sütun */
-          .footer-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
-          footer { padding: 48px 16px 32px !important; }
-
-          /* Nav padding küçüt */
-          header { padding: 0 16px !important; }
-
-          /* Genel yazı */
-          h2 { font-size: 26px !important; }
-          p { font-size: 14px !important; }
-
-          /* Comparison slider tam genişlik */
-          .comparison-slider { height: 260px !important; border-radius: 12px !important; }
-
-          /* DemoFloatingBar */
-          .floating-bar-inner { flex-direction: column !important; align-items: flex-start !important; }
         }
-
         @media (min-width: 769px) {
           .mobile-menu { display: none; }
         }
       `}</style>
-
 
       {/* ── NAVBAR ── */}
       <header style={{
@@ -575,8 +524,7 @@ export default function CarWashTemplate({ businessName, phone, address, rating, 
             <div>
               <div style={{ fontSize: 28, fontWeight: 800, color: '#fff' }}>{rating || '4.9'}</div>
               <div style={{ fontSize: 13, color: '#94a3b8' }}>Google Puanı</div>
-            </div>
-            <div>
+            </div>div>
               <div style={{ fontSize: 28, fontWeight: 800, color: '#fff' }}>{reviewCount || '328'}+</div>
               <div style={{ fontSize: 13, color: '#94a3b8' }}>Mutlu Müşteri</div>
             </div>

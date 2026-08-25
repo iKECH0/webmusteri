@@ -588,6 +588,9 @@ export default function PublicHomePage() {
           --text: #f3f1ec;
           --text-muted: #9aa2b4;
           --shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.6);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --nav-scrolled: rgba(10, 13, 19, 0.8);
         }
         body:not(.dark-theme) .kdv-root {
           --bg: #f7f4ee;
@@ -598,6 +601,9 @@ export default function PublicHomePage() {
           --text: #1c1a16;
           --text-muted: #6b6459;
           --shadow: 0 24px 60px -24px rgba(20, 16, 10, 0.18);
+            --glass-bg: rgba(255, 255, 255, 0.6);
+            --glass-border: rgba(20, 16, 10, 0.1);
+            --nav-scrolled: rgba(247, 244, 238, 0.85);
         }
       `}</style>
 
@@ -652,11 +658,11 @@ export default function PublicHomePage() {
         :global(.reveal.active) { opacity: 1; transform: translateY(0); }
 
         /* ── glass panel ── */
-        .glass-panel { background: rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.1); border-radius: var(--radius-md); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+        .glass-panel { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-md); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
 
         /* ── navbar ── */
         .navbar { position: sticky; top: 0; z-index: 100; padding: 18px 0; transition: background 0.3s ease, padding 0.3s ease, border-color 0.3s ease; border-bottom: 1px solid transparent; }
-        .navbar.scrolled { background: rgba(0,0,0,0.1); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 12px 0; border-color: rgba(0,0,0,0.1); }
+        .navbar.scrolled { background: var(--nav-scrolled); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 12px 0; border-color: var(--glass-border); }
         .nav-container { max-width: 1160px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
         .logo a { display: flex; align-items: center; gap: 10px; font-family: var(--font-display), sans-serif; font-weight: 700; font-size: 19px; }
         .logo span { color: var(--brass); }
@@ -684,7 +690,7 @@ export default function PublicHomePage() {
 
         /* ── hero ── */
         .hero { padding: 96px 24px 56px; text-align: center; display: flex; flex-direction: column; align-items: center; }
-        .status-chip { display: inline-flex; align-items: center; gap: 9px; padding: 7px 16px; border-radius: 999px; border: 1px solid rgba(0,0,0,0.1); background: rgba(0,0,0,0.1); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); margin-bottom: 26px; }
+        .status-chip { display: inline-flex; align-items: center; gap: 9px; padding: 7px 16px; border-radius: 999px; border: 1px solid var(--glass-border); background: var(--glass-bg); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); margin-bottom: 26px; }
         .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--signal); box-shadow: 0 0 0 0 rgba(61, 220, 151, 0.6); animation: pulse 2s infinite; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(61, 220, 151, 0.55); } 70% { box-shadow: 0 0 0 8px rgba(61, 220, 151, 0); } 100% { box-shadow: 0 0 0 0 rgba(61, 220, 151, 0); } }
         .status-mono { font-family: var(--font-mono), monospace; font-size: 12.5px; color: var(--text-muted); }
@@ -705,7 +711,7 @@ export default function PublicHomePage() {
         :global(.wave-divider.flip) { transform: scaleY(-1); }
 
         /* ── marquee ── */
-        .marquee-container { overflow: hidden; padding: 20px 0; border-top: 1px solid rgba(0,0,0,0.1); border-bottom: 1px solid rgba(0,0,0,0.1); background: rgba(0,0,0,0.1); }
+        .marquee-container { overflow: hidden; padding: 20px 0; border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border); background: var(--glass-bg); }
         .marquee-content { display: flex; gap: 10px; width: max-content; animation: scroll-left 32s linear infinite; font-family: var(--font-mono), monospace; font-size: 14px; color: var(--text-muted); }
         .marquee-content .dot { color: var(--brass); }
         @keyframes scroll-left { from { transform: translateX(0); } to { transform: translateX(-50%); } }
@@ -720,7 +726,7 @@ export default function PublicHomePage() {
 
         /* ── projects ── */
         .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
-        .project-card { border-radius: var(--radius-md); overflow: hidden; background: rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.1); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .project-card { border-radius: var(--radius-md); overflow: hidden; background: var(--glass-bg); border: 1px solid var(--glass-border); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); transition: transform 0.3s ease, box-shadow 0.3s ease; }
         .project-card:hover { transform: translateY(-6px); box-shadow: var(--shadow); }
         .project-image { height: 200px; background-size: cover; background-position: center; position: relative; }
         .project-category { position: absolute; top: 14px; left: 14px; background: rgba(10, 13, 19, 0.75); color: #fff; font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 999px; }
@@ -748,7 +754,7 @@ export default function PublicHomePage() {
 
         /* ── pricing ── */
         .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
-        .pricing-card { padding: 34px 28px; position: relative; transition: transform 0.3s ease; background: rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.1); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+        .pricing-card { padding: 34px 28px; position: relative; transition: transform 0.3s ease; background: var(--glass-bg); border: 1px solid var(--glass-border); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
         .pricing-card:hover { transform: translateY(-6px); }
         .pricing-card.popular { border-color: var(--brass); box-shadow: 0 20px 50px -20px rgba(0,0,0,0.1); }
         .popular-badge { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--brass), var(--brass-dark)); color: #fff; font-size: 11px; font-weight: 800; padding: 5px 16px; border-radius: 999px; letter-spacing: 0.03em; }
