@@ -652,11 +652,11 @@ export default function PublicHomePage() {
         :global(.reveal.active) { opacity: 1; transform: translateY(0); }
 
         /* ── glass panel ── */
-        .glass-panel { background: color-mix(in srgb, var(--surface) 55%, transparent); border: 1px solid color-mix(in srgb, var(--border) 70%, transparent); border-radius: var(--radius-md); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+        .glass-panel { background: rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.1); border-radius: var(--radius-md); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
 
         /* ── navbar ── */
         .navbar { position: sticky; top: 0; z-index: 100; padding: 18px 0; transition: background 0.3s ease, padding 0.3s ease, border-color 0.3s ease; border-bottom: 1px solid transparent; }
-        .navbar.scrolled { background: color-mix(in srgb, var(--bg) 72%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 12px 0; border-color: color-mix(in srgb, var(--border) 70%, transparent); }
+        .navbar.scrolled { background: rgba(0,0,0,0.1); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 12px 0; border-color: rgba(0,0,0,0.1); }
         .nav-container { max-width: 1160px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
         .logo a { display: flex; align-items: center; gap: 10px; font-family: var(--font-display), sans-serif; font-weight: 700; font-size: 19px; }
         .logo span { color: var(--brass); }
@@ -673,8 +673,8 @@ export default function PublicHomePage() {
         .btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 20px; border-radius: 999px; font-weight: 700; font-size: 14px; transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease; white-space: nowrap; }
         .btn:hover { transform: translateY(-2px); }
         .btn-large { padding: 15px 26px; font-size: 15px; }
-        .btn-primary { background: linear-gradient(135deg, var(--brass), var(--brass-dark)); color: #fff !important; box-shadow: 0 10px 26px -8px color-mix(in srgb, var(--brass) 70%, transparent); }
-        .btn-accent { background: linear-gradient(135deg, var(--violet), var(--violet-dark)); color: #fff !important; box-shadow: 0 10px 26px -8px color-mix(in srgb, var(--violet) 70%, transparent); }
+        .btn-primary { background: linear-gradient(135deg, var(--brass), var(--brass-dark)); color: #fff !important; box-shadow: 0 10px 26px -8px rgba(0,0,0,0.1); }
+        .btn-accent { background: linear-gradient(135deg, var(--violet), var(--violet-dark)); color: #fff !important; box-shadow: 0 10px 26px -8px rgba(0,0,0,0.1); }
         .btn-outline { border: 1.5px solid var(--border); color: var(--text); }
         .btn-outline:hover { border-color: var(--brass); }
         .btn-whatsapp { background: #25d366; color: #04250f; }
@@ -684,7 +684,7 @@ export default function PublicHomePage() {
 
         /* ── hero ── */
         .hero { padding: 96px 24px 56px; text-align: center; display: flex; flex-direction: column; align-items: center; }
-        .status-chip { display: inline-flex; align-items: center; gap: 9px; padding: 7px 16px; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--border) 70%, transparent); background: color-mix(in srgb, var(--surface) 45%, transparent); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); margin-bottom: 26px; }
+        .status-chip { display: inline-flex; align-items: center; gap: 9px; padding: 7px 16px; border-radius: 999px; border: 1px solid rgba(0,0,0,0.1); background: rgba(0,0,0,0.1); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); margin-bottom: 26px; }
         .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--signal); box-shadow: 0 0 0 0 rgba(61, 220, 151, 0.6); animation: pulse 2s infinite; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(61, 220, 151, 0.55); } 70% { box-shadow: 0 0 0 8px rgba(61, 220, 151, 0); } 100% { box-shadow: 0 0 0 0 rgba(61, 220, 151, 0); } }
         .status-mono { font-family: var(--font-mono), monospace; font-size: 12.5px; color: var(--text-muted); }
@@ -705,7 +705,7 @@ export default function PublicHomePage() {
         :global(.wave-divider.flip) { transform: scaleY(-1); }
 
         /* ── marquee ── */
-        .marquee-container { overflow: hidden; padding: 20px 0; border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent); border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent); background: color-mix(in srgb, var(--surface) 40%, transparent); }
+        .marquee-container { overflow: hidden; padding: 20px 0; border-top: 1px solid rgba(0,0,0,0.1); border-bottom: 1px solid rgba(0,0,0,0.1); background: rgba(0,0,0,0.1); }
         .marquee-content { display: flex; gap: 10px; width: max-content; animation: scroll-left 32s linear infinite; font-family: var(--font-mono), monospace; font-size: 14px; color: var(--text-muted); }
         .marquee-content .dot { color: var(--brass); }
         @keyframes scroll-left { from { transform: translateX(0); } to { transform: translateX(-50%); } }
@@ -720,7 +720,7 @@ export default function PublicHomePage() {
 
         /* ── projects ── */
         .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
-        .project-card { border-radius: var(--radius-md); overflow: hidden; background: color-mix(in srgb, var(--surface) 55%, transparent); border: 1px solid color-mix(in srgb, var(--border) 70%, transparent); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .project-card { border-radius: var(--radius-md); overflow: hidden; background: rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.1); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); transition: transform 0.3s ease, box-shadow 0.3s ease; }
         .project-card:hover { transform: translateY(-6px); box-shadow: var(--shadow); }
         .project-image { height: 200px; background-size: cover; background-position: center; position: relative; }
         .project-category { position: absolute; top: 14px; left: 14px; background: rgba(10, 13, 19, 0.75); color: #fff; font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 999px; }
@@ -748,9 +748,9 @@ export default function PublicHomePage() {
 
         /* ── pricing ── */
         .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
-        .pricing-card { padding: 34px 28px; position: relative; transition: transform 0.3s ease; background: color-mix(in srgb, var(--surface) 55%, transparent); border: 1px solid color-mix(in srgb, var(--border) 70%, transparent); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+        .pricing-card { padding: 34px 28px; position: relative; transition: transform 0.3s ease; background: rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.1); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
         .pricing-card:hover { transform: translateY(-6px); }
-        .pricing-card.popular { border-color: var(--brass); box-shadow: 0 20px 50px -20px color-mix(in srgb, var(--brass) 50%, transparent); }
+        .pricing-card.popular { border-color: var(--brass); box-shadow: 0 20px 50px -20px rgba(0,0,0,0.1); }
         .popular-badge { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--brass), var(--brass-dark)); color: #fff; font-size: 11px; font-weight: 800; padding: 5px 16px; border-radius: 999px; letter-spacing: 0.03em; }
         .pricing-title { font-size: 21px; margin-bottom: 10px; }
         .pricing-desc { font-size: 14px; color: var(--text-muted); line-height: 1.55; margin-bottom: 22px; min-height: 44px; }
